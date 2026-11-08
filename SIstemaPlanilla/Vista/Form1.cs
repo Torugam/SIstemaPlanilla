@@ -1,19 +1,28 @@
+using SistemaPlanilla.Modelo;
+using SistemaPlanilla.Vista;
+using SIstemaPlanilla.Vista;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 using SIstemaPlanilla.Vista;
 
 namespace SIstemaPlanilla
 {
     public partial class Form1 : Form
     {
-        Empleado empleado;
-        Departamento departamento;
-        Contratos contratos;
-        Cargos cargos;
-        Capacitaciones capacitaciones;
-        Planillas planillas;
-        Prestamos prestamos;
-        Parametros parametros;
-        Usuarios usuarios;
-        RolesPermisos rolesPermisos;
+        Empleado empleado = null!;
+        Departamentos departamento = null!;
+        Contratos contratos = null!;
+        Cargos cargos = null!;
+        Capacitaciones capacitaciones = null!;
+        Planillas planillas = null!;
+        Prestamos prestamos = null!;
+        Parametros parametros = null!;
+        Usuarios usuarios = null!;
+        RolesPermisos rolesPermisos = null!;
+
+        // Botón dinámico para Cerrar Sesión
+        Button btnCerrarSesionDinamico = null!;
 
         bool menuExpandidoAdministracion = false;
         bool menuExpandidoGestion = false;
@@ -23,8 +32,90 @@ namespace SIstemaPlanilla
         public Form1()
         {
             InitializeComponent();
+            CrearBotonCerrarSesion();
+            this.Load += Form1_Load;
         }
 
+        private void CrearBotonCerrarSesion()
+        {
+            btnCerrarSesionDinamico = new Button();
+            btnCerrarSesionDinamico.Text = "🚪 Cerrar Sesión";
+            btnCerrarSesionDinamico.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+            btnCerrarSesionDinamico.ForeColor = Color.White;
+            btnCerrarSesionDinamico.BackColor = Color.Crimson;
+            btnCerrarSesionDinamico.FlatStyle = FlatStyle.Flat;
+            btnCerrarSesionDinamico.FlatAppearance.BorderSize = 0;
+            btnCerrarSesionDinamico.Size = new Size(115, 26);
+
+            // Posicionado en la esquina superior derecha, justo debajo de los botones de la barra de título (X, minimizar)
+            btnCerrarSesionDinamico.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnCerrarSesionDinamico.Location = new Point(this.ClientSize.Width - 125, 45);
+            btnCerrarSesionDinamico.Cursor = Cursors.Hand;
+
+            btnCerrarSesionDinamico.Click += btnCerrarSesion_Click;
+
+            this.Controls.Add(btnCerrarSesionDinamico);
+            btnCerrarSesionDinamico.BringToFront();
+        }
+
+        private void Form1_Load(object? sender, EventArgs e)
+        {
+            this.Text = $"Sistema de Planillas - Usuario: {SesionUsuario.NombreEmpleado} ({SesionUsuario.NombreRol})";
+            AplicarPermisosMenu();
+        }
+
+        private void AplicarPermisosMenu()
+        {
+            if (btnAdministracion != null) btnAdministracion.Visible = true;
+            if (menuAdministracion != null) menuAdministracion.Visible = true;
+            if (btnMenuGestion != null) btnMenuGestion.Visible = true;
+            if (menuPlanilla != null) menuPlanilla.Visible = true;
+            if (btnMenuRecurso != null) btnMenuRecurso.Visible = true;
+            if (menuContainer != null) menuContainer.Visible = true;
+
+            // Rol Planillero (ID 2) -> Oculta Administración
+            if (SesionUsuario.IdRol == 2)
+            {
+                if (btnAdministracion != null) btnAdministracion.Visible = false;
+                if (menuAdministracion != null) menuAdministracion.Visible = false;
+            }
+            // Rol Recursos Humanos (ID 3) -> Oculta Administración y Gestión de Planilla
+            else if (SesionUsuario.IdRol == 3)
+            {
+                if (btnAdministracion != null) btnAdministracion.Visible = false;
+                if (menuAdministracion != null) menuAdministracion.Visible = false;
+
+                if (btnMenuGestion != null) btnMenuGestion.Visible = false;
+                if (menuPlanilla != null) menuPlanilla.Visible = false;
+            }
+        }
+
+        private void btnCerrarSesion_Click(object? sender, EventArgs e)
+        {
+            DialogResult respuesta = MessageBox.Show(
+                "¿Está seguro de que desea cerrar la sesión actual?",
+                "Cerrar Sesión",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (respuesta == DialogResult.Yes)
+            {
+                // 1. Limpiar los datos globales de la sesión
+                SesionUsuario.LimpiarSesion();
+
+                // 2. Ocultar la ventana actual primero para evitar parpadeos/bloqueos
+                this.Hide();
+
+                // 3. Crear y mostrar la pantalla de Login
+                Login formLogin = new Login();
+
+                // Al cerrar el nuevo Login, cerrar definitivamente toda la aplicación
+                formLogin.FormClosed += (s, args) => Application.Exit();
+
+                formLogin.Show();
+            }
+        }
 
         private void menuTransicion_Tick(object sender, EventArgs e)
         {
@@ -36,7 +127,6 @@ namespace SIstemaPlanilla
                     menuTransicion.Stop();
                     menuExpandido = true;
                 }
-
             }
             else
             {
@@ -59,9 +149,10 @@ namespace SIstemaPlanilla
                     sliderExpandido = false;
                     sliderTransicion.Stop();
 
-                    btnMenuRecurso.Width = sliderbar.Width;
-                    btnMenuGestion.Width = sliderbar.Width;
-                    btnAdministracion.Width = sliderbar.Width;
+                    if (btnMenuRecurso != null) btnMenuRecurso.Width = sliderbar.Width;
+                    if (btnMenuGestion != null) btnMenuGestion.Width = sliderbar.Width;
+                    if (btnAdministracion != null) btnAdministracion.Width = sliderbar.Width;
+                    if (btnSalir != null) btnSalir.Width = sliderbar.Width;
                 }
             }
             else
@@ -72,12 +163,12 @@ namespace SIstemaPlanilla
                     sliderExpandido = true;
                     sliderTransicion.Stop();
 
-                    btnMenuRecurso.Width = sliderbar.Width;
-                    btnMenuGestion.Width = sliderbar.Width;
-                    btnAdministracion.Width = sliderbar.Width;
+                    if (btnMenuRecurso != null) btnMenuRecurso.Width = sliderbar.Width;
+                    if (btnMenuGestion != null) btnMenuGestion.Width = sliderbar.Width;
+                    if (btnAdministracion != null) btnAdministracion.Width = sliderbar.Width;
+                    if (btnSalir != null) btnSalir.Width = sliderbar.Width;
                 }
             }
-
         }
 
         private void pMenu_Click(object sender, EventArgs e)
@@ -105,7 +196,6 @@ namespace SIstemaPlanilla
                     menuGestion.Stop();
                     menuExpandidoGestion = true;
                 }
-
             }
             else
             {
@@ -116,14 +206,12 @@ namespace SIstemaPlanilla
                     menuExpandidoGestion = false;
                 }
             }
-
         }
 
         private void btnAdministracion_Click(object sender, EventArgs e)
         {
             menuUsuario.Start();
         }
-
 
         private void menuUsuario_Tick(object sender, EventArgs e)
         {
@@ -135,7 +223,6 @@ namespace SIstemaPlanilla
                     menuUsuario.Stop();
                     menuExpandidoAdministracion = true;
                 }
-
             }
             else
             {
@@ -157,7 +244,7 @@ namespace SIstemaPlanilla
         {
             if (departamento == null)
             {
-                departamento = new Departamento();
+                departamento = new Departamentos();
                 departamento.FormClosed += Departamento_FormClosed;
                 departamento.MdiParent = this;
                 departamento.Dock = DockStyle.Fill;
@@ -169,10 +256,9 @@ namespace SIstemaPlanilla
             }
         }
 
-        private void Departamento_FormClosed(object sender, FormClosedEventArgs e)
+        private void Departamento_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            departamento = null;
-
+            departamento = null!;
         }
 
         private void btnCargo_Click(object sender, EventArgs e)
@@ -191,10 +277,9 @@ namespace SIstemaPlanilla
             }
         }
 
-        private void Cargo_FormClosed(object sender, FormClosedEventArgs e)
+        private void Cargo_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            cargos = null;
-
+            cargos = null!;
         }
 
         private void btnCapacitacion_Click(object sender, EventArgs e)
@@ -213,10 +298,9 @@ namespace SIstemaPlanilla
             }
         }
 
-        private void Capacitaciones_FormClosed(object sender, FormClosedEventArgs e)
+        private void Capacitaciones_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            capacitaciones = null;
-
+            capacitaciones = null!;
         }
 
         private void btnContrato_Click(object sender, EventArgs e)
@@ -235,10 +319,9 @@ namespace SIstemaPlanilla
             }
         }
 
-        private void Contratos_FormClosed(object sender, FormClosedEventArgs e)
+        private void Contratos_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            contratos = null;
-
+            contratos = null!;
         }
 
         private void btnEmple_Click(object sender, EventArgs e)
@@ -257,17 +340,15 @@ namespace SIstemaPlanilla
             }
         }
 
-        private void Empleado_FormClosed(object sender, FormClosedEventArgs e)
+        private void Empleado_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            empleado = null;
-
+            empleado = null!;
         }
 
         private void btnSalir_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            btnCerrarSesion_Click(sender, e);
         }
-
 
         private void btnMini_Click(object sender, EventArgs e)
         {
@@ -276,7 +357,6 @@ namespace SIstemaPlanilla
 
         private void button17_Click(object sender, EventArgs e)
         {
-            //prestamos
             if (prestamos == null)
             {
                 prestamos = new Prestamos();
@@ -291,15 +371,13 @@ namespace SIstemaPlanilla
             }
         }
 
-        private void Prestamos_FormClosed(object sender, FormClosedEventArgs e)
+        private void Prestamos_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            prestamos = null;
-
+            prestamos = null!;
         }
 
         private void button19_Click(object sender, EventArgs e)
         {
-            //ley
             if (parametros == null)
             {
                 parametros = new Parametros();
@@ -314,15 +392,13 @@ namespace SIstemaPlanilla
             }
         }
 
-        private void Parametros_FormClosed(object sender, FormClosedEventArgs e)
+        private void Parametros_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            parametros = null;
-
+            parametros = null!;
         }
 
         private void button15_Click(object sender, EventArgs e)
         {
-            //planillas
             if (planillas == null)
             {
                 planillas = new Planillas();
@@ -337,15 +413,13 @@ namespace SIstemaPlanilla
             }
         }
 
-        private void Planillas_FormClosed(object sender, FormClosedEventArgs e)
+        private void Planillas_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            planillas = null;
-
+            planillas = null!;
         }
 
         private void button11_Click(object sender, EventArgs e)
         {
-            //usuario
             if (usuarios == null)
             {
                 usuarios = new Usuarios();
@@ -360,14 +434,13 @@ namespace SIstemaPlanilla
             }
         }
 
-        private void Usuarios_FormClosed(object sender, FormClosedEventArgs e)
+        private void Usuarios_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            usuarios = null;
-
+            usuarios = null!;
         }
+
         private void button12_Click(object sender, EventArgs e)
         {
-            //roles
             if (rolesPermisos == null)
             {
                 rolesPermisos = new RolesPermisos();
@@ -380,13 +453,11 @@ namespace SIstemaPlanilla
             {
                 rolesPermisos.Activate();
             }
-            
         }
 
-        private void RolesPermisos_FormClosed(object sender, FormClosedEventArgs e)
+        private void RolesPermisos_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            rolesPermisos = null;
-
+            rolesPermisos = null!;
         }
     }
 }
