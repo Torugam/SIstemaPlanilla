@@ -1,4 +1,6 @@
 ﻿using SistemaPlanilla.Modelo;
+using SIstemaPlanilla.Controlador;
+using SIstemaPlanilla.Modelo;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -9,127 +11,218 @@ namespace SIstemaPlanilla.Vista
 {
     public partial class Usuarios : Form
     {
-        private DataGridView dgvUsuarios = null!;
-        private ComboBox cmbRoles = null!;
-        private Panel pnlSuperior = null!;
+        private UsuarioControlador controlador = new UsuarioControlador();
+
+        private int idUsuarioSeleccionado = 0;
 
         public Usuarios()
         {
             InitializeComponent();
-            InicializarComponentesDinamicos();
-            this.Load += Usuarios_Load;
         }
 
-        private void InicializarComponentesDinamicos()
-        {
-            pnlSuperior = new Panel();
-            pnlSuperior.Dock = DockStyle.Top;
-            pnlSuperior.Height = 45;
-            pnlSuperior.BackColor = Color.LightGray;
 
-            Label lblRol = new Label();
-            lblRol.Text = "Rol de usuario:";
-            lblRol.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            lblRol.Location = new Point(12, 13);
-            lblRol.AutoSize = true;
-
-            cmbRoles = new ComboBox();
-            cmbRoles.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbRoles.Location = new Point(110, 10);
-            cmbRoles.Width = 200;
-
-            pnlSuperior.Controls.Add(lblRol);
-            pnlSuperior.Controls.Add(cmbRoles);
-
-            dgvUsuarios = new DataGridView();
-            dgvUsuarios.Dock = DockStyle.Fill;
-            dgvUsuarios.AllowUserToAddRows = false;
-            dgvUsuarios.AllowUserToDeleteRows = false;
-            dgvUsuarios.ReadOnly = true;
-            dgvUsuarios.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvUsuarios.BackgroundColor = Color.WhiteSmoke;
-
-            this.Controls.Add(dgvUsuarios);
-            this.Controls.Add(pnlSuperior);
-
-            dgvUsuarios.BringToFront();
-        }
 
         private void Usuarios_Load(object? sender, EventArgs e)
         {
-            CargarUsuarios();
-            CargarRolesComboBox();
+            CargarCombos();
+            CargarGrid();
         }
 
-        private void CargarUsuarios()
+        private void CargarCombos()
+        {
+            using (SqlConnection con = Conexion.GetConexion())
+            {
+                if (con == null) return;
+
+
+                using (SqlDataAdapter daRol = new SqlDataAdapter("SELECT ID_ROL, NOMBRE_ROL FROM ROL", con))
+                {
+                    DataTable dtRol = new DataTable();
+                    daRol.Fill(dtRol);
+
+                    // Fila de "Seleccione..."
+                    dtRol.Rows.InsertAt(dtRol.NewRow(), 0);
+                    dtRol.Rows[0]["ID_ROL"] = 0;
+                    dtRol.Rows[0]["NOMBRE_ROL"] = "-- Seleccione Rol --";
+
+                    cmbRoles.DataSource = dtRol;
+                    cmbRoles.DisplayMember = "NOMBRE_ROL";
+                    cmbRoles.ValueMember = "ID_ROL";
+                }
+
+                using (SqlDataAdapter daEmp = new SqlDataAdapter("SELECT ID_EMPLEADO, NOMBRE_COMPLETO FROM EMPLEADO WHERE ESTADO = 'ACTIVO'", con))
+                {
+                    DataTable dtEmp = new DataTable();
+                    daEmp.Fill(dtEmp);
+
+                    // Fila de "Seleccione..."
+                    dtEmp.Rows.InsertAt(dtEmp.NewRow(), 0);
+                    dtEmp.Rows[0]["ID_EMPLEADO"] = 0;
+                    dtEmp.Rows[0]["NOMBRE_COMPLETO"] = "-- Seleccione Empleado --";
+
+                    cmbEmpleado.DataSource = dtEmp;
+                    cmbEmpleado.DisplayMember = "NOMBRE_COMPLETO";
+                    cmbEmpleado.ValueMember = "ID_EMPLEADO";
+                }
+            }
+        }
+
+        private void CargarGrid()
         {
             try
             {
-                using (SqlConnection con = Conexion.GetConexion())
-                {
-                    if (con == null)
-                    {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+                dgvUsuarios.DataSource = controlador.ListarUsuarios();
 
-                    // Es mejor especificar las columnas para no mostrar el PASSWORD_HASH en la pantalla por seguridad
-                    // Además hacemos un JOIN con la tabla ROL para ver el nombre del rol en lugar de solo un número.
-                    string query = @"SELECT U.ID_USUARIO AS [ID], 
-                                            U.USERNAME AS [Usuario], 
-                                            R.NOMBRE_ROL AS [Rol], 
-                                            U.ESTADO AS [Estado], 
-                                            U.INTENTOS_FALLIDOS AS [Intentos Fallidos]
-                                     FROM USUARIO U
-                                     INNER JOIN ROL R ON U.ID_ROL = R.ID_ROL";
-
-                    using (SqlDataAdapter da = new SqlDataAdapter(query, con))
-                    {
-                        DataTable dt = new DataTable();
-                        da.Fill(dt);
-
-                        if (dgvUsuarios != null)
-                        {
-                            dgvUsuarios.DataSource = dt;
-                        }
-                    }
-                }
+                if (dgvUsuarios.Columns["ID_USUARIO"] != null) dgvUsuarios.Columns["ID_USUARIO"].Visible = false;
+                if (dgvUsuarios.Columns["ID_ROL"] != null) dgvUsuarios.Columns["ID_ROL"].Visible = false;
+                if (dgvUsuarios.Columns["ID_EMPLEADO"] != null) dgvUsuarios.Columns["ID_EMPLEADO"].Visible = false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al cargar usuarios: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error al cargar la tabla: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void CargarRolesComboBox()
+        private void Limpiar()
         {
-            try { 
-            
-                using (SqlConnection con = Conexion.GetConexion())
+            idUsuarioSeleccionado = 0;
+            txtUsuario.Clear();
+            txtContrasenia.Clear();
+            if (cmbRoles.Items.Count > 0) cmbRoles.SelectedIndex = 0;
+            if (cmbEmpleado.Items.Count > 0) cmbEmpleado.SelectedIndex = 0;
+            txtUsuario.Focus();
+        }
+
+        private bool ValidarCampos(bool esNuevo)
+        {
+            if (string.IsNullOrWhiteSpace(txtUsuario.Text) || Convert.ToInt32(cmbRoles.SelectedValue) == 0)
+            {
+                MessageBox.Show("El nombre de usuario y el rol son obligatorios.", "Faltan datos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            if (esNuevo && string.IsNullOrWhiteSpace(txtContrasenia.Text))
+            {
+                MessageBox.Show("Debe asignar una contraseña al momento de crear un nuevo usuario.", "Faltan datos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            return true;
+        }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            if (!ValidarCampos(true)) return;
+
+            Usuario nuevoUsuario = new Usuario
+            {
+                Username = txtUsuario.Text.Trim(),
+                PasswordHash = HelperSeguridad.CalcularSHA256(txtContrasenia.Text.Trim()),
+                IdRol = Convert.ToInt32(cmbRoles.SelectedValue),
+                IdEmpleado = Convert.ToInt32(cmbEmpleado.SelectedValue)
+            };
+
+            if (controlador.GuardarNuevoUsuario(nuevoUsuario))
+            {
+                MessageBox.Show("Usuario creado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Limpiar();
+                CargarGrid();
+            }
+            else
+            {
+                MessageBox.Show("No se pudo guardar el usuario.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnActualizar_Click(object sender, EventArgs e)
+        {
+            if (idUsuarioSeleccionado == 0)
+            {
+                MessageBox.Show("Seleccione un usuario de la tabla haciendo clic sobre él.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!ValidarCampos(false)) return;
+
+
+            bool cambiaPassword = !string.IsNullOrWhiteSpace(txtContrasenia.Text);
+
+            Usuario usuarioEditado = new Usuario
+            {
+                IdUsuario = idUsuarioSeleccionado,
+                Username = txtUsuario.Text.Trim(),
+                IdRol = Convert.ToInt32(cmbRoles.SelectedValue),
+                IdEmpleado = Convert.ToInt32(cmbEmpleado.SelectedValue)
+            };
+
+            if (cambiaPassword)
+            {
+                usuarioEditado.PasswordHash = HelperSeguridad.CalcularSHA256(txtContrasenia.Text.Trim());
+            }
+
+            if (controlador.ModificarUsuario(usuarioEditado, cambiaPassword))
+            {
+                MessageBox.Show("Usuario modificado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Limpiar();
+                CargarGrid();
+            }
+        }
+
+        private void btnEliminar_Click(object sender, EventArgs e)
+        {
+            if (idUsuarioSeleccionado == 0)
+            {
+                MessageBox.Show("Seleccione un usuario de la tabla.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show("¿Está seguro de desactivar este acceso al sistema?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                if (controlador.DesactivarUsuario(idUsuarioSeleccionado))
                 {
-                    if (con == null) return; // Si no hay conexión, sale silenciosamente
-
-                    string query = "SELECT ID_ROL, NOMBRE_ROL FROM ROL";
-
-                    using (SqlDataAdapter da = new SqlDataAdapter(query, con))
-                    {
-                        DataTable dt = new DataTable();
-                        da.Fill(dt);
-
-                        if (cmbRoles != null && dt.Rows.Count > 0)
-                        {
-                            cmbRoles.DataSource = dt;
-                            // Asignamos explícitamente las columnas por su nombre en la base de datos
-                            cmbRoles.ValueMember = "ID_ROL";
-                            cmbRoles.DisplayMember = "NOMBRE_ROL";
-                        }
-                    }
+                    MessageBox.Show("Usuario desactivado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Limpiar();
+                    CargarGrid();
                 }
             }
-            catch (Exception ex)
+        }
+
+        private void txtBuscar_TextChanged(object sender, EventArgs e)
+        {
+            string filtro = txtBuscar.Text.Trim();
+            if (string.IsNullOrEmpty(filtro))
             {
-                MessageBox.Show("Error al cargar roles en el combo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                CargarGrid();
             }
+            else
+            {
+
+                dgvUsuarios.DataSource = controlador.BuscarUsuarios(filtro);
+            }
+        }
+
+        private void dgvUsuarios_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dgvUsuarios.Rows[e.RowIndex];
+
+                idUsuarioSeleccionado = Convert.ToInt32(row.Cells["ID_USUARIO"].Value);
+
+                txtUsuario.Text = row.Cells["Usuario"].Value.ToString();
+                txtContrasenia.Clear();
+
+                if (row.Cells["ID_ROL"].Value != DBNull.Value)
+                    cmbRoles.SelectedValue = Convert.ToInt32(row.Cells["ID_ROL"].Value);
+
+                if (row.Cells["ID_EMPLEADO"].Value != DBNull.Value)
+                    cmbEmpleado.SelectedValue = Convert.ToInt32(row.Cells["ID_EMPLEADO"].Value);
+                else
+                    cmbEmpleado.SelectedIndex = 0;
+            }
+        }
+
+        private void btnLimpiar_Click(object sender, EventArgs e)
+        {
+            Limpiar();
         }
     }
 }
