@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SistemaPlanilla.Modelo;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -8,7 +9,6 @@ namespace SIstemaPlanilla.Vista
 {
     public partial class Cargos : Form
     {
-        private string cadenaConexion = "Server=localhost; Database=BD_PLANILLA; Integrated Security=true;";
         private int idCargoSeleccionado = 0;
         private TextBox txtBuscar = null!;
 
@@ -36,6 +36,8 @@ namespace SIstemaPlanilla.Vista
             if (btnEliminar != null) btnEliminar.Click += btnEliminar_Click;
             if (btnLimpiar != null) btnLimpiar.Click += btnLimpiar_Click;
             if (dgvCargos != null) dgvCargos.CellClick += dgvCargos_CellClick;
+
+            this.Load += Cargos_Load;
         }
 
         private void CrearBuscadorPorCodigo()
@@ -62,7 +64,7 @@ namespace SIstemaPlanilla.Vista
             txtBuscar.BringToFront();
         }
 
-        private void Cargos_Load(object sender, EventArgs e)
+        private void Cargos_Load(object? sender, EventArgs e)
         {
             CargarCargos();
             CargarComboCargoSuperior();
@@ -73,22 +75,24 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+                using (SqlConnection conexion = Conexion.GetConexion())
                 {
-                    string query = "SELECT ID_CARGO, CAR_ID_CARGO, NOMBRE_CARGO, SALARIO_MIN_REF, SALARIO_MAX_REF FROM CARGO";
-                    using (SqlCommand cmd = new SqlCommand(query, conexion))
+                    if (conexion == null)
                     {
+                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Usando Procedimiento Almacenado para listar
+                    using (SqlCommand cmd = new SqlCommand("sp_Cargo_Listar", conexion))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@FILTRO", filtro.Trim());
+
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
                             DataTable dt = new DataTable();
                             da.Fill(dt);
-
-                            if (!string.IsNullOrWhiteSpace(filtro))
-                            {
-                                DataView dv = dt.DefaultView;
-                                dv.RowFilter = $"NOMBRE_CARGO LIKE '%{filtro.Replace("'", "''")}%'";
-                                dt = dv.ToTable();
-                            }
 
                             if (dgvCargos != null)
                             {
@@ -114,11 +118,15 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+                using (SqlConnection conexion = Conexion.GetConexion())
                 {
-                    string query = "SELECT ID_CARGO, NOMBRE_CARGO FROM CARGO";
-                    using (SqlCommand cmd = new SqlCommand(query, conexion))
+                    if (conexion == null) return;
+
+                    // Usando el Procedimiento Almacenado del combo
+                    using (SqlCommand cmd = new SqlCommand("sp_Cargo_ListarCombo", conexion))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
                             DataTable dt = new DataTable();
@@ -145,7 +153,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
-        private void btnGuardar_Click(object sender, EventArgs e)
+        private void btnGuardar_Click(object? sender, EventArgs e)
         {
             try
             {
@@ -155,13 +163,15 @@ namespace SIstemaPlanilla.Vista
                     return;
                 }
 
-                using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+                using (SqlConnection conexion = Conexion.GetConexion())
                 {
+                    if (conexion == null) return;
+
                     using (SqlCommand cmd = new SqlCommand("sp_Cargo_Insertar", conexion))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
-                        if (cbCargoSuperior.SelectedValue == null || cbCargoSuperior.SelectedValue == DBNull.Value)
+                        if (cbCargoSuperior?.SelectedValue == null || cbCargoSuperior.SelectedValue == DBNull.Value)
                         {
                             cmd.Parameters.AddWithValue("@CAR_ID_CARGO", DBNull.Value);
                         }
@@ -174,9 +184,7 @@ namespace SIstemaPlanilla.Vista
                         cmd.Parameters.AddWithValue("@SALARIO_MIN_REF", string.IsNullOrWhiteSpace(txtSalarioMin?.Text) ? 0 : Convert.ToDecimal(txtSalarioMin.Text.Trim()));
                         cmd.Parameters.AddWithValue("@SALARIO_MAX_REF", string.IsNullOrWhiteSpace(txtSalarioMax?.Text) ? 0 : Convert.ToDecimal(txtSalarioMax.Text.Trim()));
 
-                        conexion.Open();
                         cmd.ExecuteNonQuery();
-                        conexion.Close();
 
                         MessageBox.Show("Cargo registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -192,7 +200,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
-        private void btnModificar_Click(object sender, EventArgs e)
+        private void btnModificar_Click(object? sender, EventArgs e)
         {
             if (idCargoSeleccionado == 0)
             {
@@ -208,15 +216,17 @@ namespace SIstemaPlanilla.Vista
                     return;
                 }
 
-                using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+                using (SqlConnection conexion = Conexion.GetConexion())
                 {
+                    if (conexion == null) return;
+
                     using (SqlCommand cmd = new SqlCommand("sp_Cargo_Actualizar", conexion))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
                         cmd.Parameters.AddWithValue("@ID_CARGO", idCargoSeleccionado);
 
-                        if (cbCargoSuperior.SelectedValue == null || cbCargoSuperior.SelectedValue == DBNull.Value)
+                        if (cbCargoSuperior?.SelectedValue == null || cbCargoSuperior.SelectedValue == DBNull.Value)
                         {
                             cmd.Parameters.AddWithValue("@CAR_ID_CARGO", DBNull.Value);
                         }
@@ -229,9 +239,7 @@ namespace SIstemaPlanilla.Vista
                         cmd.Parameters.AddWithValue("@SALARIO_MIN_REF", string.IsNullOrWhiteSpace(txtSalarioMin?.Text) ? 0 : Convert.ToDecimal(txtSalarioMin.Text.Trim()));
                         cmd.Parameters.AddWithValue("@SALARIO_MAX_REF", string.IsNullOrWhiteSpace(txtSalarioMax?.Text) ? 0 : Convert.ToDecimal(txtSalarioMax.Text.Trim()));
 
-                        conexion.Open();
                         cmd.ExecuteNonQuery();
-                        conexion.Close();
 
                         MessageBox.Show("Cargo actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -247,7 +255,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
-        private void btnEliminar_Click(object sender, EventArgs e)
+        private void btnEliminar_Click(object? sender, EventArgs e)
         {
             if (idCargoSeleccionado == 0)
             {
@@ -259,16 +267,16 @@ namespace SIstemaPlanilla.Vista
             {
                 try
                 {
-                    using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+                    using (SqlConnection conexion = Conexion.GetConexion())
                     {
+                        if (conexion == null) return;
+
                         using (SqlCommand cmd = new SqlCommand("sp_Cargo_Eliminar", conexion))
                         {
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@ID_CARGO", idCargoSeleccionado);
 
-                            conexion.Open();
                             cmd.ExecuteNonQuery();
-                            conexion.Close();
 
                             MessageBox.Show("Cargo eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -285,7 +293,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
-        private void dgvCargos_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvCargos_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && dgvCargos != null)
             {
@@ -298,11 +306,11 @@ namespace SIstemaPlanilla.Vista
 
                 if (row.Cells["CAR_ID_CARGO"].Value != DBNull.Value)
                 {
-                    cbCargoSuperior.SelectedValue = row.Cells["CAR_ID_CARGO"].Value;
+                    if (cbCargoSuperior != null) cbCargoSuperior.SelectedValue = row.Cells["CAR_ID_CARGO"].Value;
                 }
                 else
                 {
-                    if (cbCargoSuperior.Items.Count > 0) cbCargoSuperior.SelectedIndex = 0;
+                    if (cbCargoSuperior != null && cbCargoSuperior.Items.Count > 0) cbCargoSuperior.SelectedIndex = 0;
                 }
             }
         }
@@ -318,7 +326,7 @@ namespace SIstemaPlanilla.Vista
             if (txtNombreCargo != null) txtNombreCargo.Focus();
         }
 
-        private void btnLimpiar_Click(object sender, EventArgs e)
+        private void btnLimpiar_Click(object? sender, EventArgs e)
         {
             LimpiarCampos();
         }

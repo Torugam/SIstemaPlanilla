@@ -33,7 +33,11 @@ namespace SIstemaPlanilla.Vista
             if (btnModificar != null) btnModificar.Click += btnModificar_Click;
             if (btnEliminar != null) btnEliminar.Click += btnEliminar_Click;
             if (btnLimpiar != null) btnLimpiar.Click += btnLimpiar_Click;
-            if (dgvEmpleados != null) dgvEmpleados.CellClick += dgvEmpleados_CellClick;
+            if (dgvEmpleados != null)
+            {
+                dgvEmpleados.CellClick += dgvEmpleados_CellClick;
+                dgvEmpleados.CellContentClick += dgvEmpleados_CellContentClick;
+            }
 
             this.Load += Empleado_Load;
         }
@@ -102,8 +106,7 @@ namespace SIstemaPlanilla.Vista
                 dgvEmpleados.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dgvEmpleados.MultiSelect = false;
 
-                // Ampliamos la altura de la tabla (por ejemplo, a 280 píxeles o lo que necesites para tu diseño)
-                // para que muestre más filas antes de que aparezca el scroll.
+                // Ampliamos la altura de la tabla para que muestre más filas antes de que aparezca el scroll.
                 dgvEmpleados.Height = 280;
 
                 // Modo de llenado para las columnas
@@ -153,22 +156,10 @@ namespace SIstemaPlanilla.Vista
                         return;
                     }
 
-                    string query = @"SELECT e.ID_EMPLEADO, e.NOMBRE_COMPLETO, e.DUI, e.DIRECCION, 
-                                            e.TELEFONO, e.ESTADO, c.NOMBRE_CARGO, e.ID_CARGO 
-                                     FROM EMPLEADO e
-                                     INNER JOIN CARGO c ON e.ID_CARGO = c.ID_CARGO";
-
-                    if (!string.IsNullOrWhiteSpace(filtro))
+                    using (SqlCommand cmd = new SqlCommand("sp_Empleado_Listar", conexion))
                     {
-                        query += " WHERE e.NOMBRE_COMPLETO LIKE @filtro OR e.DUI LIKE @filtro OR e.TELEFONO LIKE @filtro";
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand(query, conexion))
-                    {
-                        if (!string.IsNullOrWhiteSpace(filtro))
-                        {
-                            cmd.Parameters.AddWithValue("@filtro", "%" + filtro.Trim() + "%");
-                        }
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@FILTRO", filtro.Trim());
 
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
@@ -204,9 +195,10 @@ namespace SIstemaPlanilla.Vista
                 {
                     if (conexion == null) return;
 
-                    string query = "SELECT ID_CARGO, NOMBRE_CARGO FROM CARGO";
-                    using (SqlCommand cmd = new SqlCommand(query, conexion))
+                    using (SqlCommand cmd = new SqlCommand("sp_Cargo_ListarCombo", conexion))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
                             DataTable dt = new DataTable();
@@ -251,14 +243,14 @@ namespace SIstemaPlanilla.Vista
                         return;
                     }
 
-                    string query = "INSERT INTO EMPLEADO (NOMBRE_COMPLETO, DUI, DIRECCION, TELEFONO, ESTADO, ID_CARGO, SALARIO_BASE) VALUES (@NOMBRE, @DUI, @DIR, @TEL, 'ACTIVO', @CARGO, 0.00)";
-                    using (SqlCommand cmd = new SqlCommand(query, conexion))
+                    using (SqlCommand cmd = new SqlCommand("sp_Empleado_Insertar", conexion))
                     {
-                        cmd.Parameters.AddWithValue("@NOMBRE", txtNombre.Text.Trim());
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@NOMBRE_COMPLETO", txtNombre.Text.Trim());
                         cmd.Parameters.AddWithValue("@DUI", txtDui.Text.Trim());
-                        cmd.Parameters.AddWithValue("@DIR", txtDireccion?.Text.Trim() ?? "");
-                        cmd.Parameters.AddWithValue("@TEL", txtTelefono?.Text.Trim() ?? "");
-                        cmd.Parameters.AddWithValue("@CARGO", Convert.ToInt32(cbCargos.SelectedValue));
+                        cmd.Parameters.AddWithValue("@DIRECCION", txtDireccion?.Text.Trim() ?? "");
+                        cmd.Parameters.AddWithValue("@TELEFONO", txtTelefono?.Text.Trim() ?? "");
+                        cmd.Parameters.AddWithValue("@ID_CARGO", Convert.ToInt32(cbCargos.SelectedValue));
 
                         cmd.ExecuteNonQuery();
 
@@ -292,15 +284,15 @@ namespace SIstemaPlanilla.Vista
                         return;
                     }
 
-                    string query = "UPDATE EMPLEADO SET NOMBRE_COMPLETO = @NOMBRE, DUI = @DUI, DIRECCION = @DIR, TELEFONO = @TEL, ID_CARGO = @CARGO WHERE ID_EMPLEADO = @ID";
-                    using (SqlCommand cmd = new SqlCommand(query, conexion))
+                    using (SqlCommand cmd = new SqlCommand("sp_Empleado_Actualizar", conexion))
                     {
-                        cmd.Parameters.AddWithValue("@ID", idEmpleadoSeleccionado);
-                        cmd.Parameters.AddWithValue("@NOMBRE", txtNombre.Text.Trim());
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmpleadoSeleccionado);
+                        cmd.Parameters.AddWithValue("@NOMBRE_COMPLETO", txtNombre.Text.Trim());
                         cmd.Parameters.AddWithValue("@DUI", txtDui.Text.Trim());
-                        cmd.Parameters.AddWithValue("@DIR", txtDireccion?.Text.Trim() ?? "");
-                        cmd.Parameters.AddWithValue("@TEL", txtTelefono?.Text.Trim() ?? "");
-                        cmd.Parameters.AddWithValue("@CARGO", Convert.ToInt32(cbCargos?.SelectedValue ?? 0));
+                        cmd.Parameters.AddWithValue("@DIRECCION", txtDireccion?.Text.Trim() ?? "");
+                        cmd.Parameters.AddWithValue("@TELEFONO", txtTelefono?.Text.Trim() ?? "");
+                        cmd.Parameters.AddWithValue("@ID_CARGO", Convert.ToInt32(cbCargos?.SelectedValue ?? 0));
 
                         cmd.ExecuteNonQuery();
 
@@ -336,10 +328,12 @@ namespace SIstemaPlanilla.Vista
                             return;
                         }
 
-                        string query = "UPDATE EMPLEADO SET ESTADO = 'INACTIVO' WHERE ID_EMPLEADO = @ID";
-                        using (SqlCommand cmd = new SqlCommand(query, conexion))
+                        using (SqlCommand cmd = new SqlCommand("sp_Empleado_CambiarEstado", conexion))
                         {
-                            cmd.Parameters.AddWithValue("@ID", idEmpleadoSeleccionado);
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmpleadoSeleccionado);
+                            cmd.Parameters.AddWithValue("@ESTADO", "INACTIVO");
+
                             cmd.ExecuteNonQuery();
 
                             MessageBox.Show("Empleado dado de baja correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -375,10 +369,12 @@ namespace SIstemaPlanilla.Vista
                             return;
                         }
 
-                        string query = "UPDATE EMPLEADO SET ESTADO = 'ACTIVO' WHERE ID_EMPLEADO = @ID";
-                        using (SqlCommand cmd = new SqlCommand(query, conexion))
+                        using (SqlCommand cmd = new SqlCommand("sp_Empleado_CambiarEstado", conexion))
                         {
-                            cmd.Parameters.AddWithValue("@ID", idEmpleadoSeleccionado);
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmpleadoSeleccionado);
+                            cmd.Parameters.AddWithValue("@ESTADO", "ACTIVO");
+
                             cmd.ExecuteNonQuery();
 
                             MessageBox.Show("Empleado reactivado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
