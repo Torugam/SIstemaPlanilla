@@ -92,7 +92,6 @@
             // 
             this.dtpFechaFin.Checked = false;
             this.dtpFechaFin.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpFechaFin.ShowCheckBox = true;
             this.dtpFechaFin.Location = new System.Drawing.Point(130, 152);
             this.dtpFechaFin.Name = "dtpFechaFin";
             this.dtpFechaFin.Size = new System.Drawing.Size(180, 27);

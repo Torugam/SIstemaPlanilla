@@ -21,8 +21,7 @@ namespace SIstemaPlanilla
         Usuarios usuarios = null!;
         RolesPermisos rolesPermisos = null!;
 
-        // Botón dinámico para Cerrar Sesión
-        Button btnCerrarSesionDinamico = null!;
+  
 
         bool menuExpandidoAdministracion = false;
         bool menuExpandidoGestion = false;
@@ -32,31 +31,10 @@ namespace SIstemaPlanilla
         public Form1()
         {
             InitializeComponent();
-            CrearBotonCerrarSesion();
             this.Load += Form1_Load;
         }
 
-        private void CrearBotonCerrarSesion()
-        {
-            btnCerrarSesionDinamico = new Button();
-            btnCerrarSesionDinamico.Text = "🚪 Cerrar Sesión";
-            btnCerrarSesionDinamico.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
-            btnCerrarSesionDinamico.ForeColor = Color.White;
-            btnCerrarSesionDinamico.BackColor = Color.Crimson;
-            btnCerrarSesionDinamico.FlatStyle = FlatStyle.Flat;
-            btnCerrarSesionDinamico.FlatAppearance.BorderSize = 0;
-            btnCerrarSesionDinamico.Size = new Size(115, 26);
-
-            // Posicionado en la esquina superior derecha, justo debajo de los botones de la barra de título (X, minimizar)
-            btnCerrarSesionDinamico.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnCerrarSesionDinamico.Location = new Point(this.ClientSize.Width - 125, 45);
-            btnCerrarSesionDinamico.Cursor = Cursors.Hand;
-
-            btnCerrarSesionDinamico.Click += btnCerrarSesion_Click;
-
-            this.Controls.Add(btnCerrarSesionDinamico);
-            btnCerrarSesionDinamico.BringToFront();
-        }
+    
 
         private void Form1_Load(object? sender, EventArgs e)
         {
