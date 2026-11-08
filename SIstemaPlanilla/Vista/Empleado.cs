@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace SIstemaPlanilla.Vista
@@ -9,10 +10,24 @@ namespace SIstemaPlanilla.Vista
     public partial class Empleado : Form
     {
         private int idEmpleadoSeleccionado = 0;
+        private TextBox txtBuscar = null!;
+        private Button btnReactivar = null!;
 
         public Empleado()
         {
             InitializeComponent();
+
+            // Evita errores de diseño gráficos en Visual Studio (IUIService / DesignMode)
+            bool enModoDiseno = this.DesignMode || (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime);
+
+            if (!enModoDiseno)
+            {
+                // Crear y posicionar el buscador arriba a la par del título "EMPLEADOS"
+                CrearBuscadorPorCodigo();
+
+                // Crear y posicionar el botón Reactivar ordenadamente entre Eliminar y Limpiar
+                CrearBotonReactivarPorCodigo();
+            }
 
             if (btnGuardar != null) btnGuardar.Click += btnGuardar_Click;
             if (btnModificar != null) btnModificar.Click += btnModificar_Click;
@@ -23,14 +38,110 @@ namespace SIstemaPlanilla.Vista
             this.Load += Empleado_Load;
         }
 
+        private void CrearBuscadorPorCodigo()
+        {
+            Label lblBuscar = new Label
+            {
+                Text = "Buscar:",
+                AutoSize = true,
+                Font = new Font(this.Font, FontStyle.Bold),
+                Location = new Point(175, 20)
+            };
+
+            txtBuscar = new TextBox
+            {
+                Width = 230,
+                Location = new Point(230, 17)
+            };
+            txtBuscar.TextChanged += txtBuscar_TextChanged;
+
+            this.Controls.Add(lblBuscar);
+            this.Controls.Add(txtBuscar);
+
+            lblBuscar.BringToFront();
+            txtBuscar.BringToFront();
+        }
+
+        private void CrearBotonReactivarPorCodigo()
+        {
+            btnReactivar = new Button();
+            btnReactivar.Text = "Reactivar";
+            btnReactivar.Size = btnEliminar != null ? btnEliminar.Size : new Size(75, 25);
+
+            if (btnEliminar != null && btnLimpiar != null)
+            {
+                // Colocamos el botón Reactivar a la derecha de Eliminar, y movemos Limpiar un poco más a la derecha
+                btnReactivar.Location = new Point(btnEliminar.Location.X + btnEliminar.Width + 10, btnEliminar.Location.Y);
+                btnLimpiar.Location = new Point(btnReactivar.Location.X + btnReactivar.Width + 10, btnLimpiar.Location.Y);
+            }
+            else
+            {
+                btnReactivar.Location = new Point(500, 150);
+            }
+
+            btnReactivar.Click += btnReactivar_Click;
+            this.Controls.Add(btnReactivar);
+            btnReactivar.BringToFront();
+        }
+
         private void Empleado_Load(object? sender, EventArgs e)
         {
+            ConfigurarDataGridView();
             CargarEmpleados();
             CargarComboCargos();
             LimpiarCampos();
         }
 
-        private void CargarEmpleados()
+        private void ConfigurarDataGridView()
+        {
+            if (dgvEmpleados != null)
+            {
+                dgvEmpleados.AllowUserToAddRows = false;
+                dgvEmpleados.AllowUserToDeleteRows = false;
+                dgvEmpleados.ReadOnly = true;
+                dgvEmpleados.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                dgvEmpleados.MultiSelect = false;
+
+                // Ampliamos la altura de la tabla (por ejemplo, a 280 píxeles o lo que necesites para tu diseño)
+                // para que muestre más filas antes de que aparezca el scroll.
+                dgvEmpleados.Height = 280;
+
+                // Modo de llenado para las columnas
+                dgvEmpleados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+                // Anchos fijos y encabezados limpios
+                if (dgvEmpleados.Columns["ID_EMPLEADO"] != null)
+                {
+                    dgvEmpleados.Columns["ID_EMPLEADO"].HeaderText = "ID";
+                    dgvEmpleados.Columns["ID_EMPLEADO"].Width = 50;
+                    dgvEmpleados.Columns["ID_EMPLEADO"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                }
+
+                if (dgvEmpleados.Columns["NOMBRE_COMPLETO"] != null)
+                    dgvEmpleados.Columns["NOMBRE_COMPLETO"].HeaderText = "Nombre Completo";
+
+                if (dgvEmpleados.Columns["DUI"] != null)
+                    dgvEmpleados.Columns["DUI"].HeaderText = "DUI";
+
+                if (dgvEmpleados.Columns["DIRECCION"] != null)
+                    dgvEmpleados.Columns["DIRECCION"].HeaderText = "Dirección";
+
+                if (dgvEmpleados.Columns["TELEFONO"] != null)
+                    dgvEmpleados.Columns["TELEFONO"].HeaderText = "Teléfono";
+
+                if (dgvEmpleados.Columns["ESTADO"] != null)
+                {
+                    dgvEmpleados.Columns["ESTADO"].HeaderText = "Estado";
+                    dgvEmpleados.Columns["ESTADO"].Width = 80;
+                    dgvEmpleados.Columns["ESTADO"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                }
+
+                if (dgvEmpleados.Columns["NOMBRE_CARGO"] != null)
+                    dgvEmpleados.Columns["NOMBRE_CARGO"].HeaderText = "Cargo";
+            }
+        }
+
+        private void CargarEmpleados(string filtro = "")
         {
             try
             {
@@ -47,8 +158,18 @@ namespace SIstemaPlanilla.Vista
                                      FROM EMPLEADO e
                                      INNER JOIN CARGO c ON e.ID_CARGO = c.ID_CARGO";
 
+                    if (!string.IsNullOrWhiteSpace(filtro))
+                    {
+                        query += " WHERE e.NOMBRE_COMPLETO LIKE @filtro OR e.DUI LIKE @filtro OR e.TELEFONO LIKE @filtro";
+                    }
+
                     using (SqlCommand cmd = new SqlCommand(query, conexion))
                     {
+                        if (!string.IsNullOrWhiteSpace(filtro))
+                        {
+                            cmd.Parameters.AddWithValue("@filtro", "%" + filtro.Trim() + "%");
+                        }
+
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
                             DataTable dt = new DataTable();
@@ -69,13 +190,19 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        private void txtBuscar_TextChanged(object? sender, EventArgs e)
+        {
+            string textoBusqueda = txtBuscar?.Text ?? string.Empty;
+            CargarEmpleados(textoBusqueda);
+        }
+
         private void CargarComboCargos()
         {
             try
             {
                 using (SqlConnection conexion = Conexion.GetConexion())
                 {
-                    if (conexion == null) return; // Si hay error de red, sale silenciosamente
+                    if (conexion == null) return;
 
                     string query = "SELECT ID_CARGO, NOMBRE_CARGO FROM CARGO";
                     using (SqlCommand cmd = new SqlCommand(query, conexion))
@@ -223,7 +350,46 @@ namespace SIstemaPlanilla.Vista
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error al eliminar el empleado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error al dar de baja el empleado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void btnReactivar_Click(object? sender, EventArgs e)
+        {
+            if (idEmpleadoSeleccionado == 0)
+            {
+                MessageBox.Show("Seleccione un empleado inactivo de la lista para reactivar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show("¿Está seguro de reactivar a este empleado?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                try
+                {
+                    using (SqlConnection conexion = Conexion.GetConexion())
+                    {
+                        if (conexion == null)
+                        {
+                            MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        string query = "UPDATE EMPLEADO SET ESTADO = 'ACTIVO' WHERE ID_EMPLEADO = @ID";
+                        using (SqlCommand cmd = new SqlCommand(query, conexion))
+                        {
+                            cmd.Parameters.AddWithValue("@ID", idEmpleadoSeleccionado);
+                            cmd.ExecuteNonQuery();
+
+                            MessageBox.Show("Empleado reactivado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            LimpiarCampos();
+                            CargarEmpleados();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al reactivar el empleado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -247,6 +413,11 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        private void dgvEmpleados_CellContentClick(object? sender, DataGridViewCellEventArgs e)
+        {
+            dgvEmpleados_CellClick(sender, e);
+        }
+
         private void LimpiarCampos()
         {
             idEmpleadoSeleccionado = 0;
@@ -255,6 +426,7 @@ namespace SIstemaPlanilla.Vista
             if (txtDireccion != null) txtDireccion.Clear();
             if (txtTelefono != null) txtTelefono.Clear();
             if (cbCargos != null && cbCargos.Items.Count > 0) cbCargos.SelectedIndex = 0;
+            if (txtBuscar != null) txtBuscar.Clear();
             if (txtNombre != null) txtNombre.Focus();
         }
 

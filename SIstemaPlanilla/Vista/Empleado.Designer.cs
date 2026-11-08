@@ -17,190 +17,202 @@
 
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.lblNombre = new System.Windows.Forms.Label();
-            this.txtNombre = new System.Windows.Forms.TextBox();
-            this.lblDui = new System.Windows.Forms.Label();
-            this.txtDui = new System.Windows.Forms.TextBox();
-            this.lblDireccion = new System.Windows.Forms.Label();
-            this.txtDireccion = new System.Windows.Forms.TextBox();
-            this.lblTelefono = new System.Windows.Forms.Label();
-            this.txtTelefono = new System.Windows.Forms.TextBox();
-            this.lblCargo = new System.Windows.Forms.Label();
-            this.cbCargos = new System.Windows.Forms.ComboBox();
-            this.btnGuardar = new System.Windows.Forms.Button();
-            this.btnModificar = new System.Windows.Forms.Button();
-            this.btnEliminar = new System.Windows.Forms.Button();
-            this.btnLimpiar = new System.Windows.Forms.Button();
-            this.dgvEmpleados = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvEmpleados)).BeginInit();
-            this.SuspendLayout();
+            label1 = new Label();
+            lblNombre = new Label();
+            txtNombre = new TextBox();
+            lblDui = new Label();
+            txtDui = new TextBox();
+            lblDireccion = new Label();
+            txtDireccion = new TextBox();
+            lblTelefono = new Label();
+            txtTelefono = new TextBox();
+            lblCargo = new Label();
+            cbCargos = new ComboBox();
+            btnGuardar = new Button();
+            btnModificar = new Button();
+            btnEliminar = new Button();
+            btnLimpiar = new Button();
+            dgvEmpleados = new DataGridView();
+            ((System.ComponentModel.ISupportInitialize)dgvEmpleados).BeginInit();
+            SuspendLayout();
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(20, 15);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(185, 38);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "EMPLEADOS";
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.Location = new Point(18, 11);
+            label1.Name = "label1";
+            label1.Size = new Size(143, 30);
+            label1.TabIndex = 0;
+            label1.Text = "EMPLEADOS";
             // 
             // lblNombre
             // 
-            this.lblNombre.AutoSize = true;
-            this.lblNombre.Location = new System.Drawing.Point(20, 75);
-            this.lblNombre.Name = "lblNombre";
-            this.lblNombre.Size = new System.Drawing.Size(133, 20);
-            this.lblNombre.TabIndex = 1;
-            this.lblNombre.Text = "Nombre Completo:";
+            lblNombre.AutoSize = true;
+            lblNombre.Location = new Point(18, 56);
+            lblNombre.Name = "lblNombre";
+            lblNombre.Size = new Size(110, 15);
+            lblNombre.TabIndex = 1;
+            lblNombre.Text = "Nombre Completo:";
             // 
             // txtNombre
             // 
-            this.txtNombre.Location = new System.Drawing.Point(160, 72);
-            this.txtNombre.Name = "txtNombre";
-            this.txtNombre.Size = new System.Drawing.Size(250, 27);
-            this.txtNombre.TabIndex = 2;
+            txtNombre.Location = new Point(140, 54);
+            txtNombre.Margin = new Padding(3, 2, 3, 2);
+            txtNombre.Name = "txtNombre";
+            txtNombre.Size = new Size(219, 23);
+            txtNombre.TabIndex = 2;
             // 
             // lblDui
             // 
-            this.lblDui.AutoSize = true;
-            this.lblDui.Location = new System.Drawing.Point(20, 115);
-            this.lblDui.Name = "lblDui";
-            this.lblDui.Size = new System.Drawing.Size(38, 20);
-            this.lblDui.TabIndex = 3;
-            this.lblDui.Text = "DUI:";
+            lblDui.AutoSize = true;
+            lblDui.Location = new Point(18, 86);
+            lblDui.Name = "lblDui";
+            lblDui.Size = new Size(29, 15);
+            lblDui.TabIndex = 3;
+            lblDui.Text = "DUI:";
             // 
             // txtDui
             // 
-            this.txtDui.Location = new System.Drawing.Point(160, 112);
-            this.txtDui.Name = "txtDui";
-            this.txtDui.Size = new System.Drawing.Size(250, 27);
-            this.txtDui.TabIndex = 4;
+            txtDui.Location = new Point(140, 84);
+            txtDui.Margin = new Padding(3, 2, 3, 2);
+            txtDui.Name = "txtDui";
+            txtDui.Size = new Size(219, 23);
+            txtDui.TabIndex = 4;
             // 
             // lblDireccion
             // 
-            this.lblDireccion.AutoSize = true;
-            this.lblDireccion.Location = new System.Drawing.Point(440, 75);
-            this.lblDireccion.Name = "lblDireccion";
-            this.lblDireccion.Size = new System.Drawing.Size(75, 20);
-            this.lblDireccion.TabIndex = 5;
-            this.lblDireccion.Text = "Dirección:";
+            lblDireccion.AutoSize = true;
+            lblDireccion.Location = new Point(385, 56);
+            lblDireccion.Name = "lblDireccion";
+            lblDireccion.Size = new Size(60, 15);
+            lblDireccion.TabIndex = 5;
+            lblDireccion.Text = "Dirección:";
             // 
             // txtDireccion
             // 
-            this.txtDireccion.Location = new System.Drawing.Point(530, 72);
-            this.txtDireccion.Name = "txtDireccion";
-            this.txtDireccion.Size = new System.Drawing.Size(230, 27);
-            this.txtDireccion.TabIndex = 6;
+            txtDireccion.Location = new Point(464, 54);
+            txtDireccion.Margin = new Padding(3, 2, 3, 2);
+            txtDireccion.Name = "txtDireccion";
+            txtDireccion.Size = new Size(202, 23);
+            txtDireccion.TabIndex = 6;
             // 
             // lblTelefono
             // 
-            this.lblTelefono.AutoSize = true;
-            this.lblTelefono.Location = new System.Drawing.Point(440, 115);
-            this.lblTelefono.Name = "lblTelefono";
-            this.lblTelefono.Size = new System.Drawing.Size(70, 20);
-            this.lblTelefono.TabIndex = 7;
-            this.lblTelefono.Text = "Teléfono:";
+            lblTelefono.AutoSize = true;
+            lblTelefono.Location = new Point(385, 86);
+            lblTelefono.Name = "lblTelefono";
+            lblTelefono.Size = new Size(56, 15);
+            lblTelefono.TabIndex = 7;
+            lblTelefono.Text = "Teléfono:";
             // 
             // txtTelefono
             // 
-            this.txtTelefono.Location = new System.Drawing.Point(530, 112);
-            this.txtTelefono.Name = "txtTelefono";
-            this.txtTelefono.Size = new System.Drawing.Size(230, 27);
-            this.txtTelefono.TabIndex = 8;
+            txtTelefono.Location = new Point(464, 84);
+            txtTelefono.Margin = new Padding(3, 2, 3, 2);
+            txtTelefono.Name = "txtTelefono";
+            txtTelefono.Size = new Size(202, 23);
+            txtTelefono.TabIndex = 8;
             // 
             // lblCargo
             // 
-            this.lblCargo.AutoSize = true;
-            this.lblCargo.Location = new System.Drawing.Point(20, 155);
-            this.lblCargo.Name = "lblCargo";
-            this.lblCargo.Size = new System.Drawing.Size(52, 20);
-            this.lblCargo.TabIndex = 9;
-            this.lblCargo.Text = "Cargo:";
+            lblCargo.AutoSize = true;
+            lblCargo.Location = new Point(18, 116);
+            lblCargo.Name = "lblCargo";
+            lblCargo.Size = new Size(42, 15);
+            lblCargo.TabIndex = 9;
+            lblCargo.Text = "Cargo:";
             // 
             // cbCargos
             // 
-            this.cbCargos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbCargos.FormattingEnabled = true;
-            this.cbCargos.Location = new System.Drawing.Point(160, 152);
-            this.cbCargos.Name = "cbCargos";
-            this.cbCargos.Size = new System.Drawing.Size(250, 28);
-            this.cbCargos.TabIndex = 10;
+            cbCargos.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbCargos.FormattingEnabled = true;
+            cbCargos.Location = new Point(140, 114);
+            cbCargos.Margin = new Padding(3, 2, 3, 2);
+            cbCargos.Name = "cbCargos";
+            cbCargos.Size = new Size(219, 23);
+            cbCargos.TabIndex = 10;
             // 
             // btnGuardar
             // 
-            this.btnGuardar.Location = new System.Drawing.Point(440, 152);
-            this.btnGuardar.Name = "btnGuardar";
-            this.btnGuardar.Size = new System.Drawing.Size(80, 32);
-            this.btnGuardar.TabIndex = 11;
-            this.btnGuardar.Text = "Guardar";
-            this.btnGuardar.UseVisualStyleBackColor = true;
+            btnGuardar.Location = new Point(385, 114);
+            btnGuardar.Margin = new Padding(3, 2, 3, 2);
+            btnGuardar.Name = "btnGuardar";
+            btnGuardar.Size = new Size(70, 24);
+            btnGuardar.TabIndex = 11;
+            btnGuardar.Text = "Guardar";
+            btnGuardar.UseVisualStyleBackColor = true;
             // 
             // btnModificar
             // 
-            this.btnModificar.Location = new System.Drawing.Point(530, 152);
-            this.btnModificar.Name = "btnModificar";
-            this.btnModificar.Size = new System.Drawing.Size(80, 32);
-            this.btnModificar.TabIndex = 12;
-            this.btnModificar.Text = "Modificar";
-            this.btnModificar.UseVisualStyleBackColor = true;
+            btnModificar.Location = new Point(464, 114);
+            btnModificar.Margin = new Padding(3, 2, 3, 2);
+            btnModificar.Name = "btnModificar";
+            btnModificar.Size = new Size(70, 24);
+            btnModificar.TabIndex = 12;
+            btnModificar.Text = "Modificar";
+            btnModificar.UseVisualStyleBackColor = true;
             // 
             // btnEliminar
             // 
-            this.btnEliminar.Location = new System.Drawing.Point(620, 152);
-            this.btnEliminar.Name = "btnEliminar";
-            this.btnEliminar.Size = new System.Drawing.Size(80, 32);
-            this.btnEliminar.TabIndex = 13;
-            this.btnEliminar.Text = "Eliminar";
-            this.btnEliminar.UseVisualStyleBackColor = true;
+            btnEliminar.Location = new Point(542, 114);
+            btnEliminar.Margin = new Padding(3, 2, 3, 2);
+            btnEliminar.Name = "btnEliminar";
+            btnEliminar.Size = new Size(70, 24);
+            btnEliminar.TabIndex = 13;
+            btnEliminar.Text = "Eliminar";
+            btnEliminar.UseVisualStyleBackColor = true;
             // 
             // btnLimpiar
             // 
-            this.btnLimpiar.Location = new System.Drawing.Point(710, 152);
-            this.btnLimpiar.Name = "btnLimpiar";
-            this.btnLimpiar.Size = new System.Drawing.Size(75, 32);
-            this.btnLimpiar.TabIndex = 14;
-            this.btnLimpiar.Text = "Limpiar";
-            this.btnLimpiar.UseVisualStyleBackColor = true;
+            btnLimpiar.Location = new Point(621, 114);
+            btnLimpiar.Margin = new Padding(3, 2, 3, 2);
+            btnLimpiar.Name = "btnLimpiar";
+            btnLimpiar.Size = new Size(66, 24);
+            btnLimpiar.TabIndex = 14;
+            btnLimpiar.Text = "Limpiar";
+            btnLimpiar.UseVisualStyleBackColor = true;
             // 
             // dgvEmpleados
             // 
-            this.dgvEmpleados.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvEmpleados.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvEmpleados.Location = new System.Drawing.Point(20, 205);
-            this.dgvEmpleados.Name = "dgvEmpleados";
-            this.dgvEmpleados.RowHeadersWidth = 51;
-            this.dgvEmpleados.Size = new System.Drawing.Size(765, 225);
-            this.dgvEmpleados.TabIndex = 15;
+            dgvEmpleados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvEmpleados.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvEmpleados.Location = new Point(18, 154);
+            dgvEmpleados.Margin = new Padding(3, 2, 3, 2);
+            dgvEmpleados.Name = "dgvEmpleados";
+            dgvEmpleados.RowHeadersWidth = 51;
+            dgvEmpleados.Size = new Size(719, 169);
+            dgvEmpleados.TabIndex = 15;
+            dgvEmpleados.CellContentClick += dgvEmpleados_CellContentClick;
             // 
             // Empleado
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(810, 450);
-            this.Controls.Add(this.dgvEmpleados);
-            this.Controls.Add(this.btnLimpiar);
-            this.Controls.Add(this.btnEliminar);
-            this.Controls.Add(this.btnModificar);
-            this.Controls.Add(this.btnGuardar);
-            this.Controls.Add(this.cbCargos);
-            this.Controls.Add(this.lblCargo);
-            this.Controls.Add(this.txtTelefono);
-            this.Controls.Add(this.lblTelefono);
-            this.Controls.Add(this.txtDireccion);
-            this.Controls.Add(this.lblDireccion);
-            this.Controls.Add(this.txtDui);
-            this.Controls.Add(this.lblDui);
-            this.Controls.Add(this.txtNombre);
-            this.Controls.Add(this.lblNombre);
-            this.Controls.Add(this.label1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "Empleado";
-            this.Text = "Empleado";
-            this.Load += new System.EventHandler(this.Empleado_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvEmpleados)).EndInit();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(709, 338);
+            Controls.Add(dgvEmpleados);
+            Controls.Add(btnLimpiar);
+            Controls.Add(btnEliminar);
+            Controls.Add(btnModificar);
+            Controls.Add(btnGuardar);
+            Controls.Add(cbCargos);
+            Controls.Add(lblCargo);
+            Controls.Add(txtTelefono);
+            Controls.Add(lblTelefono);
+            Controls.Add(txtDireccion);
+            Controls.Add(lblDireccion);
+            Controls.Add(txtDui);
+            Controls.Add(lblDui);
+            Controls.Add(txtNombre);
+            Controls.Add(lblNombre);
+            Controls.Add(label1);
+            FormBorderStyle = FormBorderStyle.None;
+            Margin = new Padding(3, 2, 3, 2);
+            Name = "Empleado";
+            Text = "Empleado";
+            Load += Empleado_Load;
+            ((System.ComponentModel.ISupportInitialize)dgvEmpleados).EndInit();
+            ResumeLayout(false);
             PerformLayout();
         }
 

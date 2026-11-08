@@ -1,27 +1,75 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace SIstemaPlanilla.Vista
 {
     public partial class Cargos : Form
     {
-        // Ajusta tu servidor si es necesario (ej: "Server=.; Database=BD_PLANILLA; Integrated Security=true;")
         private string cadenaConexion = "Server=localhost; Database=BD_PLANILLA; Integrated Security=true;";
+        private int idCargoSeleccionado = 0;
+        private TextBox txtBuscar = null!;
 
         public Cargos()
         {
             InitializeComponent();
+
+            // Configuración visual limpia (sin bordes de ventana molestos)
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.MaximizeBox = false;
+            this.MinimizeBox = true;
+            this.ControlBox = true;
+            this.ShowIcon = false;
+
+            bool enModoDiseno = this.DesignMode || (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime);
+
+            if (!enModoDiseno)
+            {
+                CrearBuscadorPorCodigo();
+            }
+
+            // Suscripción a eventos de botones
+            if (btnGuardar != null) btnGuardar.Click += btnGuardar_Click;
+            if (btnModificar != null) btnModificar.Click += btnModificar_Click;
+            if (btnEliminar != null) btnEliminar.Click += btnEliminar_Click;
+            if (btnLimpiar != null) btnLimpiar.Click += btnLimpiar_Click;
+            if (dgvCargos != null) dgvCargos.CellClick += dgvCargos_CellClick;
+        }
+
+        private void CrearBuscadorPorCodigo()
+        {
+            Label lblBuscar = new Label
+            {
+                Text = "Buscar:",
+                AutoSize = true,
+                Font = new Font(this.Font.FontFamily, 10, FontStyle.Bold),
+                Location = new Point(170, 24)
+            };
+
+            txtBuscar = new TextBox
+            {
+                Width = 200,
+                Location = new Point(230, 21)
+            };
+            txtBuscar.TextChanged += txtBuscar_TextChanged;
+
+            this.Controls.Add(lblBuscar);
+            this.Controls.Add(txtBuscar);
+
+            lblBuscar.BringToFront();
+            txtBuscar.BringToFront();
         }
 
         private void Cargos_Load(object sender, EventArgs e)
         {
             CargarCargos();
             CargarComboCargoSuperior();
+            LimpiarCampos();
         }
 
-        private void CargarCargos()
+        private void CargarCargos(string filtro = "")
         {
             try
             {
@@ -34,7 +82,18 @@ namespace SIstemaPlanilla.Vista
                         {
                             DataTable dt = new DataTable();
                             da.Fill(dt);
-                            dgvCargos.DataSource = dt;
+
+                            if (!string.IsNullOrWhiteSpace(filtro))
+                            {
+                                DataView dv = dt.DefaultView;
+                                dv.RowFilter = $"NOMBRE_CARGO LIKE '%{filtro.Replace("'", "''")}%'";
+                                dt = dv.ToTable();
+                            }
+
+                            if (dgvCargos != null)
+                            {
+                                dgvCargos.DataSource = dt;
+                            }
                         }
                     }
                 }
@@ -43,6 +102,12 @@ namespace SIstemaPlanilla.Vista
             {
                 MessageBox.Show("Error al cargar los cargos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void txtBuscar_TextChanged(object? sender, EventArgs e)
+        {
+            string textoBusqueda = txtBuscar?.Text ?? string.Empty;
+            CargarCargos(textoBusqueda);
         }
 
         private void CargarComboCargoSuperior()
@@ -64,9 +129,12 @@ namespace SIstemaPlanilla.Vista
                             fila["NOMBRE_CARGO"] = "-- Ninguno (Cargo Principal) --";
                             dt.Rows.InsertAt(fila, 0);
 
-                            cbCargoSuperior.DataSource = dt;
-                            cbCargoSuperior.DisplayMember = "NOMBRE_CARGO";
-                            cbCargoSuperior.ValueMember = "ID_CARGO";
+                            if (cbCargoSuperior != null)
+                            {
+                                cbCargoSuperior.DataSource = dt;
+                                cbCargoSuperior.DisplayMember = "NOMBRE_CARGO";
+                                cbCargoSuperior.ValueMember = "ID_CARGO";
+                            }
                         }
                     }
                 }
@@ -81,9 +149,9 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(txtIdCargo.Text) || string.IsNullOrWhiteSpace(txtNombreCargo.Text))
+                if (string.IsNullOrWhiteSpace(txtNombreCargo?.Text))
                 {
-                    MessageBox.Show("El ID del Cargo y el Nombre son obligatorios.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("El Nombre del Cargo es obligatorio.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -92,8 +160,6 @@ namespace SIstemaPlanilla.Vista
                     using (SqlCommand cmd = new SqlCommand("sp_Cargo_Insertar", conexion))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-
-                        cmd.Parameters.AddWithValue("@ID_CARGO", Convert.ToInt32(txtIdCargo.Text.Trim()));
 
                         if (cbCargoSuperior.SelectedValue == null || cbCargoSuperior.SelectedValue == DBNull.Value)
                         {
@@ -105,8 +171,8 @@ namespace SIstemaPlanilla.Vista
                         }
 
                         cmd.Parameters.AddWithValue("@NOMBRE_CARGO", txtNombreCargo.Text.Trim());
-                        cmd.Parameters.AddWithValue("@SALARIO_MIN_REF", Convert.ToDecimal(txtSalarioMin.Text.Trim()));
-                        cmd.Parameters.AddWithValue("@SALARIO_MAX_REF", Convert.ToDecimal(txtSalarioMax.Text.Trim()));
+                        cmd.Parameters.AddWithValue("@SALARIO_MIN_REF", string.IsNullOrWhiteSpace(txtSalarioMin?.Text) ? 0 : Convert.ToDecimal(txtSalarioMin.Text.Trim()));
+                        cmd.Parameters.AddWithValue("@SALARIO_MAX_REF", string.IsNullOrWhiteSpace(txtSalarioMax?.Text) ? 0 : Convert.ToDecimal(txtSalarioMax.Text.Trim()));
 
                         conexion.Open();
                         cmd.ExecuteNonQuery();
@@ -126,14 +192,130 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        private void btnModificar_Click(object sender, EventArgs e)
+        {
+            if (idCargoSeleccionado == 0)
+            {
+                MessageBox.Show("Seleccione un cargo de la tabla para modificar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(txtNombreCargo?.Text))
+                {
+                    MessageBox.Show("El Nombre del Cargo es obligatorio.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_Cargo_Actualizar", conexion))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@ID_CARGO", idCargoSeleccionado);
+
+                        if (cbCargoSuperior.SelectedValue == null || cbCargoSuperior.SelectedValue == DBNull.Value)
+                        {
+                            cmd.Parameters.AddWithValue("@CAR_ID_CARGO", DBNull.Value);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@CAR_ID_CARGO", Convert.ToInt32(cbCargoSuperior.SelectedValue));
+                        }
+
+                        cmd.Parameters.AddWithValue("@NOMBRE_CARGO", txtNombreCargo.Text.Trim());
+                        cmd.Parameters.AddWithValue("@SALARIO_MIN_REF", string.IsNullOrWhiteSpace(txtSalarioMin?.Text) ? 0 : Convert.ToDecimal(txtSalarioMin.Text.Trim()));
+                        cmd.Parameters.AddWithValue("@SALARIO_MAX_REF", string.IsNullOrWhiteSpace(txtSalarioMax?.Text) ? 0 : Convert.ToDecimal(txtSalarioMax.Text.Trim()));
+
+                        conexion.Open();
+                        cmd.ExecuteNonQuery();
+                        conexion.Close();
+
+                        MessageBox.Show("Cargo actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        LimpiarCampos();
+                        CargarCargos();
+                        CargarComboCargoSuperior();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al actualizar el cargo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnEliminar_Click(object sender, EventArgs e)
+        {
+            if (idCargoSeleccionado == 0)
+            {
+                MessageBox.Show("Seleccione un cargo de la tabla para eliminar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show("¿Está seguro de eliminar este cargo?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                try
+                {
+                    using (SqlConnection conexion = new SqlConnection(cadenaConexion))
+                    {
+                        using (SqlCommand cmd = new SqlCommand("sp_Cargo_Eliminar", conexion))
+                        {
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@ID_CARGO", idCargoSeleccionado);
+
+                            conexion.Open();
+                            cmd.ExecuteNonQuery();
+                            conexion.Close();
+
+                            MessageBox.Show("Cargo eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            LimpiarCampos();
+                            CargarCargos();
+                            CargarComboCargoSuperior();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al eliminar el cargo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void dgvCargos_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && dgvCargos != null)
+            {
+                DataGridViewRow row = dgvCargos.Rows[e.RowIndex];
+                idCargoSeleccionado = Convert.ToInt32(row.Cells["ID_CARGO"].Value);
+
+                if (txtNombreCargo != null) txtNombreCargo.Text = row.Cells["NOMBRE_CARGO"].Value.ToString();
+                if (txtSalarioMin != null) txtSalarioMin.Text = row.Cells["SALARIO_MIN_REF"].Value.ToString();
+                if (txtSalarioMax != null) txtSalarioMax.Text = row.Cells["SALARIO_MAX_REF"].Value.ToString();
+
+                if (row.Cells["CAR_ID_CARGO"].Value != DBNull.Value)
+                {
+                    cbCargoSuperior.SelectedValue = row.Cells["CAR_ID_CARGO"].Value;
+                }
+                else
+                {
+                    if (cbCargoSuperior.Items.Count > 0) cbCargoSuperior.SelectedIndex = 0;
+                }
+            }
+        }
+
         private void LimpiarCampos()
         {
-            txtIdCargo.Clear();
-            txtNombreCargo.Clear();
-            txtSalarioMin.Clear();
-            txtSalarioMax.Clear();
-            if (cbCargoSuperior.Items.Count > 0) cbCargoSuperior.SelectedIndex = 0;
-            txtIdCargo.Focus();
+            idCargoSeleccionado = 0;
+            if (txtNombreCargo != null) txtNombreCargo.Clear();
+            if (txtSalarioMin != null) txtSalarioMin.Clear();
+            if (txtSalarioMax != null) txtSalarioMax.Clear();
+            if (txtBuscar != null) txtBuscar.Clear();
+            if (cbCargoSuperior != null && cbCargoSuperior.Items.Count > 0) cbCargoSuperior.SelectedIndex = 0;
+            if (txtNombreCargo != null) txtNombreCargo.Focus();
         }
 
         private void btnLimpiar_Click(object sender, EventArgs e)

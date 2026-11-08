@@ -17,163 +17,164 @@
 
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.lblId = new System.Windows.Forms.Label();
-            this.txtIdCapacitacion = new System.Windows.Forms.TextBox();
-            this.lblNombre = new System.Windows.Forms.Label();
-            this.txtNombreCapacitacion = new System.Windows.Forms.TextBox();
-            this.lblHoras = new System.Windows.Forms.Label();
+            this.gbDatos = new System.Windows.Forms.GroupBox();
             this.txtHoras = new System.Windows.Forms.TextBox();
-            this.lblDesc = new System.Windows.Forms.Label();
+            this.lblHoras = new System.Windows.Forms.Label();
             this.txtDescripcion = new System.Windows.Forms.TextBox();
+            this.lblDescripcion = new System.Windows.Forms.Label();
+            this.txtNombreCapacitacion = new System.Windows.Forms.TextBox();
+            this.lblNombre = new System.Windows.Forms.Label();
             this.btnGuardar = new System.Windows.Forms.Button();
+            this.btnModificar = new System.Windows.Forms.Button();
+            this.btnEliminar = new System.Windows.Forms.Button();
             this.btnLimpiar = new System.Windows.Forms.Button();
             this.dgvCapacitaciones = new System.Windows.Forms.DataGridView();
+            this.gbDatos.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCapacitaciones)).BeginInit();
             this.SuspendLayout();
             // 
-            // label1
+            // gbDatos
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(20, 15);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(225, 38);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "CAPACITACIONES";
+            this.gbDatos.Controls.Add(this.txtHoras);
+            this.gbDatos.Controls.Add(this.lblHoras);
+            this.gbDatos.Controls.Add(this.txtDescripcion);
+            this.gbDatos.Controls.Add(this.lblDescripcion);
+            this.gbDatos.Controls.Add(this.txtNombreCapacitacion);
+            this.gbDatos.Controls.Add(this.lblNombre);
+            this.gbDatos.Location = new System.Drawing.Point(20, 20);
+            this.gbDatos.Name = "gbDatos";
+            this.gbDatos.Size = new System.Drawing.Size(430, 155);
+            this.gbDatos.TabIndex = 0;
+            this.gbDatos.TabStop = false;
+            this.gbDatos.Text = "Información de Capacitación";
             // 
-            // lblId
+            // txtHoras
             // 
-            this.lblId.AutoSize = true;
-            this.lblId.Location = new System.Drawing.Point(20, 75);
-            this.lblId.Name = "lblId";
-            this.lblId.Size = new System.Drawing.Size(115, 20);
-            this.lblId.TabIndex = 1;
-            this.lblId.Text = "ID Capacitación:";
-            // 
-            // txtIdCapacitacion
-            // 
-            this.txtIdCapacitacion.Location = new System.Drawing.Point(150, 72);
-            this.txtIdCapacitacion.Name = "txtIdCapacitacion";
-            this.txtIdCapacitacion.Size = new System.Drawing.Size(150, 27);
-            this.txtIdCapacitacion.TabIndex = 2;
-            // 
-            // lblNombre
-            // 
-            this.lblNombre.AutoSize = true;
-            this.lblNombre.Location = new System.Drawing.Point(20, 115);
-            this.lblNombre.Name = "lblNombre";
-            this.lblNombre.Size = new System.Drawing.Size(67, 20);
-            this.lblNombre.TabIndex = 3;
-            this.lblNombre.Text = "Nombre:";
-            // 
-            // txtNombreCapacitacion
-            // 
-            this.txtNombreCapacitacion.Location = new System.Drawing.Point(150, 112);
-            this.txtNombreCapacitacion.Name = "txtNombreCapacitacion";
-            this.txtNombreCapacitacion.Size = new System.Drawing.Size(220, 27);
-            this.txtNombreCapacitacion.TabIndex = 4;
+            this.txtHoras.Location = new System.Drawing.Point(120, 110);
+            this.txtHoras.Name = "txtHoras";
+            this.txtHoras.Size = new System.Drawing.Size(100, 20);
+            this.txtHoras.TabIndex = 5;
             // 
             // lblHoras
             // 
             this.lblHoras.AutoSize = true;
-            this.lblHoras.Location = new System.Drawing.Point(400, 75);
+            this.lblHoras.Location = new System.Drawing.Point(20, 113);
             this.lblHoras.Name = "lblHoras";
-            this.lblHoras.Size = new System.Drawing.Size(51, 20);
-            this.lblHoras.TabIndex = 5;
-            this.lblHoras.Text = "Horas:";
-            // 
-            // txtHoras
-            // 
-            this.txtHoras.Location = new System.Drawing.Point(510, 72);
-            this.txtHoras.Name = "txtHoras";
-            this.txtHoras.Size = new System.Drawing.Size(150, 27);
-            this.txtHoras.TabIndex = 6;
-            // 
-            // lblDesc
-            // 
-            this.lblDesc.AutoSize = true;
-            this.lblDesc.Location = new System.Drawing.Point(400, 115);
-            this.lblDesc.Name = "lblDesc";
-            this.lblDesc.Size = new System.Drawing.Size(91, 20);
-            this.lblDesc.TabIndex = 7;
-            this.lblDesc.Text = "Descripción:";
+            this.lblHoras.Size = new System.Drawing.Size(74, 13);
+            this.lblHoras.TabIndex = 4;
+            this.lblHoras.Text = "Horas Duración:";
             // 
             // txtDescripcion
             // 
-            this.txtDescripcion.Location = new System.Drawing.Point(510, 112);
+            this.txtDescripcion.Location = new System.Drawing.Point(120, 50);
+            this.txtDescripcion.Multiline = true;
             this.txtDescripcion.Name = "txtDescripcion";
-            this.txtDescripcion.Size = new System.Drawing.Size(220, 27);
-            this.txtDescripcion.TabIndex = 8;
+            this.txtDescripcion.Size = new System.Drawing.Size(280, 50);
+            this.txtDescripcion.TabIndex = 3;
+            // 
+            // lblDescripcion
+            // 
+            this.lblDescripcion.AutoSize = true;
+            this.lblDescripcion.Location = new System.Drawing.Point(20, 53);
+            this.lblDescripcion.Name = "lblDescripcion";
+            this.lblDescripcion.Size = new System.Drawing.Size(66, 13);
+            this.lblDescripcion.TabIndex = 2;
+            this.lblDescripcion.Text = "Descripción:";
+            // 
+            // txtNombreCapacitacion
+            // 
+            this.txtNombreCapacitacion.Location = new System.Drawing.Point(120, 20);
+            this.txtNombreCapacitacion.Name = "txtNombreCapacitacion";
+            this.txtNombreCapacitacion.Size = new System.Drawing.Size(280, 20);
+            this.txtNombreCapacitacion.TabIndex = 1;
+            // 
+            // lblNombre
+            // 
+            this.lblNombre.AutoSize = true;
+            this.lblNombre.Location = new System.Drawing.Point(20, 23);
+            this.lblNombre.Name = "lblNombre";
+            this.lblNombre.Size = new System.Drawing.Size(47, 13);
+            this.lblNombre.TabIndex = 0;
+            this.lblNombre.Text = "Nombre:";
             // 
             // btnGuardar
             // 
-            this.btnGuardar.Location = new System.Drawing.Point(510, 155);
+            this.btnGuardar.Location = new System.Drawing.Point(470, 25);
             this.btnGuardar.Name = "btnGuardar";
             this.btnGuardar.Size = new System.Drawing.Size(100, 32);
-            this.btnGuardar.TabIndex = 9;
+            this.btnGuardar.TabIndex = 1;
             this.btnGuardar.Text = "Guardar";
             this.btnGuardar.UseVisualStyleBackColor = true;
-            this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
+            // 
+            // btnModificar
+            // 
+            this.btnModificar.Location = new System.Drawing.Point(470, 68);
+            this.btnModificar.Name = "btnModificar";
+            this.btnModificar.Size = new System.Drawing.Size(100, 32);
+            this.btnModificar.TabIndex = 2;
+            this.btnModificar.Text = "Modificar";
+            this.btnModificar.UseVisualStyleBackColor = true;
+            // 
+            // btnEliminar
+            // 
+            this.btnEliminar.Location = new System.Drawing.Point(470, 111);
+            this.btnEliminar.Name = "btnEliminar";
+            this.btnEliminar.Size = new System.Drawing.Size(100, 32);
+            this.btnEliminar.TabIndex = 3;
+            this.btnEliminar.Text = "Eliminar";
+            this.btnEliminar.UseVisualStyleBackColor = true;
             // 
             // btnLimpiar
             // 
-            this.btnLimpiar.Location = new System.Drawing.Point(630, 155);
+            this.btnLimpiar.Location = new System.Drawing.Point(470, 154);
             this.btnLimpiar.Name = "btnLimpiar";
             this.btnLimpiar.Size = new System.Drawing.Size(100, 32);
-            this.btnLimpiar.TabIndex = 10;
+            this.btnLimpiar.TabIndex = 4;
             this.btnLimpiar.Text = "Limpiar";
             this.btnLimpiar.UseVisualStyleBackColor = true;
-            this.btnLimpiar.Click += new System.EventHandler(this.btnLimpiar_Click);
             // 
             // dgvCapacitaciones
             // 
-            this.dgvCapacitaciones.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvCapacitaciones.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvCapacitaciones.Location = new System.Drawing.Point(20, 205);
+            this.dgvCapacitaciones.Location = new System.Drawing.Point(20, 250);
             this.dgvCapacitaciones.Name = "dgvCapacitaciones";
-            this.dgvCapacitaciones.RowHeadersWidth = 51;
-            this.dgvCapacitaciones.Size = new System.Drawing.Size(750, 220);
-            this.dgvCapacitaciones.TabIndex = 11;
+            this.dgvCapacitaciones.Size = new System.Drawing.Size(550, 210);
+            this.dgvCapacitaciones.TabIndex = 5;
             // 
             // Capacitaciones
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(595, 480);
             this.Controls.Add(this.dgvCapacitaciones);
             this.Controls.Add(this.btnLimpiar);
+            this.Controls.Add(this.btnEliminar);
+            this.Controls.Add(this.btnModificar);
             this.Controls.Add(this.btnGuardar);
-            this.Controls.Add(this.txtDescripcion);
-            this.Controls.Add(this.lblDesc);
-            this.Controls.Add(this.txtHoras);
-            this.Controls.Add(this.lblHoras);
-            this.Controls.Add(this.txtNombreCapacitacion);
-            this.Controls.Add(this.lblNombre);
-            this.Controls.Add(this.txtIdCapacitacion);
-            this.Controls.Add(this.lblId);
-            this.Controls.Add(this.label1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Controls.Add(this.gbDatos);
             this.Name = "Capacitaciones";
-            this.Text = "Capacitaciones";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Gestión de Capacitaciones";
             this.Load += new System.EventHandler(this.Capacitaciones_Load);
+            this.gbDatos.ResumeLayout(false);
+            this.gbDatos.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCapacitaciones)).EndInit();
             this.ResumeLayout(false);
-            PerformLayout();
+
         }
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label lblId;
-        private System.Windows.Forms.TextBox txtIdCapacitacion;
-        private System.Windows.Forms.Label lblNombre;
-        private System.Windows.Forms.TextBox txtNombreCapacitacion;
-        private System.Windows.Forms.Label lblHoras;
+        private System.Windows.Forms.GroupBox gbDatos;
         private System.Windows.Forms.TextBox txtHoras;
-        private System.Windows.Forms.Label lblDesc;
+        private System.Windows.Forms.Label lblHoras;
         private System.Windows.Forms.TextBox txtDescripcion;
+        private System.Windows.Forms.Label lblDescripcion;
+        private System.Windows.Forms.TextBox txtNombreCapacitacion;
+        private System.Windows.Forms.Label lblNombre;
         private System.Windows.Forms.Button btnGuardar;
+        private System.Windows.Forms.Button btnModificar;
+        private System.Windows.Forms.Button btnEliminar;
         private System.Windows.Forms.Button btnLimpiar;
         private System.Windows.Forms.DataGridView dgvCapacitaciones;
     }

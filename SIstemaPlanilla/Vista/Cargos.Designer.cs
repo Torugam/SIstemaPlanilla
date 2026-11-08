@@ -18,8 +18,6 @@
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.lblId = new System.Windows.Forms.Label();
-            this.txtIdCargo = new System.Windows.Forms.TextBox();
             this.lblNombre = new System.Windows.Forms.Label();
             this.txtNombreCargo = new System.Windows.Forms.TextBox();
             this.lblSuperior = new System.Windows.Forms.Label();
@@ -29,6 +27,8 @@
             this.lblMax = new System.Windows.Forms.Label();
             this.txtSalarioMax = new System.Windows.Forms.TextBox();
             this.btnGuardar = new System.Windows.Forms.Button();
+            this.btnModificar = new System.Windows.Forms.Button();
+            this.btnEliminar = new System.Windows.Forms.Button();
             this.btnLimpiar = new System.Windows.Forms.Button();
             this.dgvCargos = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCargos)).BeginInit();
@@ -44,107 +44,107 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "CARGOS";
             // 
-            // lblId
-            // 
-            this.lblId.AutoSize = true;
-            this.lblId.Location = new System.Drawing.Point(20, 70);
-            this.lblId.Name = "lblId";
-            this.lblId.Size = new System.Drawing.Size(69, 20);
-            this.lblId.TabIndex = 1;
-            this.lblId.Text = "ID Cargo:";
-            // 
-            // txtIdCargo
-            // 
-            this.txtIdCargo.Location = new System.Drawing.Point(140, 67);
-            this.txtIdCargo.Name = "txtIdCargo";
-            this.txtIdCargo.Size = new System.Drawing.Size(150, 27);
-            this.txtIdCargo.TabIndex = 2;
-            // 
             // lblNombre
             // 
             this.lblNombre.AutoSize = true;
-            this.lblNombre.Location = new System.Drawing.Point(20, 110);
+            this.lblNombre.Location = new System.Drawing.Point(20, 75);
             this.lblNombre.Name = "lblNombre";
             this.lblNombre.Size = new System.Drawing.Size(110, 20);
-            this.lblNombre.TabIndex = 3;
+            this.lblNombre.TabIndex = 1;
             this.lblNombre.Text = "Nombre Cargo:";
             // 
             // txtNombreCargo
             // 
-            this.txtNombreCargo.Location = new System.Drawing.Point(140, 107);
+            this.txtNombreCargo.Location = new System.Drawing.Point(140, 72);
             this.txtNombreCargo.Name = "txtNombreCargo";
             this.txtNombreCargo.Size = new System.Drawing.Size(200, 27);
-            this.txtNombreCargo.TabIndex = 4;
+            this.txtNombreCargo.TabIndex = 2;
             // 
             // lblSuperior
             // 
             this.lblSuperior.AutoSize = true;
-            this.lblSuperior.Location = new System.Drawing.Point(20, 150);
+            this.lblSuperior.Location = new System.Drawing.Point(20, 115);
             this.lblSuperior.Name = "lblSuperior";
             this.lblSuperior.Size = new System.Drawing.Size(109, 20);
-            this.lblSuperior.TabIndex = 5;
+            this.lblSuperior.TabIndex = 3;
             this.lblSuperior.Text = "Cargo Superior:";
             // 
             // cbCargoSuperior
             // 
             this.cbCargoSuperior.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbCargoSuperior.FormattingEnabled = true;
-            this.cbCargoSuperior.Location = new System.Drawing.Point(140, 147);
+            this.cbCargoSuperior.Location = new System.Drawing.Point(140, 112);
             this.cbCargoSuperior.Name = "cbCargoSuperior";
             this.cbCargoSuperior.Size = new System.Drawing.Size(200, 28);
-            this.cbCargoSuperior.TabIndex = 6;
+            this.cbCargoSuperior.TabIndex = 4;
             // 
             // lblMin
             // 
             this.lblMin.AutoSize = true;
-            this.lblMin.Location = new System.Drawing.Point(370, 70);
+            this.lblMin.Location = new System.Drawing.Point(370, 75);
             this.lblMin.Name = "lblMin";
             this.lblMin.Size = new System.Drawing.Size(104, 20);
-            this.lblMin.TabIndex = 7;
+            this.lblMin.TabIndex = 5;
             this.lblMin.Text = "Salario Mínimo:";
             // 
             // txtSalarioMin
             // 
-            this.txtSalarioMin.Location = new System.Drawing.Point(480, 67);
+            this.txtSalarioMin.Location = new System.Drawing.Point(480, 72);
             this.txtSalarioMin.Name = "txtSalarioMin";
             this.txtSalarioMin.Size = new System.Drawing.Size(150, 27);
-            this.txtSalarioMin.TabIndex = 8;
+            this.txtSalarioMin.TabIndex = 6;
             // 
             // lblMax
             // 
             this.lblMax.AutoSize = true;
-            this.lblMax.Location = new System.Drawing.Point(370, 110);
+            this.lblMax.Location = new System.Drawing.Point(370, 115);
             this.lblMax.Name = "lblMax";
             this.lblMax.Size = new System.Drawing.Size(107, 20);
-            this.lblMax.TabIndex = 9;
+            this.lblMax.TabIndex = 7;
             this.lblMax.Text = "Salario Máximo:";
             // 
             // txtSalarioMax
             // 
-            this.txtSalarioMax.Location = new System.Drawing.Point(480, 107);
+            this.txtSalarioMax.Location = new System.Drawing.Point(480, 112);
             this.txtSalarioMax.Name = "txtSalarioMax";
             this.txtSalarioMax.Size = new System.Drawing.Size(150, 27);
-            this.txtSalarioMax.TabIndex = 10;
+            this.txtSalarioMax.TabIndex = 8;
             // 
             // btnGuardar
             // 
-            this.btnGuardar.Location = new System.Drawing.Point(430, 145);
+            this.btnGuardar.Location = new System.Drawing.Point(320, 155);
             this.btnGuardar.Name = "btnGuardar";
             this.btnGuardar.Size = new System.Drawing.Size(90, 30);
-            this.btnGuardar.TabIndex = 11;
+            this.btnGuardar.TabIndex = 9;
             this.btnGuardar.Text = "Guardar";
             this.btnGuardar.UseVisualStyleBackColor = true;
-            this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
+            // 
+            // btnModificar
+            // 
+            this.btnModificar.Location = new System.Drawing.Point(420, 155);
+            this.btnModificar.Name = "btnModificar";
+            this.btnModificar.Size = new System.Drawing.Size(90, 30);
+            this.btnModificar.TabIndex = 10;
+            this.btnModificar.Text = "Modificar";
+            this.btnModificar.UseVisualStyleBackColor = true;
+            // 
+            // btnEliminar
+            // 
+            this.btnEliminar.Location = new System.Drawing.Point(520, 155);
+            this.btnEliminar.Name = "btnEliminar";
+            this.btnEliminar.Size = new System.Drawing.Size(90, 30);
+            this.btnEliminar.TabIndex = 11;
+            this.btnEliminar.Text = "Eliminar";
+            this.btnEliminar.UseVisualStyleBackColor = true;
             // 
             // btnLimpiar
             // 
-            this.btnLimpiar.Location = new System.Drawing.Point(540, 145);
+            this.btnLimpiar.Location = new System.Drawing.Point(620, 155);
             this.btnLimpiar.Name = "btnLimpiar";
             this.btnLimpiar.Size = new System.Drawing.Size(90, 30);
             this.btnLimpiar.TabIndex = 12;
             this.btnLimpiar.Text = "Limpiar";
             this.btnLimpiar.UseVisualStyleBackColor = true;
-            this.btnLimpiar.Click += new System.EventHandler(this.btnLimpiar_Click);
             // 
             // dgvCargos
             // 
@@ -163,6 +163,8 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.dgvCargos);
             this.Controls.Add(this.btnLimpiar);
+            this.Controls.Add(this.btnEliminar);
+            this.Controls.Add(this.btnModificar);
             this.Controls.Add(this.btnGuardar);
             this.Controls.Add(this.txtSalarioMax);
             this.Controls.Add(this.lblMax);
@@ -172,8 +174,6 @@
             this.Controls.Add(this.lblSuperior);
             this.Controls.Add(this.txtNombreCargo);
             this.Controls.Add(this.lblNombre);
-            this.Controls.Add(this.txtIdCargo);
-            this.Controls.Add(this.lblId);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Cargos";
@@ -187,8 +187,6 @@
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label lblId;
-        private System.Windows.Forms.TextBox txtIdCargo;
         private System.Windows.Forms.Label lblNombre;
         private System.Windows.Forms.TextBox txtNombreCargo;
         private System.Windows.Forms.Label lblSuperior;
@@ -198,6 +196,8 @@
         private System.Windows.Forms.Label lblMax;
         private System.Windows.Forms.TextBox txtSalarioMax;
         private System.Windows.Forms.Button btnGuardar;
+        private System.Windows.Forms.Button btnModificar;
+        private System.Windows.Forms.Button btnEliminar;
         private System.Windows.Forms.Button btnLimpiar;
         private System.Windows.Forms.DataGridView dgvCargos;
     }

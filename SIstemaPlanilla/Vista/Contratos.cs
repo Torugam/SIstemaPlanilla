@@ -1,5 +1,6 @@
 ﻿using SistemaPlanilla.Modelo;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -9,64 +10,17 @@ namespace SIstemaPlanilla.Vista
 {
     public partial class Contratos : Form
     {
-        // Controles que adaptaremos/crearemos por código de forma totalmente segura
-        private ComboBox cbTipoContrato = null!;
-        private TextBox txtBuscar = null!;
+        private int idContratoSeleccionado = 0;
 
         public Contratos()
         {
             InitializeComponent();
 
-            // 1. Transformamos el TextBox de tipo contrato del diseñador en un ComboBox desplegable
-            if (txtTipoContrato != null)
+            bool enModoDiseno = this.DesignMode || (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime);
+
+            if (!enModoDiseno)
             {
-                cbTipoContrato = new ComboBox
-                {
-                    Location = txtTipoContrato.Location,
-                    Size = txtTipoContrato.Size,
-                    DropDownStyle = ComboBoxStyle.DropDownList,
-                    Font = txtTipoContrato.Font,
-                    TabIndex = txtTipoContrato.TabIndex
-                };
-
-                // Reemplazamos el TextBox viejo por el nuevo ComboBox en el formulario
-                this.Controls.Remove(txtTipoContrato);
-                txtTipoContrato.Dispose();
-                this.Controls.Add(cbTipoContrato);
-            }
-
-            // 2. Creamos dinámicamente el cuadro de búsqueda en la parte superior junto al título
-            txtBuscar = new TextBox
-            {
-                Location = new Point(220, 20),
-                Size = new Size(280, 27),
-                ForeColor = Color.Gray,
-                Text = "Buscar por empleado o tipo..."
-            };
-            this.Controls.Add(txtBuscar);
-            txtBuscar.BringToFront();
-
-            // Configuración del ComboBox de tipo de contrato
-            if (cbTipoContrato != null)
-            {
-                cbTipoContrato.Items.Clear();
-                cbTipoContrato.Items.AddRange(new string[] { "PERMANENTE", "TEMPORAL" });
-                if (cbTipoContrato.Items.Count > 0) cbTipoContrato.SelectedIndex = 0;
-                cbTipoContrato.SelectedIndexChanged += CbTipoContrato_SelectedIndexChanged;
-            }
-
-            // Eventos del buscador
-            txtBuscar.Enter += TxtBuscar_Enter;
-            txtBuscar.Leave += TxtBuscar_Leave;
-            txtBuscar.TextChanged += TxtBuscar_TextChanged;
-
-            if (btnGuardar != null) btnGuardar.Click += btnGuardar_Click;
-            if (btnLimpiar != null) btnLimpiar.Click += btnLimpiar_Click;
-
-            // Formato visual para diferenciar filas en el DataGridView
-            if (dgvContratos != null)
-            {
-                dgvContratos.CellFormatting += DgvContratos_CellFormatting;
+                // Código inicial si se requiere
             }
 
             this.Load += Contratos_Load;
@@ -74,72 +28,170 @@ namespace SIstemaPlanilla.Vista
 
         private void Contratos_Load(object? sender, EventArgs e)
         {
-            CargarContratos();
+            ConfigurarDataGridView();
             CargarComboEmpleados();
-            ActualizarEstadoFechaFin();
+            CargarComboTipoContrato();
+            CargarContratos();
         }
 
-        private void CbTipoContrato_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            ActualizarEstadoFechaFin();
-        }
+        // ---------- Búsqueda de controles ----------
 
-        private void ActualizarEstadoFechaFin()
+        // Recorre todos los controles del formulario (incluso los que están dentro de paneles)
+        private IEnumerable<Control> TodosLosControles(Control padre)
         {
-            if (dtpFechaFin != null && cbTipoContrato != null)
+            foreach (Control hijo in padre.Controls)
             {
-                if (cbTipoContrato.SelectedItem?.ToString() == "PERMANENTE")
-                {
-                    dtpFechaFin.Enabled = false; // Los permanentes no llevan fecha de fin
-                    dtpFechaFin.Checked = false;
-                }
-                else
-                {
-                    dtpFechaFin.Enabled = true;
-                }
+                yield return hijo;
+                foreach (Control nieto in TodosLosControles(hijo))
+                    yield return nieto;
             }
         }
 
-        private void CargarContratos()
+        // ComboBox de empleados
+        private ComboBox? ObtenerComboEmpleado()
         {
-            try
+            foreach (Control c in TodosLosControles(this))
             {
-                using (SqlConnection conexion = Conexion.GetConexion())
-                {
-                    if (conexion == null)
-                    {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+                if (c is ComboBox cb && (c.Name.Contains("Empleado", StringComparison.OrdinalIgnoreCase) || c.Name.Contains("comboBox1", StringComparison.OrdinalIgnoreCase)))
+                    return cb;
+            }
+            return null;
+        }
 
-                    using (SqlCommand cmd = new SqlCommand("sp_Contrato_Listar", conexion))
+        // ComboBox de tipo de contrato.
+        // Si en el formulario ese campo es un TextBox, lo reemplaza automáticamente por un ComboBox.
+        private ComboBox? ObtenerComboTipoContrato()
+        {
+            ComboBox? comboEmpleado = ObtenerComboEmpleado();
+
+            // 1) Si ya existe un ComboBox (que no sea el de empleados), se usa ese
+            foreach (Control c in TodosLosControles(this))
+            {
+                if (c is ComboBox cb && cb != comboEmpleado)
+                    return cb;
+            }
+
+            // 2) Si no existe, buscamos el TextBox de "Tipo Contrato"
+            Control? campo = null;
+
+            // 2a) Por nombre del control
+            foreach (Control c in TodosLosControles(this))
+            {
+                if (c is TextBoxBase && (c.Name.Contains("Tipo", StringComparison.OrdinalIgnoreCase) || c.Name.Contains("Contrato", StringComparison.OrdinalIgnoreCase)))
+                {
+                    campo = c;
+                    break;
+                }
+            }
+
+            // 2b) Por cercanía al label "Tipo Contrato"
+            if (campo == null)
+            {
+                Label? etiqueta = null;
+                foreach (Control c in TodosLosControles(this))
+                {
+                    if (c is Label lb && lb.Text.Contains("Tipo", StringComparison.OrdinalIgnoreCase) && lb.Text.Contains("Contrato", StringComparison.OrdinalIgnoreCase))
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        etiqueta = lb;
+                        break;
+                    }
+                }
+
+                if (etiqueta != null)
+                {
+                    int mejorDistancia = int.MaxValue;
+                    foreach (Control c in TodosLosControles(this))
+                    {
+                        if (c is TextBoxBase && c.Parent == etiqueta.Parent && Math.Abs(c.Top - etiqueta.Top) < 30 && c.Left >= etiqueta.Left)
                         {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-                            if (dgvContratos != null)
-                                dgvContratos.DataSource = dt;
+                            int distancia = c.Left - etiqueta.Left;
+                            if (distancia < mejorDistancia)
+                            {
+                                mejorDistancia = distancia;
+                                campo = c;
+                            }
                         }
                     }
                 }
             }
-            catch (Exception ex)
+
+            if (campo == null || campo.Parent == null) return null;
+
+            // 3) Reemplazamos el TextBox por un ComboBox en la misma posición y tamaño
+            ComboBox nuevo = new ComboBox();
+            nuevo.Name = "cbTipoContrato";
+            nuevo.Font = campo.Font;
+            nuevo.Location = campo.Location;
+            nuevo.Width = campo.Width;
+            nuevo.Anchor = campo.Anchor;
+            nuevo.TabIndex = campo.TabIndex;
+
+            Control padreCampo = campo.Parent;
+            int indice = padreCampo.Controls.GetChildIndex(campo);
+            padreCampo.Controls.Remove(campo);
+            padreCampo.Controls.Add(nuevo);
+            padreCampo.Controls.SetChildIndex(nuevo, indice);
+            campo.Dispose();
+
+            return nuevo;
+        }
+
+        private void ConfigurarDataGridView()
+        {
+            DataGridView? tabla = null;
+            foreach (Control c in this.Controls)
             {
-                MessageBox.Show("Error al cargar los contratos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (c is DataGridView dgv)
+                {
+                    tabla = dgv;
+                    break;
+                }
+            }
+
+            if (tabla != null)
+            {
+                tabla.AllowUserToAddRows = false;
+                tabla.AllowUserToDeleteRows = false;
+                tabla.ReadOnly = true;
+                tabla.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                tabla.MultiSelect = false;
+                tabla.Height = 280;
+                tabla.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+                if (tabla.Columns["ID_CONTRATO"] != null)
+                {
+                    tabla.Columns["ID_CONTRATO"].HeaderText = "ID";
+                    tabla.Columns["ID_CONTRATO"].Width = 50;
+                    tabla.Columns["ID_CONTRATO"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                }
+
+                if (tabla.Columns["NOMBRE_COMPLETO"] != null)
+                    tabla.Columns["NOMBRE_COMPLETO"].HeaderText = "Nombre Completo";
+
+                if (tabla.Columns["SALARIO_BASE"] != null)
+                    tabla.Columns["SALARIO_BASE"].HeaderText = "Salario Base";
+
+                if (tabla.Columns["TIPO_CONTRATO"] != null)
+                    tabla.Columns["TIPO_CONTRATO"].HeaderText = "Tipo de Contrato";
+
+                if (tabla.Columns["FECHA_INICIO_CONTRATO"] != null)
+                    tabla.Columns["FECHA_INICIO_CONTRATO"].HeaderText = "Fecha Inicio";
+
+                if (tabla.Columns["FECHA_FIN_CONTRATO"] != null)
+                    tabla.Columns["FECHA_FIN_CONTRATO"].HeaderText = "Fecha Fin";
             }
         }
 
+        // Empleado: buscador por nombre (escribes y sugiere)
         private void CargarComboEmpleados()
         {
             try
             {
                 using (SqlConnection conexion = Conexion.GetConexion())
                 {
-                    if (conexion == null) return; 
+                    if (conexion == null) return;
 
-                    string query = "SELECT ID_EMPLEADO, NOMBRE_COMPLETO FROM EMPLEADO WHERE ESTADO = 'ACTIVO'";
+                    string query = "SELECT ID_EMPLEADO, NOMBRE_COMPLETO FROM EMPLEADO WHERE ESTADO = 'ACTIVO' ORDER BY NOMBRE_COMPLETO ASC";
                     using (SqlCommand cmd = new SqlCommand(query, conexion))
                     {
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
@@ -147,16 +199,23 @@ namespace SIstemaPlanilla.Vista
                             DataTable dt = new DataTable();
                             da.Fill(dt);
 
-                            DataRow fila = dt.NewRow();
-                            fila["ID_EMPLEADO"] = 0;
-                            fila["NOMBRE_COMPLETO"] = "-- Seleccione un Empleado --";
-                            dt.Rows.InsertAt(fila, 0);
-
-                            if (cbEmpleados != null)
+                            ComboBox? cb = ObtenerComboEmpleado();
+                            if (cb != null)
                             {
-                                cbEmpleados.DataSource = dt;
-                                cbEmpleados.DisplayMember = "NOMBRE_COMPLETO";
-                                cbEmpleados.ValueMember = "ID_EMPLEADO";
+                                cb.Visible = true;
+                                cb.AutoCompleteMode = AutoCompleteMode.None;
+
+                                cb.DataSource = dt;
+                                cb.DisplayMember = "NOMBRE_COMPLETO";
+                                cb.ValueMember = "ID_EMPLEADO";
+
+                                // Buscador
+                                cb.DropDownStyle = ComboBoxStyle.DropDown;
+                                cb.AutoCompleteSource = AutoCompleteSource.ListItems;
+                                cb.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+                                cb.SelectedIndex = -1;
+                                cb.Text = string.Empty;
                             }
                         }
                     }
@@ -168,62 +227,66 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
-        // Método para separar visualmente con colores los tipos de contrato en la tabla
-        private void DgvContratos_CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
+        // Tipo de contrato: solo 2 opciones -> Permanente y Temporal (no se puede escribir)
+        private void CargarComboTipoContrato()
         {
-            if (dgvContratos != null && e.RowIndex >= 0 && e.ColumnIndex < dgvContratos.Columns.Count)
+            try
             {
-                if (dgvContratos.Columns[e.ColumnIndex].Name == "TIPO_CONTRATO" && e.Value != null)
-                {
-                    string tipo = e.Value.ToString() ?? "";
+                DataTable dtTipo = new DataTable();
+                dtTipo.Columns.Add("Tipo", typeof(string));
 
-                    if (tipo == "PERMANENTE")
+                dtTipo.Rows.Add("Permanente");
+                dtTipo.Rows.Add("Temporal");
+
+                ComboBox? cb = ObtenerComboTipoContrato();
+                if (cb != null)
+                {
+                    cb.Visible = true;
+                    cb.DataSource = dtTipo;
+                    cb.DisplayMember = "Tipo";
+                    cb.ValueMember = "Tipo";
+                    cb.DropDownStyle = ComboBoxStyle.DropDownList; // no permite escribir
+                    cb.SelectedIndex = -1;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar tipos de contrato: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void CargarContratos()
+        {
+            try
+            {
+                using (SqlConnection conexion = Conexion.GetConexion())
+                {
+                    if (conexion == null) return;
+
+                    using (SqlCommand cmd = new SqlCommand("sp_Contrato_Listar", conexion))
                     {
-                        e.CellStyle.BackColor = Color.FromArgb(220, 248, 220); // Verde suave
-                        e.CellStyle.ForeColor = Color.DarkGreen;
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            da.Fill(dt);
+
+                            foreach (Control c in this.Controls)
+                            {
+                                if (c is DataGridView tabla)
+                                {
+                                    tabla.DataSource = dt;
+                                    break;
+                                }
+                            }
+                        }
                     }
-                    else if (tipo == "TEMPORAL")
-                    {
-                        e.CellStyle.BackColor = Color.FromArgb(255, 243, 205); // Amarillo / Naranja suave
-                        e.CellStyle.ForeColor = Color.DarkOrange;
-                    }
                 }
             }
-        }
-
-        private void TxtBuscar_Enter(object? sender, EventArgs e)
-        {
-            if (txtBuscar != null && txtBuscar.Text == "Buscar por empleado o tipo...")
+            catch (Exception ex)
             {
-                txtBuscar.Text = "";
-                txtBuscar.ForeColor = Color.Black;
-            }
-        }
-
-        private void TxtBuscar_Leave(object? sender, EventArgs e)
-        {
-            if (txtBuscar != null && string.IsNullOrWhiteSpace(txtBuscar.Text))
-            {
-                txtBuscar.Text = "Buscar por empleado o tipo...";
-                txtBuscar.ForeColor = Color.Gray;
-            }
-        }
-
-        private void TxtBuscar_TextChanged(object? sender, EventArgs e)
-        {
-            if (dgvContratos != null && dgvContratos.DataSource is DataTable dt && txtBuscar != null)
-            {
-                string filtro = txtBuscar.Text.Trim();
-
-                if (string.IsNullOrEmpty(filtro) || filtro == "Buscar por empleado o tipo...")
-                {
-                    dt.DefaultView.RowFilter = "";
-                }
-                else
-                {
-                    string filtroEscapado = filtro.Replace("'", "''");
-                    dt.DefaultView.RowFilter = $"NOMBRE_COMPLETO LIKE '%{filtroEscapado}%' OR TIPO_CONTRATO LIKE '%{filtroEscapado}%'";
-                }
+                MessageBox.Show("Error al cargar los contratos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -231,38 +294,78 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                if (cbEmpleados == null || cbEmpleados.SelectedValue == null || Convert.ToInt32(cbEmpleados.SelectedValue) == 0 || string.IsNullOrWhiteSpace(txtSalarioBase?.Text))
+                int idEmpleadoSeleccionado = 0;
+                string tipoContratoSeleccionado = string.Empty;
+                decimal salarioBase = 0;
+                DateTime fechaInicio = DateTime.Now;
+                DateTime fechaFin = DateTime.Now;
+
+                // Recorremos los controles del formulario para capturar los valores de forma segura
+                foreach (Control c in this.Controls)
                 {
-                    MessageBox.Show("Debe seleccionar un empleado y registrar el salario base.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    if (c is ComboBox cb)
+                    {
+                        if (cb.Name.Contains("Empleado", StringComparison.OrdinalIgnoreCase) && cb.SelectedValue != null)
+                        {
+                            int.TryParse(cb.SelectedValue.ToString(), out idEmpleadoSeleccionado);
+                        }
+                        else if ((cb.Name.Contains("Contrato", StringComparison.OrdinalIgnoreCase) || cb.Name.Contains("Tipo", StringComparison.OrdinalIgnoreCase)) && cb.SelectedItem != null)
+                        {
+                            tipoContratoSeleccionado = cb.Text;
+                        }
+                    }
+                    else if (c is TextBox tb)
+                    {
+                        if (tb.Name.Contains("Salario", StringComparison.OrdinalIgnoreCase))
+                        {
+                            decimal.TryParse(tb.Text.Trim(), out salarioBase);
+                        }
+                    }
+                    else if (c is DateTimePicker dtp)
+                    {
+                        if (dtp.Name.Contains("Inicio", StringComparison.OrdinalIgnoreCase))
+                        {
+                            fechaInicio = dtp.Value;
+                        }
+                        else if (dtp.Name.Contains("Fin", StringComparison.OrdinalIgnoreCase))
+                        {
+                            fechaFin = dtp.Value;
+                        }
+                    }
+                }
+
+                if (idEmpleadoSeleccionado == 0)
+                {
+                    MessageBox.Show("Por favor seleccione un empleado de la lista.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                string tipoContrato = cbTipoContrato?.SelectedItem?.ToString() ?? "PERMANENTE";
+                if (string.IsNullOrWhiteSpace(tipoContratoSeleccionado) || tipoContratoSeleccionado.Contains("Seleccione"))
+                {
+                    MessageBox.Show("Por favor seleccione el tipo de contrato.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
                 using (SqlConnection conexion = Conexion.GetConexion())
                 {
-                    if (conexion == null)
-                    {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+                    if (conexion == null) return;
 
                     using (SqlCommand cmd = new SqlCommand("sp_Contrato_Insertar", conexion))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
-                        cmd.Parameters.AddWithValue("@ID_EMPLEADO", Convert.ToInt32(cbEmpleados.SelectedValue));
-                        cmd.Parameters.AddWithValue("@FECHA_INICIO", dtpFechaInicio?.Value ?? DateTime.Now);
-                        cmd.Parameters.AddWithValue("@FECHA_FIN", tipoContrato == "TEMPORAL" ? (object)(dtpFechaFin?.Value ?? DateTime.Now) : DBNull.Value);
-                        cmd.Parameters.AddWithValue("@SALARIO_BASE", Convert.ToDecimal(txtSalarioBase.Text.Trim()));
-                        cmd.Parameters.AddWithValue("@TIPO_CONTRATO", tipoContrato);
+                        // Enviamos todos los parámetros requeridos por tu procedimiento almacenado
+                        cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmpleadoSeleccionado);
+                        cmd.Parameters.AddWithValue("@TIPO_CONTRATO", tipoContratoSeleccionado);
+                        cmd.Parameters.AddWithValue("@SALARIO_BASE", salarioBase);
+                        cmd.Parameters.AddWithValue("@FECHA_INICIO", fechaInicio);
+                        cmd.Parameters.AddWithValue("@FECHA_FIN", tipoContratoSeleccionado.Equals("Permanente", StringComparison.OrdinalIgnoreCase) ? (object)DBNull.Value : fechaFin);
 
                         cmd.ExecuteNonQuery();
 
-                        MessageBox.Show("Contrato registrado y asociado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        LimpiarCampos();
+                        MessageBox.Show("Contrato registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         CargarContratos();
+                        LimpiarCampos();
                     }
                 }
             }
@@ -272,26 +375,20 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
-        private void LimpiarCampos()
-        {
-            if (cbEmpleados != null && cbEmpleados.Items.Count > 0) cbEmpleados.SelectedIndex = 0;
-            if (cbTipoContrato != null && cbTipoContrato.Items.Count > 0) cbTipoContrato.SelectedIndex = 0;
-            if (txtSalarioBase != null) txtSalarioBase.Clear();
-
-            if (txtBuscar != null)
-            {
-                txtBuscar.Text = "Buscar por empleado o tipo...";
-                txtBuscar.ForeColor = Color.Gray;
-            }
-
-            if (dtpFechaInicio != null) dtpFechaInicio.Value = DateTime.Now;
-            if (dtpFechaFin != null) dtpFechaFin.Value = DateTime.Now;
-            if (cbEmpleados != null) cbEmpleados.Focus();
-        }
-
         private void btnLimpiar_Click(object? sender, EventArgs e)
         {
             LimpiarCampos();
+        }
+
+        private void LimpiarCampos()
+        {
+            idContratoSeleccionado = 0;
+            CargarComboEmpleados();
+            CargarComboTipoContrato();
+            foreach (Control c in TodosLosControles(this))
+            {
+                if (c is TextBox tb) tb.Clear();
+            }
         }
     }
 }
