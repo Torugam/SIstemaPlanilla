@@ -104,8 +104,14 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection conexion = new SqlConnection(Conexion.CadenaConexion))
+                using (SqlConnection conexion = Conexion.GetConexion())
                 {
+                    if (conexion == null)
+                    {
+                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     using (SqlCommand cmd = new SqlCommand("sp_Contrato_Listar", conexion))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
@@ -129,8 +135,10 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection conexion = new SqlConnection(Conexion.CadenaConexion))
+                using (SqlConnection conexion = Conexion.GetConexion())
                 {
+                    if (conexion == null) return; 
+
                     string query = "SELECT ID_EMPLEADO, NOMBRE_COMPLETO FROM EMPLEADO WHERE ESTADO = 'ACTIVO'";
                     using (SqlCommand cmd = new SqlCommand(query, conexion))
                     {
@@ -231,8 +239,14 @@ namespace SIstemaPlanilla.Vista
 
                 string tipoContrato = cbTipoContrato?.SelectedItem?.ToString() ?? "PERMANENTE";
 
-                using (SqlConnection conexion = new SqlConnection(Conexion.CadenaConexion))
+                using (SqlConnection conexion = Conexion.GetConexion())
                 {
+                    if (conexion == null)
+                    {
+                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     using (SqlCommand cmd = new SqlCommand("sp_Contrato_Insertar", conexion))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
@@ -243,7 +257,6 @@ namespace SIstemaPlanilla.Vista
                         cmd.Parameters.AddWithValue("@SALARIO_BASE", Convert.ToDecimal(txtSalarioBase.Text.Trim()));
                         cmd.Parameters.AddWithValue("@TIPO_CONTRATO", tipoContrato);
 
-                        conexion.Open();
                         cmd.ExecuteNonQuery();
 
                         MessageBox.Show("Contrato registrado y asociado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);

@@ -34,8 +34,14 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection conexion = new SqlConnection(Conexion.CadenaConexion))
+                using (SqlConnection conexion = Conexion.GetConexion())
                 {
+                    if (conexion == null)
+                    {
+                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     string query = @"SELECT e.ID_EMPLEADO, e.NOMBRE_COMPLETO, e.DUI, e.DIRECCION, 
                                             e.TELEFONO, e.ESTADO, c.NOMBRE_CARGO, e.ID_CARGO 
                                      FROM EMPLEADO e
@@ -67,8 +73,10 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection conexion = new SqlConnection(Conexion.CadenaConexion))
+                using (SqlConnection conexion = Conexion.GetConexion())
                 {
+                    if (conexion == null) return; // Si hay error de red, sale silenciosamente
+
                     string query = "SELECT ID_CARGO, NOMBRE_CARGO FROM CARGO";
                     using (SqlCommand cmd = new SqlCommand(query, conexion))
                     {
@@ -108,8 +116,14 @@ namespace SIstemaPlanilla.Vista
                     return;
                 }
 
-                using (SqlConnection conexion = new SqlConnection(Conexion.CadenaConexion))
+                using (SqlConnection conexion = Conexion.GetConexion())
                 {
+                    if (conexion == null)
+                    {
+                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     string query = "INSERT INTO EMPLEADO (NOMBRE_COMPLETO, DUI, DIRECCION, TELEFONO, ESTADO, ID_CARGO, SALARIO_BASE) VALUES (@NOMBRE, @DUI, @DIR, @TEL, 'ACTIVO', @CARGO, 0.00)";
                     using (SqlCommand cmd = new SqlCommand(query, conexion))
                     {
@@ -119,7 +133,6 @@ namespace SIstemaPlanilla.Vista
                         cmd.Parameters.AddWithValue("@TEL", txtTelefono?.Text.Trim() ?? "");
                         cmd.Parameters.AddWithValue("@CARGO", Convert.ToInt32(cbCargos.SelectedValue));
 
-                        conexion.Open();
                         cmd.ExecuteNonQuery();
 
                         MessageBox.Show("Empleado registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -144,8 +157,14 @@ namespace SIstemaPlanilla.Vista
 
             try
             {
-                using (SqlConnection conexion = new SqlConnection(Conexion.CadenaConexion))
+                using (SqlConnection conexion = Conexion.GetConexion())
                 {
+                    if (conexion == null)
+                    {
+                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     string query = "UPDATE EMPLEADO SET NOMBRE_COMPLETO = @NOMBRE, DUI = @DUI, DIRECCION = @DIR, TELEFONO = @TEL, ID_CARGO = @CARGO WHERE ID_EMPLEADO = @ID";
                     using (SqlCommand cmd = new SqlCommand(query, conexion))
                     {
@@ -156,7 +175,6 @@ namespace SIstemaPlanilla.Vista
                         cmd.Parameters.AddWithValue("@TEL", txtTelefono?.Text.Trim() ?? "");
                         cmd.Parameters.AddWithValue("@CARGO", Convert.ToInt32(cbCargos?.SelectedValue ?? 0));
 
-                        conexion.Open();
                         cmd.ExecuteNonQuery();
 
                         MessageBox.Show("Empleado actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -183,13 +201,18 @@ namespace SIstemaPlanilla.Vista
             {
                 try
                 {
-                    using (SqlConnection conexion = new SqlConnection(Conexion.CadenaConexion))
+                    using (SqlConnection conexion = Conexion.GetConexion())
                     {
+                        if (conexion == null)
+                        {
+                            MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
                         string query = "UPDATE EMPLEADO SET ESTADO = 'INACTIVO' WHERE ID_EMPLEADO = @ID";
                         using (SqlCommand cmd = new SqlCommand(query, conexion))
                         {
                             cmd.Parameters.AddWithValue("@ID", idEmpleadoSeleccionado);
-                            conexion.Open();
                             cmd.ExecuteNonQuery();
 
                             MessageBox.Show("Empleado dado de baja correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);

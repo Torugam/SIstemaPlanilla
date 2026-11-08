@@ -41,25 +41,35 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(Conexion.CadenaConexion))
+                // AQUÍ USAMOS TU NUEVA CLASE DE CONEXIÓN
+                using (SqlConnection con = Conexion.GetConexion())
                 {
-                    // Consulta a BD_PLANILLA
-                    string query = @"SELECT IdRol, NombreRol AS [Nombre del Rol], 
-                                     CASE 
-                                         WHEN IdRol = 1 THEN 'Administrador - Acceso total al sistema'
-                                         WHEN IdRol = 2 THEN 'Planillero - Acceso a Gestión de Planilla y Recursos Humanos'
-                                         WHEN IdRol = 3 THEN 'Recursos Humanos - Acceso a Empleados y Contratos'
-                                         ELSE 'Sin descripción'
-                                     END AS [Permisos Asignados]
-                                     FROM Roles";
-
-                    SqlDataAdapter da = new SqlDataAdapter(query, con);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-
-                    if (dgvRoles != null)
+                    if (con == null)
                     {
-                        dgvRoles.DataSource = dt;
+                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Consulta ajustada a los nombres de tu tabla real en SQL Server (ROL, ID_ROL, NOMBRE_ROL)
+                    string query = @"SELECT ID_ROL AS [ID], 
+                                            NOMBRE_ROL AS [Nombre del Rol], 
+                                            CASE 
+                                                WHEN ID_ROL = 1 THEN 'Administrador - Acceso total al sistema'
+                                                WHEN ID_ROL = 2 THEN 'Planillero - Acceso a Gestión de Planilla y Recursos Humanos'
+                                                WHEN ID_ROL = 3 THEN 'Recursos Humanos - Acceso a Empleados y Contratos'
+                                                ELSE ISNULL(DESCRIPCION, 'Sin descripción')
+                                            END AS [Permisos Asignados]
+                                     FROM ROL";
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(query, con))
+                    {
+                        DataTable dt = new DataTable();
+                        da.Fill(dt);
+
+                        if (dgvRoles != null)
+                        {
+                            dgvRoles.DataSource = dt;
+                        }
                     }
                 }
             }

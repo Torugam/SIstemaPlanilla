@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Configuration;
 
 namespace SistemaPlanilla.Modelo
 {
@@ -19,23 +18,25 @@ namespace SistemaPlanilla.Modelo
         {
             List<OpccionMenu> opciones = new List<OpccionMenu>();
 
-            string connectionString = ConfigurationManager.ConnectionStrings["ConexionBD"]?.ConnectionString
-                ?? "Data Source=localhost;Initial Catalog=BD_PLANILLA;Integrated Security=True;";
-
             string query = @"SELECT O.ID_OPCION, O.NOMBRE_OPCION, O.RUTA_INTERFACE 
                              FROM ROL_OPCION RO
                              INNER JOIN OPCION O ON RO.ID_OPCION = O.ID_OPCION
                              WHERE RO.ID_ROL = @idRol";
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = Conexion.GetConexion())
             {
+                if (conn == null)
+                {
+                    System.Windows.Forms.MessageBox.Show("Fallo al conectar con la base de datos para cargar el menú.");
+                    return opciones;
+                }
+
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@idRol", idRol);
 
                     try
                     {
-                        conn.Open();
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())

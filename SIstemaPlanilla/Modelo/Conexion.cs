@@ -1,10 +1,28 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 
 namespace SistemaPlanilla.Modelo
 {
-    public static class Conexion
+    public class Conexion
     {
-        // Cadena apuntando a la base de datos BD_PLANILLA
-        public static string CadenaConexion = "Server=.;Database=BD_PLANILLA;Integrated Security=True;";
+        public static SqlConnection GetConexion()
+        {
+            string CConexion = "Server=.;Database=BD_PLANILLA;Integrated Security=True;";
+
+
+            try
+            {
+                SqlConnection con = new SqlConnection(CConexion);
+                
+                con.Open(); 
+                
+                return con;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error de conexión: " + e.Message);
+                return null;
+            }
+        }
     }
 }

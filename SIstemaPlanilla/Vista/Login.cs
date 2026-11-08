@@ -1,8 +1,7 @@
-﻿using SistemaPlanilla; // Permite reconectar con Form1 sin errores CS0246
+﻿using SistemaPlanilla;
 using SistemaPlanilla.Modelo;
 using SIstemaPlanilla;
 using System;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -154,11 +153,14 @@ namespace SistemaPlanilla.Vista
 
             string passwordHash = HelperSeguridad.CalcularSHA256(password);
 
-            string connectionString = ConfigurationManager.ConnectionStrings["ConexionBD"]?.ConnectionString
-                ?? "Data Source=localhost;Initial Catalog=BD_PLANILLA;Integrated Security=True;";
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = Conexion.GetConexion())
             {
+                if (conn == null)
+                {
+                    MostrarError("Fallo al conectar con la base de datos. Verifique su red o conexión SQL.");
+                    return;
+                }
+
                 using (SqlCommand cmd = new SqlCommand("SP_ValidarLogin", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -175,7 +177,6 @@ namespace SistemaPlanilla.Vista
 
                     try
                     {
-                        conn.Open();
                         cmd.ExecuteNonQuery();
 
                         int codigoRespuesta = Convert.ToInt32(cmd.Parameters["@p_codigo_respuesta"].Value);
@@ -203,7 +204,7 @@ namespace SistemaPlanilla.Vista
                     }
                     catch (Exception ex)
                     {
-                        MostrarError("Error de conexión: " + ex.Message);
+                        MostrarError("Error de validación: " + ex.Message);
                     }
                 }
             }

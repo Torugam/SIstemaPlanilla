@@ -65,17 +65,33 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection con = new SqlConnection(Conexion.CadenaConexion))
+                using (SqlConnection con = Conexion.GetConexion())
                 {
-                    string query = "SELECT * FROM Usuario";
-
-                    SqlDataAdapter da = new SqlDataAdapter(query, con);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-
-                    if (dgvUsuarios != null)
+                    if (con == null)
                     {
-                        dgvUsuarios.DataSource = dt;
+                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Es mejor especificar las columnas para no mostrar el PASSWORD_HASH en la pantalla por seguridad
+                    // Además hacemos un JOIN con la tabla ROL para ver el nombre del rol en lugar de solo un número.
+                    string query = @"SELECT U.ID_USUARIO AS [ID], 
+                                            U.USERNAME AS [Usuario], 
+                                            R.NOMBRE_ROL AS [Rol], 
+                                            U.ESTADO AS [Estado], 
+                                            U.INTENTOS_FALLIDOS AS [Intentos Fallidos]
+                                     FROM USUARIO U
+                                     INNER JOIN ROL R ON U.ID_ROL = R.ID_ROL";
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(query, con))
+                    {
+                        DataTable dt = new DataTable();
+                        da.Fill(dt);
+
+                        if (dgvUsuarios != null)
+                        {
+                            dgvUsuarios.DataSource = dt;
+                        }
                     }
                 }
             }
@@ -87,22 +103,26 @@ namespace SIstemaPlanilla.Vista
 
         private void CargarRolesComboBox()
         {
-            try
-            {
-                using (SqlConnection con = new SqlConnection(Conexion.CadenaConexion))
+            try { 
+            
+                using (SqlConnection con = Conexion.GetConexion())
                 {
-                    string query = "SELECT * FROM Rol";
+                    if (con == null) return; // Si no hay conexión, sale silenciosamente
 
-                    SqlDataAdapter da = new SqlDataAdapter(query, con);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
+                    string query = "SELECT ID_ROL, NOMBRE_ROL FROM ROL";
 
-                    if (cmbRoles != null && dt.Rows.Count > 0)
+                    using (SqlDataAdapter da = new SqlDataAdapter(query, con))
                     {
-                        cmbRoles.DataSource = dt;
-                        // Usa las posiciones de las columnas automáticamente para evitar fallos de nombres
-                        cmbRoles.ValueMember = dt.Columns[0].ColumnName;     // ID de la primera columna
-                        cmbRoles.DisplayMember = dt.Columns[1].ColumnName;   // Nombre de la segunda columna
+                        DataTable dt = new DataTable();
+                        da.Fill(dt);
+
+                        if (cmbRoles != null && dt.Rows.Count > 0)
+                        {
+                            cmbRoles.DataSource = dt;
+                            // Asignamos explícitamente las columnas por su nombre en la base de datos
+                            cmbRoles.ValueMember = "ID_ROL";
+                            cmbRoles.DisplayMember = "NOMBRE_ROL";
+                        }
                     }
                 }
             }
