@@ -1,6 +1,7 @@
 ﻿using SistemaPlanilla;
 using SistemaPlanilla.Modelo;
 using SIstemaPlanilla;
+using SIstemaPlanilla.Controlador;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -21,6 +22,9 @@ namespace SistemaPlanilla.Vista
         private TextBox txtPassword = null!;
         private Button btnIngresar = null!;
         private Label lblError = null!;
+
+
+        private  UsuarioControlador controlador = new UsuarioControlador();
 
         public Login()
         {
@@ -144,69 +148,27 @@ namespace SistemaPlanilla.Vista
         {
             string username = txtUsuario.Text.Trim();
             string password = txtPassword.Text.Trim();
+            string mensajeRespuesta = "";
 
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            bool exito = controlador.IniciarSesion(username, password, out mensajeRespuesta);
+
+            if (exito)
             {
-                MostrarError("Por favor ingrese su usuario y contraseña.");
-                return;
+
+                
+                MessageBox.Show($"¡Bienvenido {SesionUsuario.Username}!", "Acceso Concedido", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtUsuario.Clear();
+                txtPassword.Clear();
+                txtUsuario.Focus();
+
+                Form1 frmPrincipal = new Form1();
+                this.Hide();                 
+                frmPrincipal.ShowDialog(); 
+                this.Show();
             }
-
-            string passwordHash = HelperSeguridad.CalcularSHA256(password);
-
-            using (SqlConnection conn = Conexion.GetConexion())
+            else
             {
-                if (conn == null)
-                {
-                    MostrarError("Fallo al conectar con la base de datos. Verifique su red o conexión SQL.");
-                    return;
-                }
-
-                using (SqlCommand cmd = new SqlCommand("SP_ValidarLogin", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    cmd.Parameters.AddWithValue("@p_username", username);
-                    cmd.Parameters.AddWithValue("@p_password_hash", passwordHash);
-
-                    cmd.Parameters.Add("@p_id_usuario", SqlDbType.Int).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("@p_id_rol", SqlDbType.Int).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("@p_nombre_rol", SqlDbType.VarChar, 50).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("@p_nombre_empleado", SqlDbType.VarChar, 150).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("@p_codigo_respuesta", SqlDbType.Int).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("@p_mensaje", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
-
-                    try
-                    {
-                        cmd.ExecuteNonQuery();
-
-                        int codigoRespuesta = Convert.ToInt32(cmd.Parameters["@p_codigo_respuesta"].Value);
-                        string mensaje = cmd.Parameters["@p_mensaje"].Value?.ToString() ?? "";
-
-                        if (codigoRespuesta == 1)
-                        {
-                            SesionUsuario.IdUsuario = Convert.ToInt32(cmd.Parameters["@p_id_usuario"].Value);
-                            SesionUsuario.IdRol = Convert.ToInt32(cmd.Parameters["@p_id_rol"].Value);
-                            SesionUsuario.Username = username;
-                            SesionUsuario.NombreRol = cmd.Parameters["@p_nombre_rol"].Value?.ToString() ?? "";
-                            SesionUsuario.NombreEmpleado = cmd.Parameters["@p_nombre_empleado"].Value?.ToString() ?? "";
-
-                            MessageBox.Show($"¡Bienvenido {SesionUsuario.NombreEmpleado}!", "Acceso Concedido", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                            Form1 frmPrincipal = new Form1();
-                            this.Hide();
-                            frmPrincipal.ShowDialog();
-                            this.Close();
-                        }
-                        else
-                        {
-                            MostrarError(mensaje);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MostrarError("Error de validación: " + ex.Message);
-                    }
-                }
+                MostrarError(mensajeRespuesta);
             }
         }
 

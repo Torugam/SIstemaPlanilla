@@ -1,4 +1,5 @@
-﻿using SIstemaPlanilla.Modelo;
+﻿using SistemaPlanilla.Modelo;
+using SIstemaPlanilla.Modelo;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -37,10 +38,24 @@ namespace SIstemaPlanilla.Controlador
             return usuarioEditado.Actualizar(cambiaPassword);
         }
 
-        public bool DesactivarUsuario(int idSeleccionado)
+        public bool CambiarEstadoUsuario(int idSeleccionado, string nuevoEstado)
         {
             Usuario obj = new Usuario { IdUsuario = idSeleccionado };
-            return obj.Desactivar();
+            return obj.CambiarEstado(nuevoEstado);
+        }
+
+        public bool IniciarSesion(string username, string password, out string mensaje)
+        {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                mensaje = "Por favor ingrese su usuario y contraseña.";
+                return false;
+            }
+
+            string passwordHash = HelperSeguridad.CalcularSHA256(password);
+
+            Usuario objUsuario = new Usuario();
+            return objUsuario.ValidarLogin(username, passwordHash, out mensaje);
         }
     }
 }

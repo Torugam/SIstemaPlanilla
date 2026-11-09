@@ -71,6 +71,7 @@
             sliderTransicion = new System.Windows.Forms.Timer(components);
             menuGestion = new System.Windows.Forms.Timer(components);
             menuUsuario = new System.Windows.Forms.Timer(components);
+            btnCerrar = new Button();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pMenu).BeginInit();
             sliderbar.SuspendLayout();
@@ -152,6 +153,7 @@
             sliderbar.Controls.Add(menuContainer);
             sliderbar.Controls.Add(menuPlanilla);
             sliderbar.Controls.Add(menuAdministracion);
+            sliderbar.Controls.Add(btnCerrar);
             sliderbar.Dock = DockStyle.Left;
             sliderbar.FlowDirection = FlowDirection.TopDown;
             sliderbar.Location = new Point(0, 39);
@@ -606,6 +608,20 @@
             menuUsuario.Interval = 10;
             menuUsuario.Tick += menuUsuario_Tick;
             // 
+            // btnCerrar
+            // 
+            btnCerrar.BackColor = Color.FromArgb(29, 48, 64);
+            btnCerrar.FlatAppearance.BorderSize = 0;
+            btnCerrar.FlatStyle = FlatStyle.Flat;
+            btnCerrar.ForeColor = Color.White;
+            btnCerrar.Location = new Point(3, 165);
+            btnCerrar.Name = "btnCerrar";
+            btnCerrar.Size = new Size(242, 29);
+            btnCerrar.TabIndex = 4;
+            btnCerrar.Text = "Cerrar sesión";
+            btnCerrar.UseVisualStyleBackColor = false;
+            btnCerrar.Click += btnCerrar_Click;
+            // 
             // Form1
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -690,5 +706,6 @@
         private Button button8;
         private Button btnSalir;
         private Button btnMini;
+        private Button btnCerrar;
     }
 }

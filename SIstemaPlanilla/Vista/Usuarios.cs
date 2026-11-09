@@ -18,6 +18,7 @@ namespace SIstemaPlanilla.Vista
         public Usuarios()
         {
             InitializeComponent();
+            Diseño();
         }
 
 
@@ -40,7 +41,6 @@ namespace SIstemaPlanilla.Vista
                     DataTable dtRol = new DataTable();
                     daRol.Fill(dtRol);
 
-                    // Fila de "Seleccione..."
                     dtRol.Rows.InsertAt(dtRol.NewRow(), 0);
                     dtRol.Rows[0]["ID_ROL"] = 0;
                     dtRol.Rows[0]["NOMBRE_ROL"] = "-- Seleccione Rol --";
@@ -55,7 +55,6 @@ namespace SIstemaPlanilla.Vista
                     DataTable dtEmp = new DataTable();
                     daEmp.Fill(dtEmp);
 
-                    // Fila de "Seleccione..."
                     dtEmp.Rows.InsertAt(dtEmp.NewRow(), 0);
                     dtEmp.Rows[0]["ID_EMPLEADO"] = 0;
                     dtEmp.Rows[0]["NOMBRE_COMPLETO"] = "-- Seleccione Empleado --";
@@ -76,6 +75,7 @@ namespace SIstemaPlanilla.Vista
                 if (dgvUsuarios.Columns["ID_USUARIO"] != null) dgvUsuarios.Columns["ID_USUARIO"].Visible = false;
                 if (dgvUsuarios.Columns["ID_ROL"] != null) dgvUsuarios.Columns["ID_ROL"].Visible = false;
                 if (dgvUsuarios.Columns["ID_EMPLEADO"] != null) dgvUsuarios.Columns["ID_EMPLEADO"].Visible = false;
+
             }
             catch (Exception ex)
             {
@@ -91,6 +91,8 @@ namespace SIstemaPlanilla.Vista
             if (cmbRoles.Items.Count > 0) cmbRoles.SelectedIndex = 0;
             if (cmbEmpleado.Items.Count > 0) cmbEmpleado.SelectedIndex = 0;
             txtUsuario.Focus();
+
+            btnEliminar.Text = "Desactivar";
         }
 
         private bool ValidarCampos(bool esNuevo)
@@ -173,15 +175,22 @@ namespace SIstemaPlanilla.Vista
                 return;
             }
 
-            if (MessageBox.Show("¿Está seguro de desactivar este acceso al sistema?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            string estadoActual = dgvUsuarios.CurrentRow.Cells["Estado"].Value.ToString();
+
+            string nuevoEstado = (estadoActual == "ACTIVO") ? "INACTIVO" : "ACTIVO";
+            string accion = (estadoActual == "ACTIVO") ? "desactivar" : "activar";
+
+            if (MessageBox.Show($"¿Está seguro de {accion} este acceso al sistema?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                if (controlador.DesactivarUsuario(idUsuarioSeleccionado))
+                if (controlador.CambiarEstadoUsuario(idUsuarioSeleccionado, nuevoEstado))
                 {
-                    MessageBox.Show("Usuario desactivado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Usuario {accion}do correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     Limpiar();
                     CargarGrid();
                 }
             }
+
+            
         }
 
         private void txtBuscar_TextChanged(object sender, EventArgs e)
@@ -217,12 +226,77 @@ namespace SIstemaPlanilla.Vista
                     cmbEmpleado.SelectedValue = Convert.ToInt32(row.Cells["ID_EMPLEADO"].Value);
                 else
                     cmbEmpleado.SelectedIndex = 0;
+
+                btnEliminar.Text = (row.Cells["Estado"].Value.ToString() == "ACTIVO") ? "Desactivar" : "Activar";
             }
         }
 
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             Limpiar();
+            CargarGrid();
+        }
+
+        private void Diseño()
+        {
+            Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321"); 
+            Color azulOscuro = ColorTranslator.FromHtml("#1D2D44"); 
+            Color azulAcero = ColorTranslator.FromHtml("#3E5C76"); 
+            Color azulClaro = ColorTranslator.FromHtml("#748CAB"); 
+            Color cremaClaro = ColorTranslator.FromHtml("#F0EBD8"); 
+
+            this.BackColor = cremaClaro;
+            this.ForeColor = azulMuyOscuro;
+
+            Button[] botones = { btnGuardar, btnActualizar, btnEliminar, btnLimpiar };
+            foreach (Button btn in botones)
+            {
+                if (btn == null) continue;
+
+                btn.BackColor = azulAcero; 
+                btn.ForeColor = Color.White; 
+                btn.FlatStyle = FlatStyle.Flat; 
+                btn.FlatAppearance.BorderSize = 0;
+                btn.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                btn.Cursor = Cursors.Hand;
+
+                btn.FlatAppearance.MouseOverBackColor = azulOscuro;
+            }
+
+            if (dgvUsuarios != null)
+            {
+                dgvUsuarios.BackgroundColor = cremaClaro;
+                dgvUsuarios.BorderStyle = BorderStyle.None;
+                dgvUsuarios.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+                dgvUsuarios.GridColor = azulClaro;
+
+                dgvUsuarios.EnableHeadersVisualStyles = false;
+
+                dgvUsuarios.ColumnHeadersDefaultCellStyle.BackColor = azulOscuro;
+                dgvUsuarios.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                dgvUsuarios.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+                dgvUsuarios.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+                dgvUsuarios.ColumnHeadersHeight = 35;
+
+                dgvUsuarios.DefaultCellStyle.BackColor = Color.White;
+                dgvUsuarios.DefaultCellStyle.ForeColor = azulMuyOscuro;
+                dgvUsuarios.DefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+                dgvUsuarios.RowTemplate.Height = 30;
+
+                dgvUsuarios.DefaultCellStyle.SelectionBackColor = azulClaro;
+                dgvUsuarios.DefaultCellStyle.SelectionForeColor = Color.White;
+                dgvUsuarios.RowTemplate.Height = 35;
+            }
+            
+            TextBox[] cajasDeTexto = { txtUsuario, txtContrasenia, txtBuscar };
+            foreach (TextBox txt in cajasDeTexto)
+            {
+                if (txt == null) continue;
+
+                txt.Enter += (s, e) => { txt.BackColor = Color.White; };
+
+                txt.Leave += (s, e) => { txt.BackColor = ColorTranslator.FromHtml("#F9F9F9"); };
+            }
         }
     }
 }

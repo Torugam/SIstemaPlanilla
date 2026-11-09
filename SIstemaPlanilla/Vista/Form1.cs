@@ -21,7 +21,7 @@ namespace SIstemaPlanilla
         Usuarios usuarios = null!;
         RolesPermisos rolesPermisos = null!;
 
-  
+
 
         bool menuExpandidoAdministracion = false;
         bool menuExpandidoGestion = false;
@@ -34,7 +34,7 @@ namespace SIstemaPlanilla
             this.Load += Form1_Load;
         }
 
-    
+
 
         private void Form1_Load(object? sender, EventArgs e)
         {
@@ -44,27 +44,33 @@ namespace SIstemaPlanilla
 
         private void AplicarPermisosMenu()
         {
-            if (btnAdministracion != null) btnAdministracion.Visible = true;
-            if (menuAdministracion != null) menuAdministracion.Visible = true;
-            if (btnMenuGestion != null) btnMenuGestion.Visible = true;
-            if (menuPlanilla != null) menuPlanilla.Visible = true;
-            if (btnMenuRecurso != null) btnMenuRecurso.Visible = true;
-            if (menuContainer != null) menuContainer.Visible = true;
+            if (btnAdministracion != null) btnAdministracion.Visible = false;
+            if (btnMenuGestion != null) btnMenuGestion.Visible = false;
+            if (btnMenuRecurso != null) btnMenuRecurso.Visible = false;
+            if (menuAdministracion != null) menuAdministracion.Visible = false;
+            if (menuContainer != null) menuContainer.Visible = false;
+            if (menuPlanilla != null) menuPlanilla.Visible = false;
 
-            // Rol Planillero (ID 2) -> Oculta Administración
-            if (SesionUsuario.IdRol == 2)
+
+            List<int> permisos = ModuloMenu.ObtenerPermisos(SesionUsuario.IdRol);
+
+
+            if (permisos.Contains((int)OpcionesSistema.Administracion))
             {
-                if (btnAdministracion != null) btnAdministracion.Visible = false;
-                if (menuAdministracion != null) menuAdministracion.Visible = false;
+                if (btnAdministracion != null) btnAdministracion.Visible = true;
+                if (menuAdministracion != null) menuAdministracion.Visible = true;
             }
-            // Rol Recursos Humanos (ID 3) -> Oculta Administración y Gestión de Planilla
-            else if (SesionUsuario.IdRol == 3)
-            {
-                if (btnAdministracion != null) btnAdministracion.Visible = false;
-                if (menuAdministracion != null) menuAdministracion.Visible = false;
 
-                if (btnMenuGestion != null) btnMenuGestion.Visible = false;
-                if (menuPlanilla != null) menuPlanilla.Visible = false;
+            if (permisos.Contains((int)OpcionesSistema.RecursosHumanos))
+            {
+                if (btnMenuRecurso != null) btnMenuRecurso.Visible = true;
+                if (menuContainer != null) menuContainer.Visible = true;
+            }
+
+            if (permisos.Contains((int)OpcionesSistema.GestionPlanilla))
+            {
+                if (btnMenuGestion != null) btnMenuGestion.Visible = true;
+                if (menuPlanilla != null) menuPlanilla.Visible = true;
             }
         }
 
@@ -325,7 +331,7 @@ namespace SIstemaPlanilla
 
         private void btnSalir_Click(object sender, EventArgs e)
         {
-            btnCerrarSesion_Click(sender, e);
+            
         }
 
         private void btnMini_Click(object sender, EventArgs e)
@@ -436,6 +442,29 @@ namespace SIstemaPlanilla
         private void RolesPermisos_FormClosed(object? sender, FormClosedEventArgs e)
         {
             rolesPermisos = null!;
+        }
+
+        private void Form1_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCerrar_Click(object sender, EventArgs e)
+        {
+            DialogResult respuesta = MessageBox.Show(
+            "¿Está seguro de que desea cerrar la sesión actual?",
+            "Cerrar Sesión",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question
+    );
+
+            if (respuesta == DialogResult.Yes)
+            {
+                SesionUsuario.LimpiarSesion();
+
+                
+                this.Close();
+            }
         }
     }
 }

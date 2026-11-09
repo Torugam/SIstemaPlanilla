@@ -1,4 +1,5 @@
 ﻿using SistemaPlanilla.Modelo;
+using SIstemaPlanilla.Controlador;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -9,73 +10,183 @@ namespace SIstemaPlanilla.Vista
 {
     public partial class RolesPermisos : Form
     {
-        private DataGridView dgvRoles = null!;
+        private RolControlador controlador = new RolControlador();
+        private int idRolSeleccionado = 0;
 
         public RolesPermisos()
         {
             InitializeComponent();
-            InicializarComponentesDinamicos();
-            this.Load += RolesPermisos_Load;
+            Diseño();
         }
 
-        private void InicializarComponentesDinamicos()
-        {
-            dgvRoles = new DataGridView();
-            dgvRoles.Dock = DockStyle.Fill;
-            dgvRoles.AllowUserToAddRows = false;
-            dgvRoles.AllowUserToDeleteRows = false;
-            dgvRoles.ReadOnly = true;
-            dgvRoles.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvRoles.BackgroundColor = Color.WhiteSmoke;
-
-            this.Controls.Add(dgvRoles);
-            dgvRoles.BringToFront();
-        }
 
         private void RolesPermisos_Load(object? sender, EventArgs e)
         {
-            CargarCatalogoRoles();
+            clbOpciones.DataSource = Enum.GetValues(typeof(OpcionesSistema));
+            CargarGridRoles();
         }
 
-        private void CargarCatalogoRoles()
+        private void CargarGridRoles()
         {
             try
             {
-                // AQUÍ USAMOS TU NUEVA CLASE DE CONEXIÓN
-                using (SqlConnection con = Conexion.GetConexion())
-                {
-                    if (con == null)
-                    {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+                dgvRoles.DataSource = controlador.ListarRoles();
+                if (dgvRoles.Columns["ID_ROL"] != null) dgvRoles.Columns["ID_ROL"].Visible = false;
 
-                    // Consulta ajustada a los nombres de tu tabla real en SQL Server (ROL, ID_ROL, NOMBRE_ROL)
-                    string query = @"SELECT ID_ROL AS [ID], 
-                                            NOMBRE_ROL AS [Nombre del Rol], 
-                                            CASE 
-                                                WHEN ID_ROL = 1 THEN 'Administrador - Acceso total al sistema'
-                                                WHEN ID_ROL = 2 THEN 'Planillero - Acceso a Gestión de Planilla y Recursos Humanos'
-                                                WHEN ID_ROL = 3 THEN 'Recursos Humanos - Acceso a Empleados y Contratos'
-                                                ELSE ISNULL(DESCRIPCION, 'Sin descripción')
-                                            END AS [Permisos Asignados]
-                                     FROM ROL";
-
-                    using (SqlDataAdapter da = new SqlDataAdapter(query, con))
-                    {
-                        DataTable dt = new DataTable();
-                        da.Fill(dt);
-
-                        if (dgvRoles != null)
-                        {
-                            dgvRoles.DataSource = dt;
-                        }
-                    }
-                }
+                dgvRoles.RowHeadersVisible = false;
+                dgvRoles.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                dgvRoles.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                dgvRoles.MultiSelect = false;
+                dgvRoles.ReadOnly = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al cargar la tabla de roles: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error al cargar la tabla: " + ex.Message);
+            }
+        }
+
+        private void Limpiar()
+        {
+            idRolSeleccionado = 0;
+            txtNombreRol.Clear();
+            btnGuardar.Text = "Guardar";
+            for (int i = 0; i < clbOpciones.Items.Count; i++) { clbOpciones.SetItemChecked(i, false); }
+            txtNombreRol.Focus();
+        }
+
+        private void dgvRoles_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dgvRoles.Rows[e.RowIndex];
+
+                idRolSeleccionado = Convert.ToInt32(row.Cells["ID_ROL"].Value);
+                txtNombreRol.Text = row.Cells["Rol"].Value.ToString();
+
+                // Limpiar checks
+                for (int i = 0; i < clbOpciones.Items.Count; i++) { clbOpciones.SetItemChecked(i, false); }
+
+                // Marcar checks según la Base de Datos
+                List<int> permisosDelRol = controlador.ConsultarPermisosDeRol(idRolSeleccionado);
+
+                for (int i = 0; i < clbOpciones.Items.Count; i++)
+                {
+                    int idOpcionLista = (int)clbOpciones.Items[i];
+                    if (permisosDelRol.Contains(idOpcionLista))
+                    {
+                        clbOpciones.SetItemChecked(i, true);
+                    }
+                }
+
+                btnGuardar.Text = "Modificar";
+            }
+        }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtNombreRol.Text))
+            {
+                MessageBox.Show("Ingrese un nombre para el Rol.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (clbOpciones.CheckedItems.Count == 0)
+            {
+                MessageBox.Show("Debe asignarle al menos un permiso.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            List<int> permisosSeleccionados = new List<int>();
+            foreach (var itemChequeado in clbOpciones.CheckedItems)
+            {
+                permisosSeleccionados.Add((int)itemChequeado);
+            }
+
+            string nombre = txtNombreRol.Text.Trim();
+
+            if (idRolSeleccionado == 0) // Guardar nuevo
+            {
+                if (controlador.CrearNuevoRol(nombre, permisosSeleccionados))
+                {
+                    MessageBox.Show("Rol creado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Limpiar();
+                    CargarGridRoles();
+                }
+            }
+            else 
+            {
+                if (controlador.ModificarRol(idRolSeleccionado, nombre, permisosSeleccionados))
+                {
+                    MessageBox.Show("Rol modificado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Limpiar();
+                    CargarGridRoles();
+                }
+            }
+        }
+
+        private void btnLimpiar_Click(object sender, EventArgs e)
+        {
+            Limpiar();
+        }
+
+        private void Diseño()
+        {
+            Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321");
+            Color azulOscuro = ColorTranslator.FromHtml("#1D2D44");
+            Color azulAcero = ColorTranslator.FromHtml("#3E5C76");
+            Color azulClaro = ColorTranslator.FromHtml("#748CAB");
+            Color cremaClaro = ColorTranslator.FromHtml("#F0EBD8");
+
+            this.BackColor = cremaClaro;
+            this.ForeColor = azulMuyOscuro;
+
+            Button[] botones = { btnGuardar, btnLimpiar};
+            foreach (Button btn in botones)
+            {
+                if (btn == null) continue;
+
+                btn.BackColor = azulAcero;
+                btn.ForeColor = Color.White;
+                btn.FlatStyle = FlatStyle.Flat;
+                btn.FlatAppearance.BorderSize = 0;
+                btn.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                btn.Cursor = Cursors.Hand;
+
+                btn.FlatAppearance.MouseOverBackColor = azulOscuro;
+            }
+
+            if (dgvRoles != null)
+            {
+                dgvRoles.BackgroundColor = cremaClaro;
+                dgvRoles.BorderStyle = BorderStyle.None;
+                dgvRoles.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+                dgvRoles.GridColor = azulClaro;
+
+                dgvRoles.EnableHeadersVisualStyles = false;
+
+                dgvRoles.ColumnHeadersDefaultCellStyle.BackColor = azulOscuro;
+                dgvRoles.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                dgvRoles.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+                dgvRoles.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+                dgvRoles.ColumnHeadersHeight = 35;
+
+                dgvRoles.DefaultCellStyle.BackColor = Color.White;
+                dgvRoles.DefaultCellStyle.ForeColor = azulMuyOscuro;
+                dgvRoles.DefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+                dgvRoles.RowTemplate.Height = 30;
+
+                dgvRoles.DefaultCellStyle.SelectionBackColor = azulClaro;
+                dgvRoles.DefaultCellStyle.SelectionForeColor = Color.White;
+                dgvRoles.RowTemplate.Height = 35;
+            }
+
+            TextBox[] cajasDeTexto = { txtNombreRol, txtBuscar};
+            foreach (TextBox txt in cajasDeTexto)
+            {
+                if (txt == null) continue;
+
+                txt.Enter += (s, e) => { txt.BackColor = Color.White; };
+
+                txt.Leave += (s, e) => { txt.BackColor = ColorTranslator.FromHtml("#F9F9F9"); };
             }
         }
     }
