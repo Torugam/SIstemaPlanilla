@@ -250,6 +250,7 @@
             FormBorderStyle = FormBorderStyle.None;
             Name = "Usuarios";
             Text = "Usuarios";
+            Activated += Usuarios_Activated;
             Load += Usuarios_Load;
             ((System.ComponentModel.ISupportInitialize)dgvUsuarios).EndInit();
             ResumeLayout(false);

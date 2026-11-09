@@ -190,7 +190,7 @@ namespace SIstemaPlanilla.Vista
                 }
             }
 
-            
+
         }
 
         private void txtBuscar_TextChanged(object sender, EventArgs e)
@@ -239,11 +239,11 @@ namespace SIstemaPlanilla.Vista
 
         private void Diseño()
         {
-            Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321"); 
-            Color azulOscuro = ColorTranslator.FromHtml("#1D2D44"); 
-            Color azulAcero = ColorTranslator.FromHtml("#3E5C76"); 
-            Color azulClaro = ColorTranslator.FromHtml("#748CAB"); 
-            Color cremaClaro = ColorTranslator.FromHtml("#F0EBD8"); 
+            Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321");
+            Color azulOscuro = ColorTranslator.FromHtml("#1D2D44");
+            Color azulAcero = ColorTranslator.FromHtml("#3E5C76");
+            Color azulClaro = ColorTranslator.FromHtml("#748CAB");
+            Color cremaClaro = ColorTranslator.FromHtml("#F0EBD8");
 
             this.BackColor = cremaClaro;
             this.ForeColor = azulMuyOscuro;
@@ -253,9 +253,9 @@ namespace SIstemaPlanilla.Vista
             {
                 if (btn == null) continue;
 
-                btn.BackColor = azulAcero; 
-                btn.ForeColor = Color.White; 
-                btn.FlatStyle = FlatStyle.Flat; 
+                btn.BackColor = azulAcero;
+                btn.ForeColor = Color.White;
+                btn.FlatStyle = FlatStyle.Flat;
                 btn.FlatAppearance.BorderSize = 0;
                 btn.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
                 btn.Cursor = Cursors.Hand;
@@ -287,7 +287,7 @@ namespace SIstemaPlanilla.Vista
                 dgvUsuarios.DefaultCellStyle.SelectionForeColor = Color.White;
                 dgvUsuarios.RowTemplate.Height = 35;
             }
-            
+
             TextBox[] cajasDeTexto = { txtUsuario, txtContrasenia, txtBuscar };
             foreach (TextBox txt in cajasDeTexto)
             {
@@ -297,6 +297,11 @@ namespace SIstemaPlanilla.Vista
 
                 txt.Leave += (s, e) => { txt.BackColor = ColorTranslator.FromHtml("#F9F9F9"); };
             }
+        }
+
+        private void Usuarios_Activated(object sender, EventArgs e)
+        {
+            CargarCombos();
         }
     }
 }

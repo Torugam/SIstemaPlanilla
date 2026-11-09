@@ -17,170 +17,215 @@
 
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.lblNombre = new System.Windows.Forms.Label();
-            this.txtNombreCargo = new System.Windows.Forms.TextBox();
-            this.lblSuperior = new System.Windows.Forms.Label();
-            this.cbCargoSuperior = new System.Windows.Forms.ComboBox();
-            this.lblMin = new System.Windows.Forms.Label();
-            this.txtSalarioMin = new System.Windows.Forms.TextBox();
-            this.lblMax = new System.Windows.Forms.Label();
-            this.txtSalarioMax = new System.Windows.Forms.TextBox();
-            this.btnGuardar = new System.Windows.Forms.Button();
-            this.btnModificar = new System.Windows.Forms.Button();
-            this.btnEliminar = new System.Windows.Forms.Button();
-            this.btnLimpiar = new System.Windows.Forms.Button();
-            this.dgvCargos = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvCargos)).BeginInit();
-            this.SuspendLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Cargos));
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            label1 = new Label();
+            lblNombre = new Label();
+            txtNombreCargo = new TextBox();
+            lblSuperior = new Label();
+            cbCargoSuperior = new ComboBox();
+            lblMin = new Label();
+            txtSalarioMin = new TextBox();
+            lblMax = new Label();
+            txtSalarioMax = new TextBox();
+            btnGuardar = new Button();
+            btnModificar = new Button();
+            btnEliminar = new Button();
+            btnLimpiar = new Button();
+            dgvCargos = new DataGridView();
+            txtBuscar = new TextBox();
+            label2 = new Label();
+            ((System.ComponentModel.ISupportInitialize)dgvCargos).BeginInit();
+            SuspendLayout();
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(20, 15);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(129, 38);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "CARGOS";
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.Location = new Point(20, 15);
+            label1.Name = "label1";
+            label1.Size = new Size(129, 38);
+            label1.TabIndex = 0;
+            label1.Text = "CARGOS";
             // 
             // lblNombre
             // 
-            this.lblNombre.AutoSize = true;
-            this.lblNombre.Location = new System.Drawing.Point(20, 75);
-            this.lblNombre.Name = "lblNombre";
-            this.lblNombre.Size = new System.Drawing.Size(110, 20);
-            this.lblNombre.TabIndex = 1;
-            this.lblNombre.Text = "Nombre Cargo:";
+            lblNombre.AutoSize = true;
+            lblNombre.Location = new Point(100, 165);
+            lblNombre.Name = "lblNombre";
+            lblNombre.Size = new Size(111, 20);
+            lblNombre.TabIndex = 1;
+            lblNombre.Text = "Nombre Cargo:";
             // 
             // txtNombreCargo
             // 
-            this.txtNombreCargo.Location = new System.Drawing.Point(140, 72);
-            this.txtNombreCargo.Name = "txtNombreCargo";
-            this.txtNombreCargo.Size = new System.Drawing.Size(200, 27);
-            this.txtNombreCargo.TabIndex = 2;
+            txtNombreCargo.Location = new Point(231, 158);
+            txtNombreCargo.Name = "txtNombreCargo";
+            txtNombreCargo.PlaceholderText = "Nombre";
+            txtNombreCargo.Size = new Size(200, 27);
+            txtNombreCargo.TabIndex = 2;
             // 
             // lblSuperior
             // 
-            this.lblSuperior.AutoSize = true;
-            this.lblSuperior.Location = new System.Drawing.Point(20, 115);
-            this.lblSuperior.Name = "lblSuperior";
-            this.lblSuperior.Size = new System.Drawing.Size(109, 20);
-            this.lblSuperior.TabIndex = 3;
-            this.lblSuperior.Text = "Cargo Superior:";
+            lblSuperior.AutoSize = true;
+            lblSuperior.Location = new Point(99, 216);
+            lblSuperior.Name = "lblSuperior";
+            lblSuperior.Size = new Size(112, 20);
+            lblSuperior.TabIndex = 3;
+            lblSuperior.Text = "Cargo Superior:";
             // 
             // cbCargoSuperior
             // 
-            this.cbCargoSuperior.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbCargoSuperior.FormattingEnabled = true;
-            this.cbCargoSuperior.Location = new System.Drawing.Point(140, 112);
-            this.cbCargoSuperior.Name = "cbCargoSuperior";
-            this.cbCargoSuperior.Size = new System.Drawing.Size(200, 28);
-            this.cbCargoSuperior.TabIndex = 4;
+            cbCargoSuperior.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbCargoSuperior.FormattingEnabled = true;
+            cbCargoSuperior.Location = new Point(231, 213);
+            cbCargoSuperior.Name = "cbCargoSuperior";
+            cbCargoSuperior.Size = new Size(200, 28);
+            cbCargoSuperior.TabIndex = 4;
             // 
             // lblMin
             // 
-            this.lblMin.AutoSize = true;
-            this.lblMin.Location = new System.Drawing.Point(370, 75);
-            this.lblMin.Name = "lblMin";
-            this.lblMin.Size = new System.Drawing.Size(104, 20);
-            this.lblMin.TabIndex = 5;
-            this.lblMin.Text = "Salario Mínimo:";
+            lblMin.AutoSize = true;
+            lblMin.Location = new Point(558, 161);
+            lblMin.Name = "lblMin";
+            lblMin.Size = new Size(113, 20);
+            lblMin.TabIndex = 5;
+            lblMin.Text = "Salario Mínimo:";
             // 
             // txtSalarioMin
             // 
-            this.txtSalarioMin.Location = new System.Drawing.Point(480, 72);
-            this.txtSalarioMin.Name = "txtSalarioMin";
-            this.txtSalarioMin.Size = new System.Drawing.Size(150, 27);
-            this.txtSalarioMin.TabIndex = 6;
+            txtSalarioMin.Location = new Point(710, 161);
+            txtSalarioMin.Name = "txtSalarioMin";
+            txtSalarioMin.Size = new Size(150, 27);
+            txtSalarioMin.TabIndex = 6;
             // 
             // lblMax
             // 
-            this.lblMax.AutoSize = true;
-            this.lblMax.Location = new System.Drawing.Point(370, 115);
-            this.lblMax.Name = "lblMax";
-            this.lblMax.Size = new System.Drawing.Size(107, 20);
-            this.lblMax.TabIndex = 7;
-            this.lblMax.Text = "Salario Máximo:";
+            lblMax.AutoSize = true;
+            lblMax.Location = new Point(555, 213);
+            lblMax.Name = "lblMax";
+            lblMax.Size = new Size(116, 20);
+            lblMax.TabIndex = 7;
+            lblMax.Text = "Salario Máximo:";
             // 
             // txtSalarioMax
             // 
-            this.txtSalarioMax.Location = new System.Drawing.Point(480, 112);
-            this.txtSalarioMax.Name = "txtSalarioMax";
-            this.txtSalarioMax.Size = new System.Drawing.Size(150, 27);
-            this.txtSalarioMax.TabIndex = 8;
+            txtSalarioMax.Location = new Point(710, 209);
+            txtSalarioMax.Name = "txtSalarioMax";
+            txtSalarioMax.Size = new Size(150, 27);
+            txtSalarioMax.TabIndex = 8;
             // 
             // btnGuardar
             // 
-            this.btnGuardar.Location = new System.Drawing.Point(320, 155);
-            this.btnGuardar.Name = "btnGuardar";
-            this.btnGuardar.Size = new System.Drawing.Size(90, 30);
-            this.btnGuardar.TabIndex = 9;
-            this.btnGuardar.Text = "Guardar";
-            this.btnGuardar.UseVisualStyleBackColor = true;
+            btnGuardar.Location = new Point(983, 285);
+            btnGuardar.Name = "btnGuardar";
+            btnGuardar.Size = new Size(90, 30);
+            btnGuardar.TabIndex = 9;
+            btnGuardar.Text = "Guardar";
+            btnGuardar.UseVisualStyleBackColor = true;
+            btnGuardar.Click += btnGuardar_Click_1;
             // 
             // btnModificar
             // 
-            this.btnModificar.Location = new System.Drawing.Point(420, 155);
-            this.btnModificar.Name = "btnModificar";
-            this.btnModificar.Size = new System.Drawing.Size(90, 30);
-            this.btnModificar.TabIndex = 10;
-            this.btnModificar.Text = "Modificar";
-            this.btnModificar.UseVisualStyleBackColor = true;
+            btnModificar.Location = new Point(983, 331);
+            btnModificar.Name = "btnModificar";
+            btnModificar.Size = new Size(90, 30);
+            btnModificar.TabIndex = 10;
+            btnModificar.Text = "Modificar";
+            btnModificar.UseVisualStyleBackColor = true;
+            btnModificar.Click += btnModificar_Click_1;
             // 
             // btnEliminar
             // 
-            this.btnEliminar.Location = new System.Drawing.Point(520, 155);
-            this.btnEliminar.Name = "btnEliminar";
-            this.btnEliminar.Size = new System.Drawing.Size(90, 30);
-            this.btnEliminar.TabIndex = 11;
-            this.btnEliminar.Text = "Eliminar";
-            this.btnEliminar.UseVisualStyleBackColor = true;
+            btnEliminar.Location = new Point(983, 376);
+            btnEliminar.Name = "btnEliminar";
+            btnEliminar.Size = new Size(90, 30);
+            btnEliminar.TabIndex = 11;
+            btnEliminar.Text = "Eliminar";
+            btnEliminar.UseVisualStyleBackColor = true;
+            btnEliminar.Click += btnEliminar_Click_1;
             // 
             // btnLimpiar
             // 
-            this.btnLimpiar.Location = new System.Drawing.Point(620, 155);
-            this.btnLimpiar.Name = "btnLimpiar";
-            this.btnLimpiar.Size = new System.Drawing.Size(90, 30);
-            this.btnLimpiar.TabIndex = 12;
-            this.btnLimpiar.Text = "Limpiar";
-            this.btnLimpiar.UseVisualStyleBackColor = true;
+            btnLimpiar.Image = (Image)resources.GetObject("btnLimpiar.Image");
+            btnLimpiar.Location = new Point(924, 244);
+            btnLimpiar.Name = "btnLimpiar";
+            btnLimpiar.Size = new Size(41, 35);
+            btnLimpiar.TabIndex = 12;
+            btnLimpiar.UseVisualStyleBackColor = true;
+            btnLimpiar.Click += btnLimpiar_Click_1;
             // 
             // dgvCargos
             // 
-            this.dgvCargos.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvCargos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvCargos.Location = new System.Drawing.Point(20, 200);
-            this.dgvCargos.Name = "dgvCargos";
-            this.dgvCargos.RowHeadersWidth = 51;
-            this.dgvCargos.Size = new System.Drawing.Size(750, 230);
-            this.dgvCargos.TabIndex = 13;
+            dgvCargos.AllowUserToAddRows = false;
+            dgvCargos.AllowUserToDeleteRows = false;
+            dgvCargos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvCargos.BackgroundColor = Color.FromArgb(240, 235, 216);
+            dgvCargos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvCargos.Location = new Point(29, 285);
+            dgvCargos.MultiSelect = false;
+            dgvCargos.Name = "dgvCargos";
+            dgvCargos.ReadOnly = true;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Control;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(116, 140, 171);
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            dgvCargos.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dgvCargos.RowHeadersVisible = false;
+            dgvCargos.RowHeadersWidth = 51;
+            dgvCargos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvCargos.Size = new Size(936, 230);
+            dgvCargos.TabIndex = 13;
+            dgvCargos.CellClick += dgvCargos_CellClick;
+            // 
+            // txtBuscar
+            // 
+            txtBuscar.Location = new Point(364, 69);
+            txtBuscar.Name = "txtBuscar";
+            txtBuscar.PlaceholderText = "Buscar por el nombre cargo o el cargo superior";
+            txtBuscar.Size = new Size(431, 27);
+            txtBuscar.TabIndex = 14;
+            txtBuscar.TextChanged += txtBuscar_TextChanged;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(289, 72);
+            label2.Name = "label2";
+            label2.Size = new Size(52, 20);
+            label2.TabIndex = 15;
+            label2.Text = "Buscar";
             // 
             // Cargos
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.dgvCargos);
-            this.Controls.Add(this.btnLimpiar);
-            this.Controls.Add(this.btnEliminar);
-            this.Controls.Add(this.btnModificar);
-            this.Controls.Add(this.btnGuardar);
-            this.Controls.Add(this.txtSalarioMax);
-            this.Controls.Add(this.lblMax);
-            this.Controls.Add(this.txtSalarioMin);
-            this.Controls.Add(this.lblMin);
-            this.Controls.Add(this.cbCargoSuperior);
-            this.Controls.Add(this.lblSuperior);
-            this.Controls.Add(this.txtNombreCargo);
-            this.Controls.Add(this.lblNombre);
-            this.Controls.Add(this.label1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "Cargos";
-            this.Text = "Cargos";
-            this.Load += new System.EventHandler(this.Cargos_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvCargos)).EndInit();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1100, 555);
+            Controls.Add(label2);
+            Controls.Add(txtBuscar);
+            Controls.Add(dgvCargos);
+            Controls.Add(btnLimpiar);
+            Controls.Add(btnEliminar);
+            Controls.Add(btnModificar);
+            Controls.Add(btnGuardar);
+            Controls.Add(txtSalarioMax);
+            Controls.Add(lblMax);
+            Controls.Add(txtSalarioMin);
+            Controls.Add(lblMin);
+            Controls.Add(cbCargoSuperior);
+            Controls.Add(lblSuperior);
+            Controls.Add(txtNombreCargo);
+            Controls.Add(lblNombre);
+            Controls.Add(label1);
+            FormBorderStyle = FormBorderStyle.None;
+            Name = "Cargos";
+            Text = "Cargos";
+            Load += Cargos_Load;
+            ((System.ComponentModel.ISupportInitialize)dgvCargos).EndInit();
+            ResumeLayout(false);
             PerformLayout();
         }
 
@@ -200,5 +245,7 @@
         private System.Windows.Forms.Button btnEliminar;
         private System.Windows.Forms.Button btnLimpiar;
         private System.Windows.Forms.DataGridView dgvCargos;
+        private TextBox txtBuscar;
+        private Label label2;
     }
 }
