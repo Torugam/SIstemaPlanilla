@@ -34,5 +34,11 @@ namespace SIstemaPlanilla.Controlador
             Rol rolEditado = new Rol { IdRol = idRol, NombreRol = nombreRol };
             return rolEditado.ActualizarRolConPermisos(opcionesSeleccionadas);
         }
+
+        public DataTable BuscarRoles(string filtro)
+        {
+            Rol objRol = new Rol();
+            return objRol.BuscarRoles(filtro);
+        }
     }
 }

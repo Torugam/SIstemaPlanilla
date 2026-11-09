@@ -2,11 +2,13 @@
 using SistemaPlanilla.Modelo;
 using SIstemaPlanilla;
 using SIstemaPlanilla.Controlador;
+using SIstemaPlanilla.Modelo;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace SistemaPlanilla.Vista
 {
@@ -157,14 +159,22 @@ namespace SistemaPlanilla.Vista
 
                 
                 MessageBox.Show($"¡Bienvenido {SesionUsuario.Username}!", "Acceso Concedido", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                txtUsuario.Clear();
-                txtPassword.Clear();
-                txtUsuario.Focus();
+                
 
                 Form1 frmPrincipal = new Form1();
                 this.Hide();                 
-                frmPrincipal.ShowDialog(); 
+                frmPrincipal.ShowDialog();
+
+                if (frmPrincipal.SalirDelPrograma)
+                {
+                    Application.Exit();
+                    return;
+                }
+                SesionUsuario.LimpiarSesion();
+                txtUsuario.Clear();
+                txtPassword.Clear();
                 this.Show();
+                txtUsuario.Focus();
             }
             else
             {
@@ -177,5 +187,7 @@ namespace SistemaPlanilla.Vista
             lblError.Text = mensaje;
             lblError.Visible = true;
         }
+
+        
     }
 }

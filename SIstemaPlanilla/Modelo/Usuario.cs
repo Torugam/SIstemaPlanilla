@@ -24,7 +24,7 @@ namespace SIstemaPlanilla.Modelo
         public string NombreEmpleado { get; set; } = string.Empty;
 
         
-        //metodo leer tabla
+        
         public DataTable Leer()
         {
             DataTable dt = new DataTable();
@@ -41,7 +41,7 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
-        //metodo buscar usuario
+        
         public DataTable Buscar(string textoBuscado)
         {
             DataTable dt = new DataTable();
@@ -49,7 +49,7 @@ namespace SIstemaPlanilla.Modelo
             {
                 if (con == null) return dt;
 
-                // Llamamos al SP de búsqueda
+                
                 using (SqlCommand cmd = new SqlCommand("SP_BuscarUsuario", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -64,7 +64,7 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
-        //metodo insertar usuario
+        
         public bool Insertar()
         {
             using (SqlConnection con = Conexion.GetConexion())
@@ -84,7 +84,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
-        // metodo actualizar usuario
+       
         public bool Actualizar(bool actualizaPassword)
         {
             using (SqlConnection con = Conexion.GetConexion())
@@ -106,7 +106,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
-        //metodo desactivar o activar usuario usuario
+       
         public bool CambiarEstado(string nuevoEstado)
         {
             using (SqlConnection con = Conexion.GetConexion())
@@ -179,6 +179,35 @@ namespace SIstemaPlanilla.Modelo
                     }
                 }
             }
+        }
+
+        public DataTable ObtenerRolesParaCombo()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = Conexion.GetConexion())
+            {
+                if (con == null) return dt;
+                using (SqlDataAdapter da = new SqlDataAdapter("SELECT ID_ROL, NOMBRE_ROL FROM ROL ORDER BY NOMBRE_ROL", con))
+                {
+                    da.Fill(dt);
+                }
+            }
+            return dt;
+        }
+
+        public DataTable ObtenerEmpleadosActivosParaCombo()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = Conexion.GetConexion())
+            {
+                if (con == null) return dt;
+                using (SqlDataAdapter da = new SqlDataAdapter(
+                    "SELECT ID_EMPLEADO, NOMBRE_COMPLETO FROM EMPLEADO WHERE ESTADO = 'ACTIVO' ORDER BY NOMBRE_COMPLETO", con))
+                {
+                    da.Fill(dt);
+                }
+            }
+            return dt;
         }
     }
 }

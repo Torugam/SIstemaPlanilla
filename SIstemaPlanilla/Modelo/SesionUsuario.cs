@@ -8,7 +8,6 @@
         public static string NombreRol { get; set; } = string.Empty;
         public static string NombreEmpleado { get; set; } = string.Empty;
 
-        // Método para resetear la sesión al cerrar sesión
         public static void LimpiarSesion()
         {
             IdUsuario = 0;

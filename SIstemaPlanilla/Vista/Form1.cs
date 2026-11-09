@@ -21,6 +21,8 @@ namespace SIstemaPlanilla
         Usuarios usuarios = null!;
         RolesPermisos rolesPermisos = null!;
 
+        CapacitacionesEmpleado capacitacionEmpleado = null!;
+
 
 
         bool menuExpandidoAdministracion = false;
@@ -38,8 +40,17 @@ namespace SIstemaPlanilla
 
         private void Form1_Load(object? sender, EventArgs e)
         {
-            this.Text = $"Sistema de Planillas - Usuario: {SesionUsuario.NombreEmpleado} ({SesionUsuario.NombreRol})";
+            lbNombreUsuario.Text = "Usuario: " + SesionUsuario.Username;
+
+            ActualizarHora();
+            timerReloj.Interval = 1000;
+            timerReloj.Start();
             AplicarPermisosMenu();
+        }
+
+        private void ActualizarHora()
+        {
+            lbHoras.Text = DateTime.Now.ToString("dd/MM/yyyy  hh:mm:ss tt");
         }
 
         private void AplicarPermisosMenu()
@@ -74,39 +85,14 @@ namespace SIstemaPlanilla
             }
         }
 
-        private void btnCerrarSesion_Click(object? sender, EventArgs e)
-        {
-            DialogResult respuesta = MessageBox.Show(
-                "¿Está seguro de que desea cerrar la sesión actual?",
-                "Cerrar Sesión",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
 
-            if (respuesta == DialogResult.Yes)
-            {
-                // 1. Limpiar los datos globales de la sesión
-                SesionUsuario.LimpiarSesion();
-
-                // 2. Ocultar la ventana actual primero para evitar parpadeos/bloqueos
-                this.Hide();
-
-                // 3. Crear y mostrar la pantalla de Login
-                Login formLogin = new Login();
-
-                // Al cerrar el nuevo Login, cerrar definitivamente toda la aplicación
-                formLogin.FormClosed += (s, args) => Application.Exit();
-
-                formLogin.Show();
-            }
-        }
 
         private void menuTransicion_Tick(object sender, EventArgs e)
         {
             if (menuExpandido == false)
             {
                 menuContainer.Height += 5;
-                if (menuContainer.Height >= 307)
+                if (menuContainer.Height >= 373)
                 {
                     menuTransicion.Stop();
                     menuExpandido = true;
@@ -329,9 +315,15 @@ namespace SIstemaPlanilla
             empleado = null!;
         }
 
+        public bool SalirDelPrograma { get; private set; } = false;
         private void btnSalir_Click(object sender, EventArgs e)
         {
-            
+            if (MessageBox.Show("¿Desea salir de la aplicación?", "Salir",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                SalirDelPrograma = true;
+                this.Close();
+            }
         }
 
         private void btnMini_Click(object sender, EventArgs e)
@@ -444,10 +436,6 @@ namespace SIstemaPlanilla
             rolesPermisos = null!;
         }
 
-        private void Form1_Load_1(object sender, EventArgs e)
-        {
-
-        }
 
         private void btnCerrar_Click(object sender, EventArgs e)
         {
@@ -462,9 +450,35 @@ namespace SIstemaPlanilla
             {
                 SesionUsuario.LimpiarSesion();
 
-                
+
                 this.Close();
             }
+        }
+
+        private void btnCapEmpleeado_Click(object sender, EventArgs e)
+        {
+            if (capacitacionEmpleado == null)
+            {
+                capacitacionEmpleado = new CapacitacionesEmpleado();
+                capacitacionEmpleado.FormClosed += CapacitacionesEmpleado_FormClosed;
+                capacitacionEmpleado.MdiParent = this;
+                capacitacionEmpleado.Dock = DockStyle.Fill;
+                capacitacionEmpleado.Show();
+            }
+            else
+            {
+                capacitacionEmpleado.Activate();
+            }
+        }
+
+        private void CapacitacionesEmpleado_FormClosed(object? sender, FormClosedEventArgs e)
+        {
+            capacitacionEmpleado = null!;
+        }
+
+        private void timerReloj_Tick(object sender, EventArgs e)
+        {
+            ActualizarHora();
         }
     }
 }

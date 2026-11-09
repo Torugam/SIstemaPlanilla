@@ -63,10 +63,8 @@ namespace SIstemaPlanilla.Vista
                 idRolSeleccionado = Convert.ToInt32(row.Cells["ID_ROL"].Value);
                 txtNombreRol.Text = row.Cells["Rol"].Value.ToString();
 
-                // Limpiar checks
                 for (int i = 0; i < clbOpciones.Items.Count; i++) { clbOpciones.SetItemChecked(i, false); }
 
-                // Marcar checks según la Base de Datos
                 List<int> permisosDelRol = controlador.ConsultarPermisosDeRol(idRolSeleccionado);
 
                 for (int i = 0; i < clbOpciones.Items.Count; i++)
@@ -112,7 +110,7 @@ namespace SIstemaPlanilla.Vista
                     CargarGridRoles();
                 }
             }
-            else 
+            else
             {
                 if (controlador.ModificarRol(idRolSeleccionado, nombre, permisosSeleccionados))
                 {
@@ -139,7 +137,7 @@ namespace SIstemaPlanilla.Vista
             this.BackColor = cremaClaro;
             this.ForeColor = azulMuyOscuro;
 
-            Button[] botones = { btnGuardar, btnLimpiar};
+            Button[] botones = { btnGuardar, btnLimpiar };
             foreach (Button btn in botones)
             {
                 if (btn == null) continue;
@@ -179,7 +177,7 @@ namespace SIstemaPlanilla.Vista
                 dgvRoles.RowTemplate.Height = 35;
             }
 
-            TextBox[] cajasDeTexto = { txtNombreRol, txtBuscar};
+            TextBox[] cajasDeTexto = { txtNombreRol, txtBuscar };
             foreach (TextBox txt in cajasDeTexto)
             {
                 if (txt == null) continue;
@@ -188,6 +186,16 @@ namespace SIstemaPlanilla.Vista
 
                 txt.Leave += (s, e) => { txt.BackColor = ColorTranslator.FromHtml("#F9F9F9"); };
             }
+        }
+
+        private void txtBuscar_TextChanged(object sender, EventArgs e)
+        {
+            string filtro = txtBuscar.Text.Trim();
+
+            if (string.IsNullOrEmpty(filtro))
+                CargarGridRoles();   
+            else
+                dgvRoles.DataSource = controlador.BuscarRoles(filtro);
         }
     }
 }

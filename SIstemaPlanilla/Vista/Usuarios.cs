@@ -31,39 +31,28 @@ namespace SIstemaPlanilla.Vista
 
         private void CargarCombos()
         {
-            using (SqlConnection con = Conexion.GetConexion())
-            {
-                if (con == null) return;
+            int rolActual = cmbRoles.SelectedValue != null ? Convert.ToInt32(cmbRoles.SelectedValue) : 0;
+            int empActual = cmbEmpleado.SelectedValue != null ? Convert.ToInt32(cmbEmpleado.SelectedValue) : 0;
 
+            DataTable dtRol = controlador.ListarRolesCombo();
+            dtRol.Rows.InsertAt(dtRol.NewRow(), 0);
+            dtRol.Rows[0]["ID_ROL"] = 0;
+            dtRol.Rows[0]["NOMBRE_ROL"] = "-- Seleccione Rol --";
 
-                using (SqlDataAdapter daRol = new SqlDataAdapter("SELECT ID_ROL, NOMBRE_ROL FROM ROL", con))
-                {
-                    DataTable dtRol = new DataTable();
-                    daRol.Fill(dtRol);
+            cmbRoles.DataSource = dtRol;
+            cmbRoles.DisplayMember = "NOMBRE_ROL";
+            cmbRoles.ValueMember = "ID_ROL";
+            cmbRoles.SelectedValue = rolActual;
 
-                    dtRol.Rows.InsertAt(dtRol.NewRow(), 0);
-                    dtRol.Rows[0]["ID_ROL"] = 0;
-                    dtRol.Rows[0]["NOMBRE_ROL"] = "-- Seleccione Rol --";
+            DataTable dtEmp = controlador.ListarEmpleadosActivosCombo();
+            dtEmp.Rows.InsertAt(dtEmp.NewRow(), 0);
+            dtEmp.Rows[0]["ID_EMPLEADO"] = 0;
+            dtEmp.Rows[0]["NOMBRE_COMPLETO"] = "-- Seleccione Empleado --";
 
-                    cmbRoles.DataSource = dtRol;
-                    cmbRoles.DisplayMember = "NOMBRE_ROL";
-                    cmbRoles.ValueMember = "ID_ROL";
-                }
-
-                using (SqlDataAdapter daEmp = new SqlDataAdapter("SELECT ID_EMPLEADO, NOMBRE_COMPLETO FROM EMPLEADO WHERE ESTADO = 'ACTIVO'", con))
-                {
-                    DataTable dtEmp = new DataTable();
-                    daEmp.Fill(dtEmp);
-
-                    dtEmp.Rows.InsertAt(dtEmp.NewRow(), 0);
-                    dtEmp.Rows[0]["ID_EMPLEADO"] = 0;
-                    dtEmp.Rows[0]["NOMBRE_COMPLETO"] = "-- Seleccione Empleado --";
-
-                    cmbEmpleado.DataSource = dtEmp;
-                    cmbEmpleado.DisplayMember = "NOMBRE_COMPLETO";
-                    cmbEmpleado.ValueMember = "ID_EMPLEADO";
-                }
-            }
+            cmbEmpleado.DataSource = dtEmp;
+            cmbEmpleado.DisplayMember = "NOMBRE_COMPLETO";
+            cmbEmpleado.ValueMember = "ID_EMPLEADO";
+            cmbEmpleado.SelectedValue = empActual;
         }
 
         private void CargarGrid()

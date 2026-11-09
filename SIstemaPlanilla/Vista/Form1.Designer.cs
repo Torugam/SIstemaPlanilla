@@ -31,8 +31,10 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             panel1 = new Panel();
+            lbNombreUsuario = new Label();
             btnMini = new Button();
             btnSalir = new Button();
+            lbHoras = new Label();
             label1 = new Label();
             pMenu = new PictureBox();
             sliderbar = new FlowLayoutPanel();
@@ -46,9 +48,9 @@
             panel5 = new Panel();
             btnCapacitacion = new Button();
             button10 = new Button();
+            btnCapEmpleeado = new Button();
             panel4 = new Panel();
             btnContrato = new Button();
-            button7 = new Button();
             panel2 = new Panel();
             btnEmple = new Button();
             menuPlanilla = new FlowLayoutPanel();
@@ -67,11 +69,12 @@
             button11 = new Button();
             panel15 = new Panel();
             button12 = new Button();
+            btnCerrar = new Button();
             menuTransicion = new System.Windows.Forms.Timer(components);
             sliderTransicion = new System.Windows.Forms.Timer(components);
             menuGestion = new System.Windows.Forms.Timer(components);
             menuUsuario = new System.Windows.Forms.Timer(components);
-            btnCerrar = new Button();
+            timerReloj = new System.Windows.Forms.Timer(components);
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pMenu).BeginInit();
             sliderbar.SuspendLayout();
@@ -96,8 +99,10 @@
             // panel1
             // 
             panel1.BackColor = Color.White;
+            panel1.Controls.Add(lbNombreUsuario);
             panel1.Controls.Add(btnMini);
             panel1.Controls.Add(btnSalir);
+            panel1.Controls.Add(lbHoras);
             panel1.Controls.Add(label1);
             panel1.Controls.Add(pMenu);
             panel1.Dock = DockStyle.Top;
@@ -105,6 +110,16 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(1392, 39);
             panel1.TabIndex = 1;
+            // 
+            // lbNombreUsuario
+            // 
+            lbNombreUsuario.AutoSize = true;
+            lbNombreUsuario.Font = new Font("Segoe UI", 10.2F);
+            lbNombreUsuario.Location = new Point(873, 8);
+            lbNombreUsuario.Name = "lbNombreUsuario";
+            lbNombreUsuario.Size = new Size(55, 23);
+            lbNombreUsuario.TabIndex = 4;
+            lbNombreUsuario.Text = "label2";
             // 
             // btnMini
             // 
@@ -125,6 +140,16 @@
             btnSalir.TabIndex = 4;
             btnSalir.UseVisualStyleBackColor = true;
             btnSalir.Click += btnSalir_Click;
+            // 
+            // lbHoras
+            // 
+            lbHoras.AutoSize = true;
+            lbHoras.Font = new Font("Segoe UI", 10.2F);
+            lbHoras.Location = new Point(1053, 7);
+            lbHoras.Name = "lbHoras";
+            lbHoras.Size = new Size(55, 23);
+            lbHoras.TabIndex = 4;
+            lbHoras.Text = "label2";
             // 
             // label1
             // 
@@ -169,6 +194,7 @@
             menuContainer.Controls.Add(panel9);
             menuContainer.Controls.Add(panel3);
             menuContainer.Controls.Add(panel5);
+            menuContainer.Controls.Add(btnCapEmpleeado);
             menuContainer.Controls.Add(panel4);
             menuContainer.Controls.Add(panel2);
             menuContainer.Location = new Point(3, 3);
@@ -302,11 +328,27 @@
             button10.TextAlign = ContentAlignment.MiddleLeft;
             button10.UseVisualStyleBackColor = false;
             // 
+            // btnCapEmpleeado
+            // 
+            btnCapEmpleeado.BackColor = Color.FromArgb(16, 24, 32);
+            btnCapEmpleeado.FlatAppearance.BorderSize = 0;
+            btnCapEmpleeado.FlatStyle = FlatStyle.Flat;
+            btnCapEmpleeado.ForeColor = Color.White;
+            btnCapEmpleeado.Image = (Image)resources.GetObject("btnCapEmpleeado.Image");
+            btnCapEmpleeado.ImageAlign = ContentAlignment.MiddleLeft;
+            btnCapEmpleeado.Location = new Point(3, 205);
+            btnCapEmpleeado.Name = "btnCapEmpleeado";
+            btnCapEmpleeado.Size = new Size(248, 48);
+            btnCapEmpleeado.TabIndex = 4;
+            btnCapEmpleeado.Text = "            Capacitacion empleado";
+            btnCapEmpleeado.TextAlign = ContentAlignment.MiddleLeft;
+            btnCapEmpleeado.UseVisualStyleBackColor = false;
+            btnCapEmpleeado.Click += btnCapEmpleeado_Click;
+            // 
             // panel4
             // 
             panel4.Controls.Add(btnContrato);
-            panel4.Controls.Add(button7);
-            panel4.Location = new Point(0, 204);
+            panel4.Location = new Point(0, 258);
             panel4.Margin = new Padding(0, 2, 0, 0);
             panel4.Name = "panel4";
             panel4.Size = new Size(248, 49);
@@ -330,27 +372,10 @@
             btnContrato.UseVisualStyleBackColor = false;
             btnContrato.Click += btnContrato_Click;
             // 
-            // button7
-            // 
-            button7.BackColor = Color.FromArgb(29, 48, 64);
-            button7.FlatAppearance.BorderSize = 0;
-            button7.FlatStyle = FlatStyle.Flat;
-            button7.ForeColor = Color.White;
-            button7.Image = (Image)resources.GetObject("button7.Image");
-            button7.ImageAlign = ContentAlignment.MiddleLeft;
-            button7.Location = new Point(0, 0);
-            button7.Name = "button7";
-            button7.Padding = new Padding(10, 0, 0, 0);
-            button7.Size = new Size(248, 55);
-            button7.TabIndex = 4;
-            button7.Text = "           Departamento";
-            button7.TextAlign = ContentAlignment.MiddleLeft;
-            button7.UseVisualStyleBackColor = false;
-            // 
             // panel2
             // 
             panel2.Controls.Add(btnEmple);
-            panel2.Location = new Point(0, 255);
+            panel2.Location = new Point(0, 309);
             panel2.Margin = new Padding(0, 2, 0, 0);
             panel2.Name = "panel2";
             panel2.Size = new Size(248, 49);
@@ -588,6 +613,24 @@
             button12.UseVisualStyleBackColor = false;
             button12.Click += button12_Click;
             // 
+            // btnCerrar
+            // 
+            btnCerrar.BackColor = Color.FromArgb(29, 48, 64);
+            btnCerrar.FlatAppearance.BorderSize = 0;
+            btnCerrar.FlatStyle = FlatStyle.Flat;
+            btnCerrar.ForeColor = Color.White;
+            btnCerrar.Image = (Image)resources.GetObject("btnCerrar.Image");
+            btnCerrar.ImageAlign = ContentAlignment.MiddleLeft;
+            btnCerrar.Location = new Point(3, 165);
+            btnCerrar.Name = "btnCerrar";
+            btnCerrar.Padding = new Padding(10, 0, 0, 0);
+            btnCerrar.Size = new Size(248, 48);
+            btnCerrar.TabIndex = 4;
+            btnCerrar.Text = "           Cerrar sesión";
+            btnCerrar.TextAlign = ContentAlignment.MiddleLeft;
+            btnCerrar.UseVisualStyleBackColor = false;
+            btnCerrar.Click += btnCerrar_Click;
+            // 
             // menuTransicion
             // 
             menuTransicion.Interval = 10;
@@ -608,19 +651,9 @@
             menuUsuario.Interval = 10;
             menuUsuario.Tick += menuUsuario_Tick;
             // 
-            // btnCerrar
+            // timerReloj
             // 
-            btnCerrar.BackColor = Color.FromArgb(29, 48, 64);
-            btnCerrar.FlatAppearance.BorderSize = 0;
-            btnCerrar.FlatStyle = FlatStyle.Flat;
-            btnCerrar.ForeColor = Color.White;
-            btnCerrar.Location = new Point(3, 165);
-            btnCerrar.Name = "btnCerrar";
-            btnCerrar.Size = new Size(242, 29);
-            btnCerrar.TabIndex = 4;
-            btnCerrar.Text = "Cerrar sesión";
-            btnCerrar.UseVisualStyleBackColor = false;
-            btnCerrar.Click += btnCerrar_Click;
+            timerReloj.Tick += timerReloj_Tick;
             // 
             // Form1
             // 
@@ -701,11 +734,14 @@
         private System.Windows.Forms.Timer menuUsuario;
         private Panel panel4;
         private Button btnContrato;
-        private Button button7;
         private Panel panel2;
         private Button button8;
         private Button btnSalir;
         private Button btnMini;
         private Button btnCerrar;
+        private Button btnCapEmpleeado;
+        private Label lbNombreUsuario;
+        private Label lbHoras;
+        private System.Windows.Forms.Timer timerReloj;
     }
 }

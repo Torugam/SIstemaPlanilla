@@ -57,5 +57,16 @@ namespace SIstemaPlanilla.Controlador
             Usuario objUsuario = new Usuario();
             return objUsuario.ValidarLogin(username, passwordHash, out mensaje);
         }
+        public DataTable ListarRolesCombo()
+        {
+            Usuario objUsuario = new Usuario();
+            return objUsuario.ObtenerRolesParaCombo();
+        }
+
+        public DataTable ListarEmpleadosActivosCombo()
+        {
+            Usuario objUsuario = new Usuario();
+            return objUsuario.ObtenerEmpleadosActivosParaCombo();
+        }
     }
 }

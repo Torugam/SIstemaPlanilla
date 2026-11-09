@@ -110,5 +110,22 @@ namespace SistemaPlanilla.Modelo
                 return true;
             }
         }
+
+        public DataTable BuscarRoles(string filtro)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = Conexion.GetConexion())
+            {
+                if (con == null) return dt;
+
+                string sql = "SELECT * FROM vw_Roles WHERE Rol LIKE @f ORDER BY Rol";
+                using (SqlDataAdapter da = new SqlDataAdapter(sql, con))
+                {
+                    da.SelectCommand.Parameters.AddWithValue("@f", "%" + filtro + "%");
+                    da.Fill(dt);
+                }
+            }
+            return dt;
+        }
     }
 }
