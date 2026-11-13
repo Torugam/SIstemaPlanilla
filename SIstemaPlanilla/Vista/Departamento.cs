@@ -1,4 +1,6 @@
 ﻿using SistemaPlanilla.Modelo;
+using SIstemaPlanilla.Controlador;
+using SIstemaPlanilla.Modelo;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -9,6 +11,7 @@ namespace SIstemaPlanilla.Vista
     public partial class Departamentos : Form
     {
         private int idDepartamentoSeleccionado = 0;
+        private readonly DepartamentoControlador controlador = new DepartamentoControlador();
 
         public Departamentos()
         {
@@ -106,27 +109,9 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection conexion = Conexion.GetConexion())
+                if (dgvDepartamentos != null)
                 {
-                    if (conexion == null)
-                    {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand("sp_Departamento_Listar", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-                            if (dgvDepartamentos != null)
-                            {
-                                dgvDepartamentos.DataSource = dt;
-                            }
-                        }
-                    }
+                    dgvDepartamentos.DataSource = controlador.ListarDepartamentos();
                 }
             }
             catch (Exception ex)
@@ -139,31 +124,18 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection conexion = Conexion.GetConexion())
+                DataTable dt = controlador.ListarEncargadosCombo();
+
+                DataRow fila = dt.NewRow();
+                fila["ID_EMPLEADO"] = DBNull.Value;
+                fila["NOMBRE_COMPLETO"] = "-- Sin Encargado / Vacante --";
+                dt.Rows.InsertAt(fila, 0);
+
+                if (cbEncargado != null)
                 {
-                    if (conexion == null) return;
-
-                    string query = "SELECT ID_EMPLEADO, NOMBRE_COMPLETO FROM Empleado";
-                    using (SqlCommand cmd = new SqlCommand(query, conexion))
-                    {
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-
-                            DataRow fila = dt.NewRow();
-                            fila["ID_EMPLEADO"] = DBNull.Value;
-                            fila["NOMBRE_COMPLETO"] = "-- Sin Encargado / Vacante --";
-                            dt.Rows.InsertAt(fila, 0);
-
-                            if (cbEncargado != null)
-                            {
-                                cbEncargado.DataSource = dt;
-                                cbEncargado.DisplayMember = "NOMBRE_COMPLETO";
-                                cbEncargado.ValueMember = "ID_EMPLEADO";
-                            }
-                        }
-                    }
+                    cbEncargado.DataSource = dt;
+                    cbEncargado.DisplayMember = "NOMBRE_COMPLETO";
+                    cbEncargado.ValueMember = "ID_EMPLEADO";
                 }
             }
             catch (Exception ex)
@@ -174,47 +146,31 @@ namespace SIstemaPlanilla.Vista
 
         private void btnGuardar_Click(object? sender, EventArgs e)
         {
-            try
+            if (string.IsNullOrWhiteSpace(txtNombreDepto?.Text))
             {
-                if (string.IsNullOrWhiteSpace(txtNombreDepto?.Text))
-                {
-                    MessageBox.Show("El nombre del departamento es obligatorio.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtNombreDepto?.Focus();
-                    return;
-                }
-
-                using (SqlConnection conexion = Conexion.GetConexion())
-                {
-                    if (conexion == null) return;
-
-                    using (SqlCommand cmd = new SqlCommand("sp_Departamento_Insertar", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-
-                        if (cbEncargado?.SelectedValue == null || cbEncargado.SelectedValue == DBNull.Value)
-                        {
-                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", DBNull.Value);
-                        }
-                        else
-                        {
-                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", Convert.ToInt32(cbEncargado.SelectedValue));
-                        }
-
-                        cmd.Parameters.AddWithValue("@NOMBRE_DEPARTAMENTO", txtNombreDepto.Text.Trim());
-                        cmd.Parameters.AddWithValue("@DESCRIPCION", string.IsNullOrWhiteSpace(txtDescripcion?.Text) ? (object)DBNull.Value : txtDescripcion.Text.Trim());
-
-                        cmd.ExecuteNonQuery();
-
-                        MessageBox.Show("Departamento registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        LimpiarCampos();
-                        CargarDepartamentos();
-                    }
-                }
+                MessageBox.Show("El nombre del departamento es obligatorio.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtNombreDepto?.Focus();
+                return;
             }
-            catch (Exception ex)
+
+            Departamento nuevo = new Departamento
             {
-                MessageBox.Show("Error al guardar el departamento: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                IdEmpleado = (cbEncargado?.SelectedValue == null || cbEncargado.SelectedValue == DBNull.Value)
+                             ? null
+                             : Convert.ToInt32(cbEncargado.SelectedValue),
+                NombreDepartamento = txtNombreDepto.Text.Trim(),
+                Descripcion = string.IsNullOrWhiteSpace(txtDescripcion?.Text) ? null : txtDescripcion.Text.Trim()
+            };
+
+            if (controlador.GuardarNuevoDepartamento(nuevo, out string mensaje))
+            {
+                MessageBox.Show("Departamento registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LimpiarCampos();
+                CargarDepartamentos();
+            }
+            else
+            {
+                MessageBox.Show("Error al guardar el departamento: " + mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -226,48 +182,32 @@ namespace SIstemaPlanilla.Vista
                 return;
             }
 
-            try
+            if (string.IsNullOrWhiteSpace(txtNombreDepto?.Text))
             {
-                if (string.IsNullOrWhiteSpace(txtNombreDepto?.Text))
-                {
-                    MessageBox.Show("El nombre del departamento es obligatorio.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtNombreDepto?.Focus();
-                    return;
-                }
-
-                using (SqlConnection conexion = Conexion.GetConexion())
-                {
-                    if (conexion == null) return;
-
-                    using (SqlCommand cmd = new SqlCommand("sp_Departamento_Actualizar", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@ID_DEPARTAMENTO", idDepartamentoSeleccionado);
-
-                        if (cbEncargado?.SelectedValue == null || cbEncargado.SelectedValue == DBNull.Value)
-                        {
-                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", DBNull.Value);
-                        }
-                        else
-                        {
-                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", Convert.ToInt32(cbEncargado.SelectedValue));
-                        }
-
-                        cmd.Parameters.AddWithValue("@NOMBRE_DEPARTAMENTO", txtNombreDepto.Text.Trim());
-                        cmd.Parameters.AddWithValue("@DESCRIPCION", string.IsNullOrWhiteSpace(txtDescripcion?.Text) ? (object)DBNull.Value : txtDescripcion.Text.Trim());
-
-                        cmd.ExecuteNonQuery();
-
-                        MessageBox.Show("Departamento actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        LimpiarCampos();
-                        CargarDepartamentos();
-                    }
-                }
+                MessageBox.Show("El nombre del departamento es obligatorio.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtNombreDepto?.Focus();
+                return;
             }
-            catch (Exception ex)
+
+            Departamento actualizado = new Departamento
             {
-                MessageBox.Show("Error al modificar el departamento: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                IdDepartamento = idDepartamentoSeleccionado,
+                IdEmpleado = (cbEncargado?.SelectedValue == null || cbEncargado.SelectedValue == DBNull.Value)
+                             ? null
+                             : Convert.ToInt32(cbEncargado.SelectedValue),
+                NombreDepartamento = txtNombreDepto.Text.Trim(),
+                Descripcion = string.IsNullOrWhiteSpace(txtDescripcion?.Text) ? null : txtDescripcion.Text.Trim()
+            };
+
+            if (controlador.ModificarDepartamento(actualizado, out string mensaje))
+            {
+                MessageBox.Show("Departamento actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LimpiarCampos();
+                CargarDepartamentos();
+            }
+            else
+            {
+                MessageBox.Show("Error al modificar el departamento: " + mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -281,29 +221,15 @@ namespace SIstemaPlanilla.Vista
 
             if (MessageBox.Show("¿Está seguro de eliminar este departamento?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                try
+                if (controlador.EliminarDepartamento(idDepartamentoSeleccionado, out string mensaje))
                 {
-                    using (SqlConnection conexion = Conexion.GetConexion())
-                    {
-                        if (conexion == null) return;
-
-                        using (SqlCommand cmd = new SqlCommand("sp_Departamento_Eliminar", conexion))
-                        {
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@ID_DEPARTAMENTO", idDepartamentoSeleccionado);
-
-                            cmd.ExecuteNonQuery();
-
-                            MessageBox.Show("Departamento eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                            LimpiarCampos();
-                            CargarDepartamentos();
-                        }
-                    }
+                    MessageBox.Show("Departamento eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LimpiarCampos();
+                    CargarDepartamentos();
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("Error al eliminar el departamento: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error al eliminar el departamento: " + mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -336,7 +262,6 @@ namespace SIstemaPlanilla.Vista
                         cbEncargado.SelectedValue = DBNull.Value;
                     }
                 }
-
             }
         }
 
@@ -347,7 +272,7 @@ namespace SIstemaPlanilla.Vista
             if (txtDescripcion != null) txtDescripcion.Clear();
             if (cbEncargado != null && cbEncargado.Items.Count > 0) cbEncargado.SelectedIndex = 0;
             if (txtNombreDepto != null) txtNombreDepto.Focus();
-            if(txtBuscar != null) txtBuscar.Clear();
+            if (txtBuscar != null) txtBuscar.Clear();
         }
 
         private void btnLimpiar_Click(object? sender, EventArgs e)
@@ -369,64 +294,42 @@ namespace SIstemaPlanilla.Vista
 
             try
             {
-                using (SqlConnection conexion = Conexion.GetConexion())
+                DataTable dtFiltrado = controlador.BuscarDepartamentos(nombreBuscado);
+
+                if (dgvDepartamentos != null)
                 {
-                    if (conexion == null)
-                    {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+                    dgvDepartamentos.DataSource = dtFiltrado;
+                }
 
-                    using (SqlCommand cmd = new SqlCommand("sp_Departamento_Listar", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+                if (dtFiltrado.Rows.Count > 0)
+                {
+                    DataRow fila = dtFiltrado.Rows[0];
 
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    idDepartamentoSeleccionado = Convert.ToInt32(fila["ID_DEPARTAMENTO"]);
+
+                    if (txtNombreDepto != null && fila["NOMBRE_DEPARTAMENTO"] != DBNull.Value)
+                        txtNombreDepto.Text = fila["NOMBRE_DEPARTAMENTO"].ToString();
+
+                    if (txtDescripcion != null)
+                        txtDescripcion.Text = (fila["DESCRIPCION"] != DBNull.Value) ? fila["DESCRIPCION"].ToString() : "";
+
+                    if (cbEncargado != null)
+                    {
+                        if (fila["ID_EMPLEADO"] != DBNull.Value && fila["ID_EMPLEADO"] != null)
                         {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-
-                            DataView dv = dt.DefaultView;
-                            dv.RowFilter = $"NOMBRE_DEPARTAMENTO LIKE '%{nombreBuscado.Replace("'", "''")}%'";
-                            DataTable dtFiltrado = dv.ToTable();
-
-                            if (dgvDepartamentos != null)
-                            {
-                                dgvDepartamentos.DataSource = dtFiltrado;
-                            }
-
-                            if (dtFiltrado.Rows.Count > 0)
-                            {
-                                DataRow fila = dtFiltrado.Rows[0];
-
-                                idDepartamentoSeleccionado = Convert.ToInt32(fila["ID_DEPARTAMENTO"]);
-
-                                if (txtNombreDepto != null && fila["NOMBRE_DEPARTAMENTO"] != DBNull.Value)
-                                    txtNombreDepto.Text = fila["NOMBRE_DEPARTAMENTO"].ToString();
-
-                                if (txtDescripcion != null)
-                                    txtDescripcion.Text = (fila["DESCRIPCION"] != DBNull.Value) ? fila["DESCRIPCION"].ToString() : "";
-
-                                if (cbEncargado != null)
-                                {
-                                    if (fila["ID_EMPLEADO"] != DBNull.Value && fila["ID_EMPLEADO"] != null)
-                                    {
-                                        cbEncargado.SelectedValue = Convert.ToInt32(fila["ID_EMPLEADO"]);
-                                    }
-                                    else
-                                    {
-                                        cbEncargado.SelectedValue = DBNull.Value;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                MessageBox.Show("No se encontró ningún departamento con ese nombre.", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                LimpiarCampos();
-                                CargarDepartamentos();
-                            }
+                            cbEncargado.SelectedValue = Convert.ToInt32(fila["ID_EMPLEADO"]);
+                        }
+                        else
+                        {
+                            cbEncargado.SelectedValue = DBNull.Value;
                         }
                     }
+                }
+                else
+                {
+                    MessageBox.Show("No se encontró ningún departamento con ese nombre.", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LimpiarCampos();
+                    CargarDepartamentos();
                 }
             }
             catch (Exception ex)

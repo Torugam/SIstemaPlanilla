@@ -1,4 +1,6 @@
 ﻿using SistemaPlanilla.Modelo;
+using SIstemaPlanilla.Controlador;
+using SIstemaPlanilla.Modelo;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -10,14 +12,12 @@ namespace SIstemaPlanilla.Vista
     public partial class Contratos : Form
     {
         private int idEmpleadoSeleccionado = 0;
+        private readonly ContratoControlador controlador = new ContratoControlador();
 
         public Contratos()
         {
             InitializeComponent();
 
-            bool enModoDiseno = this.DesignMode || (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime);
-
-        
             if (btnGuardar != null) btnGuardar.Click += btnGuardar_Click;
             if (btnModificar != null) btnModificar.Click += btnModificar_Click;
             if (btnEliminar != null) btnEliminar.Click += btnEliminar_Click;
@@ -47,7 +47,6 @@ namespace SIstemaPlanilla.Vista
             this.BackColor = cremaClaro;
             this.ForeColor = azulMuyOscuro;
 
-
             Button[] botones = { btnGuardar, btnModificar, btnEliminar, btnLimpiar, btnBuscar };
             foreach (Button btn in botones)
             {
@@ -62,7 +61,6 @@ namespace SIstemaPlanilla.Vista
                 btn.FlatAppearance.MouseOverBackColor = azulOscuro;
             }
 
-            // 2. DataGridView de Contratos
             if (dgvContratos != null)
             {
                 dgvContratos.BackgroundColor = cremaClaro;
@@ -152,41 +150,15 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection conexion = Conexion.GetConexion())
+                if (dgvContratos != null)
                 {
-                    if (conexion == null)
-                    {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand("sp_Contrato_Listar", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@FILTRO", filtro.Trim());
-
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-                            if (dgvContratos != null)
-                            {
-                                dgvContratos.DataSource = dt;
-                            }
-                        }
-                    }
+                    dgvContratos.DataSource = controlador.ListarContratos(filtro);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar los contratos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void txtBuscar_TextChanged(object? sender, EventArgs e)
-        {
-            string textoBusqueda = txtBuscar?.Text ?? string.Empty;
-            CargarContratos(textoBusqueda);
         }
 
         private void CargarComboEmpleados()
@@ -197,33 +169,19 @@ namespace SIstemaPlanilla.Vista
                     ? Convert.ToInt32(cbEmpleados.SelectedValue)
                     : 0;
 
-                using (SqlConnection conexion = Conexion.GetConexion())
+                DataTable dt = controlador.ListarEmpleadosSinContrato();
+
+                DataRow fila = dt.NewRow();
+                fila["ID_EMPLEADO"] = 0;
+                fila["NOMBRE_COMPLETO"] = "-- Seleccione un Empleado --";
+                dt.Rows.InsertAt(fila, 0);
+
+                if (cbEmpleados != null)
                 {
-                    if (conexion == null) return;
-
-                    using (SqlCommand cmd = new SqlCommand("sp_Contrato_ListarEmpleadosSinContrato", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-
-                            DataRow fila = dt.NewRow();
-                            fila["ID_EMPLEADO"] = 0;
-                            fila["NOMBRE_COMPLETO"] = "-- Seleccione un Empleado --";
-                            dt.Rows.InsertAt(fila, 0);
-
-                            if (cbEmpleados != null)
-                            {
-                                cbEmpleados.DataSource = dt;
-                                cbEmpleados.DisplayMember = "NOMBRE_COMPLETO";
-                                cbEmpleados.ValueMember = "ID_EMPLEADO";
-                                cbEmpleados.SelectedValue = empActual;
-                            }
-                        }
-                    }
+                    cbEmpleados.DataSource = dt;
+                    cbEmpleados.DisplayMember = "NOMBRE_COMPLETO";
+                    cbEmpleados.ValueMember = "ID_EMPLEADO";
+                    cbEmpleados.SelectedValue = empActual;
                 }
             }
             catch (Exception ex)
@@ -271,56 +229,34 @@ namespace SIstemaPlanilla.Vista
 
         private void btnGuardar_Click(object? sender, EventArgs e)
         {
-            try
+            /*if (cbEmpleados?.SelectedValue == null || Convert.ToInt32(cbEmpleados.SelectedValue) == 0 ||
+                cbTipoContrato?.SelectedValue == null || string.IsNullOrWhiteSpace(cbTipoContrato.SelectedValue.ToString()))
             {
+                MessageBox.Show("Por favor seleccione un empleado y el tipo de contrato.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }*/
 
-                /*if (cbEmpleados?.SelectedValue == null || Convert.ToInt32(cbEmpleados.SelectedValue) == 0 ||
-                    cbTipoContrato?.SelectedValue == null || string.IsNullOrWhiteSpace(cbTipoContrato.SelectedValue.ToString()))
-                {
-                    MessageBox.Show("Por favor seleccione un empleado y el tipo de contrato.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }*/
+            decimal.TryParse(txtSalarioBase?.Text.Trim(), out decimal salario);
 
-                int idEmp = Convert.ToInt32(cbEmpleados.SelectedValue);
-                string tipo = cbTipoContrato.SelectedValue.ToString()!.Trim().ToUpper();
-                decimal.TryParse(txtSalarioBase?.Text.Trim(), out decimal salario);
+            Contrato nuevo = new Contrato
+            {
+                IdEmpleado = Convert.ToInt32(cbEmpleados.SelectedValue),
+                TipoContrato = cbTipoContrato.SelectedValue.ToString()!.Trim().ToUpper(),
+                SalarioBase = salario,
+                FechaInicio = dtpFechaInicio?.Value ?? DateTime.Now,
+                FechaFin = dtpFechaFin?.Value ?? DateTime.Now.AddMonths(6)
+            };
 
-                using (SqlConnection conexion = Conexion.GetConexion())
-                {
-                    if (conexion == null) return;
-
-                    if (tipo == "PERMANENTE")
-                    {
-                        using (SqlCommand cmd = new SqlCommand("sp_ContratoPermanente_Insertar", conexion))
-                        {
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmp);
-                            cmd.Parameters.AddWithValue("@SALARIO_BASE", salario);
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-                    else if (tipo == "TEMPORAL")
-                    {
-                        using (SqlCommand cmd = new SqlCommand("sp_ContratoTemporal_Insertar", conexion))
-                        {
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmp);
-                            cmd.Parameters.AddWithValue("@SALARIO_BASE", salario);
-                            cmd.Parameters.AddWithValue("@FECHA_INICIO", dtpFechaInicio?.Value ?? DateTime.Now);
-                            cmd.Parameters.AddWithValue("@FECHA_FIN", dtpFechaFin?.Value ?? DateTime.Now.AddMonths(6));
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-
-                    MessageBox.Show("Contrato registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LimpiarCampos();
-                    CargarContratos();
-                    CargarComboEmpleados();
-                }
+            if (controlador.GuardarNuevoContrato(nuevo, out string mensaje))
+            {
+                MessageBox.Show("Contrato registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LimpiarCampos();
+                CargarContratos();
+                CargarComboEmpleados();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error al guardar el contrato: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error al guardar el contrato: " + mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -332,37 +268,27 @@ namespace SIstemaPlanilla.Vista
                 return;
             }
 
-            try
+            decimal.TryParse(txtSalarioBase?.Text.Trim(), out decimal salario);
+
+            Contrato actualizado = new Contrato
             {
-                decimal.TryParse(txtSalarioBase?.Text.Trim(), out decimal salario);
-                string tipo = cbTipoContrato?.SelectedValue?.ToString()?.ToUpper() ?? "";
-                bool esTemporal = (tipo == "TEMPORAL");
+                IdEmpleado = idEmpleadoSeleccionado,
+                TipoContrato = cbTipoContrato?.SelectedValue?.ToString()?.ToUpper() ?? "",
+                SalarioBase = salario,
+                FechaInicio = dtpFechaInicio?.Value ?? DateTime.Now,
+                FechaFin = dtpFechaFin?.Value ?? DateTime.Now
+            };
 
-                using (SqlConnection conexion = Conexion.GetConexion())
-                {
-                    if (conexion == null) return;
-
-                    using (SqlCommand cmd = new SqlCommand("sp_Contrato_Actualizar", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmpleadoSeleccionado);
-                        cmd.Parameters.AddWithValue("@SALARIO_BASE", salario);
-                        cmd.Parameters.AddWithValue("@FECHA_INICIO", dtpFechaInicio?.Value ?? DateTime.Now);
-                        cmd.Parameters.AddWithValue("@FECHA_FIN", dtpFechaFin?.Value ?? DateTime.Now);
-                        cmd.Parameters.AddWithValue("@ES_TEMPORAL", esTemporal);
-
-                        cmd.ExecuteNonQuery();
-
-                        MessageBox.Show("Contrato actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LimpiarCampos();
-                        CargarContratos();
-                        CargarComboEmpleados();
-                    }
-                }
+            if (controlador.ModificarContrato(actualizado, out string mensaje))
+            {
+                MessageBox.Show("Contrato actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LimpiarCampos();
+                CargarContratos();
+                CargarComboEmpleados();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error al modificar el contrato: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error al modificar el contrato: " + mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -382,7 +308,7 @@ namespace SIstemaPlanilla.Vista
                 if (dtpFechaFin != null)
                 {
                     dtpFechaFin.Enabled = false;
-                    dtpFechaFin.Value = DateTime.Now; 
+                    dtpFechaFin.Value = DateTime.Now;
                 }
             }
             else if (tipo == "TEMPORAL")
@@ -404,29 +330,16 @@ namespace SIstemaPlanilla.Vista
 
             if (MessageBox.Show("¿Está seguro de eliminar este contrato y sus registros asociados?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                try
+                if (controlador.EliminarContrato(idEmpleadoSeleccionado, out string mensaje))
                 {
-                    using (SqlConnection conexion = Conexion.GetConexion())
-                    {
-                        if (conexion == null) return;
-
-                        using (SqlCommand cmd = new SqlCommand("sp_Contrato_Eliminar", conexion))
-                        {
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmpleadoSeleccionado);
-
-                            cmd.ExecuteNonQuery();
-
-                            MessageBox.Show("Contrato eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            LimpiarCampos();
-                            CargarContratos();
-                            CargarComboEmpleados();
-                        }
-                    }
+                    MessageBox.Show("Contrato eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LimpiarCampos();
+                    CargarContratos();
+                    CargarComboEmpleados();
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("Error al eliminar el contrato: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error al eliminar el contrato: " + mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -485,92 +398,72 @@ namespace SIstemaPlanilla.Vista
             LimpiarCampos();
         }
 
-        private void btnBuscar_Click(object sender, EventArgs e)
+        private void btnBuscar_Click(object? sender, EventArgs e)
         {
             string nombreBuscado = txtBuscar?.Text.Trim() ?? "";
 
             if (string.IsNullOrWhiteSpace(nombreBuscado))
             {
                 MessageBox.Show("Por favor ingrese el nombre del empleado para buscar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                CargarContratos(); 
+                CargarContratos();
                 txtBuscar?.Focus();
                 return;
             }
 
             try
             {
-                using (SqlConnection conexion = Conexion.GetConexion())
+                DataTable dt = controlador.ListarContratos(nombreBuscado);
+
+                if (dgvContratos != null)
                 {
-                    if (conexion == null)
-                    {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+                    dgvContratos.DataSource = dt;
+                }
 
-                    using (SqlCommand cmd = new SqlCommand("sp_Contrato_Listar", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@FILTRO", nombreBuscado);
+                if (dt.Rows.Count > 0)
+                {
+                    DataRow fila = dt.Rows[0];
 
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    idEmpleadoSeleccionado = Convert.ToInt32(fila["ID_EMPLEADO"]);
+                    string nombreEmp = fila["NOMBRE_COMPLETO"]?.ToString() ?? "";
+
+                    if (cbEmpleados != null)
+                    {
+                        if (cbEmpleados.DataSource is DataTable dtEmp)
                         {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-
-                            if (dgvContratos != null)
+                            bool existe = dtEmp.AsEnumerable().Any(r => Convert.ToInt32(r["ID_EMPLEADO"]) == idEmpleadoSeleccionado);
+                            if (!existe)
                             {
-                                dgvContratos.DataSource = dt;
-                            }
-
-                            if (dt.Rows.Count > 0)
-                            {
-                                DataRow fila = dt.Rows[0];
-
-                                idEmpleadoSeleccionado = Convert.ToInt32(fila["ID_EMPLEADO"]);
-                                string nombreEmp = fila["NOMBRE_COMPLETO"]?.ToString() ?? "";
-
-                                // Aseguramos que el empleado aparezca seleccionado en cbEmpleados aunque ya tenga contrato
-                                if (cbEmpleados != null)
-                                {
-                                    if (cbEmpleados.DataSource is DataTable dtEmp)
-                                    {
-                                        bool existe = dtEmp.AsEnumerable().Any(r => Convert.ToInt32(r["ID_EMPLEADO"]) == idEmpleadoSeleccionado);
-                                        if (!existe)
-                                        {
-                                            DataRow nuevaFila = dtEmp.NewRow();
-                                            nuevaFila["ID_EMPLEADO"] = idEmpleadoSeleccionado;
-                                            nuevaFila["NOMBRE_COMPLETO"] = nombreEmp;
-                                            dtEmp.Rows.Add(nuevaFila);
-                                        }
-                                    }
-                                    cbEmpleados.SelectedValue = idEmpleadoSeleccionado;
-                                }
-
-                                string tipo = fila["TIPO_CONTRATO"]?.ToString() ?? "";
-                                if (cbTipoContrato != null)
-                                {
-                                    cbTipoContrato.SelectedValue = tipo.ToUpper().Trim();
-                                }
-
-                                ActualizarVisibilidadFechas();
-
-                                if (txtSalarioBase != null)
-                                    txtSalarioBase.Text = fila["SALARIO_BASE"]?.ToString() ?? "";
-
-                                if (fila["FECHA_INICIO"] != DBNull.Value && dtpFechaInicio != null)
-                                    dtpFechaInicio.Value = Convert.ToDateTime(fila["FECHA_INICIO"]);
-
-                                if (tipo.Equals("Temporal", StringComparison.OrdinalIgnoreCase) && fila["FECHA_FIN"] != DBNull.Value && dtpFechaFin != null)
-                                    dtpFechaFin.Value = Convert.ToDateTime(fila["FECHA_FIN"]);
-                            }
-                            else
-                            {
-                                MessageBox.Show("No se encontró ningún contrato para ese empleado.", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                LimpiarCampos();
-                                CargarContratos();
+                                DataRow nuevaFila = dtEmp.NewRow();
+                                nuevaFila["ID_EMPLEADO"] = idEmpleadoSeleccionado;
+                                nuevaFila["NOMBRE_COMPLETO"] = nombreEmp;
+                                dtEmp.Rows.Add(nuevaFila);
                             }
                         }
+                        cbEmpleados.SelectedValue = idEmpleadoSeleccionado;
                     }
+
+                    string tipo = fila["TIPO_CONTRATO"]?.ToString() ?? "";
+                    if (cbTipoContrato != null)
+                    {
+                        cbTipoContrato.SelectedValue = tipo.ToUpper().Trim();
+                    }
+
+                    ActualizarVisibilidadFechas();
+
+                    if (txtSalarioBase != null)
+                        txtSalarioBase.Text = fila["SALARIO_BASE"]?.ToString() ?? "";
+
+                    if (fila["FECHA_INICIO"] != DBNull.Value && dtpFechaInicio != null)
+                        dtpFechaInicio.Value = Convert.ToDateTime(fila["FECHA_INICIO"]);
+
+                    if (tipo.Equals("Temporal", StringComparison.OrdinalIgnoreCase) && fila["FECHA_FIN"] != DBNull.Value && dtpFechaFin != null)
+                        dtpFechaFin.Value = Convert.ToDateTime(fila["FECHA_FIN"]);
+                }
+                else
+                {
+                    MessageBox.Show("No se encontró ningún contrato para ese empleado.", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LimpiarCampos();
+                    CargarContratos();
                 }
             }
             catch (Exception ex)

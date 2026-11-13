@@ -1,4 +1,6 @@
 ﻿using SistemaPlanilla.Modelo;
+using SIstemaPlanilla.Controlador;
+using SIstemaPlanilla.Modelo;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -11,12 +13,12 @@ namespace SIstemaPlanilla.Vista
     {
         private int idEmpleadoSeleccionado = 0;
         private Button btnReactivar = null!;
+        private readonly EmpleadoControlador controlador = new EmpleadoControlador();
 
         public Empleado()
         {
             InitializeComponent();
 
-            // Evita errores de diseño gráficos en Visual Studio (IUIService / DesignMode)
             bool enModoDiseno = this.DesignMode || (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime);
 
             if (!enModoDiseno)
@@ -49,7 +51,6 @@ namespace SIstemaPlanilla.Vista
 
             this.BackColor = cremaClaro;
             this.ForeColor = azulMuyOscuro;
-
 
             Button[] botones = { btnGuardar, btnModificar, btnEliminar, btnReactivar, btnLimpiar, btnBuscar };
             foreach (Button btn in botones)
@@ -140,7 +141,6 @@ namespace SIstemaPlanilla.Vista
                 dgvEmpleados.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dgvEmpleados.MultiSelect = false;
                 dgvEmpleados.Height = 280;
-
                 dgvEmpleados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
                 if (dgvEmpleados.Columns["ID_EMPLEADO"] != null)
@@ -178,31 +178,11 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
-                using (SqlConnection conexion = Conexion.GetConexion())
+                if (dgvEmpleados != null)
                 {
-                    if (conexion == null)
-                    {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand("sp_Empleado_Listar", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@FILTRO", filtro.Trim());
-
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-                            if (dgvEmpleados != null)
-                            {
-                                dgvEmpleados.DataSource = dt;
-                                if (dgvEmpleados.Columns["ID_CARGO"] != null)
-                                    dgvEmpleados.Columns["ID_CARGO"].Visible = false;
-                            }
-                        }
-                    }
+                    dgvEmpleados.DataSource = controlador.ListarEmpleados(filtro);
+                    if (dgvEmpleados.Columns["ID_CARGO"] != null)
+                        dgvEmpleados.Columns["ID_CARGO"].Visible = false;
                 }
             }
             catch (Exception ex)
@@ -225,34 +205,19 @@ namespace SIstemaPlanilla.Vista
                     ? Convert.ToInt32(cbCargos.SelectedValue)
                     : 0;
 
-                using (SqlConnection conexion = Conexion.GetConexion())
+                DataTable dt = controlador.ListarCargosCombo();
+
+                DataRow fila = dt.NewRow();
+                fila["ID_CARGO"] = 0;
+                fila["NOMBRE_CARGO"] = "-- Seleccione un Cargo --";
+                dt.Rows.InsertAt(fila, 0);
+
+                if (cbCargos != null)
                 {
-                    if (conexion == null) return;
-
-                    using (SqlCommand cmd = new SqlCommand("sp_Cargo_ListarCombo", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-
-
-                            DataRow fila = dt.NewRow();
-                            fila["ID_CARGO"] = 0;
-                            fila["NOMBRE_CARGO"] = "-- Seleccione un Cargo --";
-                            dt.Rows.InsertAt(fila, 0);
-
-                            if (cbCargos != null)
-                            {
-                                cbCargos.DataSource = dt;
-                                cbCargos.DisplayMember = "NOMBRE_CARGO";
-                                cbCargos.ValueMember = "ID_CARGO";
-                                cbCargos.SelectedValue = cargoActual;
-                            }
-                        }
-                    }
+                    cbCargos.DataSource = dt;
+                    cbCargos.DisplayMember = "NOMBRE_CARGO";
+                    cbCargos.ValueMember = "ID_CARGO";
+                    cbCargos.SelectedValue = cargoActual;
                 }
             }
             catch (Exception ex)
@@ -263,42 +228,30 @@ namespace SIstemaPlanilla.Vista
 
         private void btnGuardar_Click(object? sender, EventArgs e)
         {
-            try
+            if (string.IsNullOrWhiteSpace(txtNombre?.Text) || string.IsNullOrWhiteSpace(txtDui?.Text) || cbCargos?.SelectedValue == null || Convert.ToInt32(cbCargos.SelectedValue) == 0)
             {
-                if (string.IsNullOrWhiteSpace(txtNombre?.Text) || string.IsNullOrWhiteSpace(txtDui?.Text) || cbCargos?.SelectedValue == null || Convert.ToInt32(cbCargos.SelectedValue) == 0)
-                {
-                    MessageBox.Show("Por favor complete los campos obligatorios y seleccione un cargo.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                using (SqlConnection conexion = Conexion.GetConexion())
-                {
-                    if (conexion == null)
-                    {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand("sp_Empleado_Insertar", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@NOMBRE_COMPLETO", txtNombre.Text.Trim());
-                        cmd.Parameters.AddWithValue("@DUI", txtDui.Text.Trim());
-                        cmd.Parameters.AddWithValue("@DIRECCION", txtDireccion?.Text.Trim() ?? "");
-                        cmd.Parameters.AddWithValue("@TELEFONO", txtTelefono?.Text.Trim() ?? "");
-                        cmd.Parameters.AddWithValue("@ID_CARGO", Convert.ToInt32(cbCargos.SelectedValue));
-
-                        cmd.ExecuteNonQuery();
-
-                        MessageBox.Show("Empleado registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LimpiarCampos();
-                        CargarEmpleados();
-                    }
-                }
+                MessageBox.Show("Por favor complete los campos obligatorios y seleccione un cargo.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            catch (Exception ex)
+
+            SIstemaPlanilla.Modelo.Empleado nuevo = new SIstemaPlanilla.Modelo.Empleado
             {
-                MessageBox.Show("Error al guardar el empleado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                NombreCompleto = txtNombre.Text.Trim(),
+                Dui = txtDui.Text.Trim(),
+                Direccion = txtDireccion?.Text.Trim() ?? "",
+                Telefono = txtTelefono?.Text.Trim() ?? "",
+                IdCargo = Convert.ToInt32(cbCargos.SelectedValue)
+            };
+
+            if (controlador.GuardarNuevoEmpleado(nuevo, out string mensaje))
+            {
+                MessageBox.Show("Empleado registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LimpiarCampos();
+                CargarEmpleados();
+            }
+            else
+            {
+                MessageBox.Show("Error al guardar el empleado: " + mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -310,37 +263,26 @@ namespace SIstemaPlanilla.Vista
                 return;
             }
 
-            try
+
+            SIstemaPlanilla.Modelo.Empleado actualizado = new SIstemaPlanilla.Modelo.Empleado
             {
-                using (SqlConnection conexion = Conexion.GetConexion())
-                {
-                    if (conexion == null)
-                    {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+                IdEmpleado = idEmpleadoSeleccionado,
+                NombreCompleto = txtNombre?.Text.Trim() ?? "",
+                Dui = txtDui?.Text.Trim() ?? "",
+                Direccion = txtDireccion?.Text.Trim() ?? "",
+                Telefono = txtTelefono?.Text.Trim() ?? "",
+                IdCargo = Convert.ToInt32(cbCargos?.SelectedValue ?? 0)
+            };
 
-                    using (SqlCommand cmd = new SqlCommand("sp_Empleado_Actualizar", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmpleadoSeleccionado);
-                        cmd.Parameters.AddWithValue("@NOMBRE_COMPLETO", txtNombre.Text.Trim());
-                        cmd.Parameters.AddWithValue("@DUI", txtDui.Text.Trim());
-                        cmd.Parameters.AddWithValue("@DIRECCION", txtDireccion?.Text.Trim() ?? "");
-                        cmd.Parameters.AddWithValue("@TELEFONO", txtTelefono?.Text.Trim() ?? "");
-                        cmd.Parameters.AddWithValue("@ID_CARGO", Convert.ToInt32(cbCargos?.SelectedValue ?? 0));
-
-                        cmd.ExecuteNonQuery();
-
-                        MessageBox.Show("Empleado actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LimpiarCampos();
-                        CargarEmpleados();
-                    }
-                }
+            if (controlador.ModificarEmpleado(actualizado, out string mensaje))
+            {
+                MessageBox.Show("Empleado actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LimpiarCampos();
+                CargarEmpleados();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error al actualizar el empleado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error al actualizar el empleado: " + mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -354,33 +296,15 @@ namespace SIstemaPlanilla.Vista
 
             if (MessageBox.Show("¿Está seguro de dar de baja a este empleado?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                try
+                if (controlador.CambiarEstadoEmpleado(idEmpleadoSeleccionado, "INACTIVO", out string mensaje))
                 {
-                    using (SqlConnection conexion = Conexion.GetConexion())
-                    {
-                        if (conexion == null)
-                        {
-                            MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-
-                        using (SqlCommand cmd = new SqlCommand("sp_Empleado_CambiarEstado", conexion))
-                        {
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmpleadoSeleccionado);
-                            cmd.Parameters.AddWithValue("@ESTADO", "INACTIVO");
-
-                            cmd.ExecuteNonQuery();
-
-                            MessageBox.Show("Empleado dado de baja correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            LimpiarCampos();
-                            CargarEmpleados();
-                        }
-                    }
+                    MessageBox.Show("Empleado dado de baja correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LimpiarCampos();
+                    CargarEmpleados();
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("Error al dar de baja el empleado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error al dar de baja el empleado: " + mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -395,33 +319,15 @@ namespace SIstemaPlanilla.Vista
 
             if (MessageBox.Show("¿Está seguro de reactivar a este empleado?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                try
+                if (controlador.CambiarEstadoEmpleado(idEmpleadoSeleccionado, "ACTIVO", out string mensaje))
                 {
-                    using (SqlConnection conexion = Conexion.GetConexion())
-                    {
-                        if (conexion == null)
-                        {
-                            MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-
-                        using (SqlCommand cmd = new SqlCommand("sp_Empleado_CambiarEstado", conexion))
-                        {
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmpleadoSeleccionado);
-                            cmd.Parameters.AddWithValue("@ESTADO", "ACTIVO");
-
-                            cmd.ExecuteNonQuery();
-
-                            MessageBox.Show("Empleado reactivado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            LimpiarCampos();
-                            CargarEmpleados();
-                        }
-                    }
+                    MessageBox.Show("Empleado reactivado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LimpiarCampos();
+                    CargarEmpleados();
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("Error al reactivar el empleado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error al reactivar el empleado: " + mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -467,74 +373,55 @@ namespace SIstemaPlanilla.Vista
             LimpiarCampos();
         }
 
-        private void Empleados_Activated(object sender, EventArgs e)
+        private void Empleados_Activated(object? sender, EventArgs e)
         {
             CargarComboCargos();
         }
 
-        private void btnBuscar_Click(object sender, EventArgs e)
+        private void btnBuscar_Click(object? sender, EventArgs e)
         {
             string nombreBuscado = txtBuscar?.Text.Trim() ?? "";
 
             if (string.IsNullOrWhiteSpace(nombreBuscado))
             {
                 MessageBox.Show("Por favor ingrese un nombre para buscar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                CargarEmpleados(); 
+                CargarEmpleados();
                 txtBuscar?.Focus();
                 return;
             }
 
             try
             {
-                using (SqlConnection conexion = Conexion.GetConexion())
+                DataTable dt = controlador.ListarEmpleados(nombreBuscado);
+
+                if (dgvEmpleados != null)
                 {
-                    if (conexion == null)
+                    dgvEmpleados.DataSource = dt;
+                    if (dgvEmpleados.Columns["ID_CARGO"] != null)
+                        dgvEmpleados.Columns["ID_CARGO"].Visible = false;
+                }
+
+                if (dt.Rows.Count > 0)
+                {
+                    DataRow fila = dt.Rows[0];
+
+                    idEmpleadoSeleccionado = Convert.ToInt32(fila["ID_EMPLEADO"]);
+
+                    if (txtNombre != null) txtNombre.Text = fila["NOMBRE_COMPLETO"]?.ToString() ?? "";
+                    if (txtDui != null) txtDui.Text = fila["DUI"]?.ToString() ?? "";
+                    if (txtDireccion != null) txtDireccion.Text = fila["DIRECCION"]?.ToString() ?? "";
+                    if (txtTelefono != null) txtTelefono.Text = fila["TELEFONO"]?.ToString() ?? "";
+
+                    if (cbCargos != null && fila["ID_CARGO"] != DBNull.Value)
                     {
-                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
+                        cbCargos.SelectedValue = Convert.ToInt32(fila["ID_CARGO"]);
                     }
-
-                    using (SqlCommand cmd = new SqlCommand("sp_Empleado_Listar", conexion))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@FILTRO", nombreBuscado);
-
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            DataTable dt = new DataTable();
-                            da.Fill(dt);
-
-                            if (dgvEmpleados != null)
-                            {
-                                dgvEmpleados.DataSource = dt;
-                                if (dgvEmpleados.Columns["ID_CARGO"] != null)
-                                    dgvEmpleados.Columns["ID_CARGO"].Visible = false;
-                            }
-
-                            if (dt.Rows.Count > 0)
-                            {
-                                DataRow fila = dt.Rows[0];
-
-                                idEmpleadoSeleccionado = Convert.ToInt32(fila["ID_EMPLEADO"]);
-
-                                if (txtNombre != null) txtNombre.Text = fila["NOMBRE_COMPLETO"]?.ToString() ?? "";
-                                if (txtDui != null) txtDui.Text = fila["DUI"]?.ToString() ?? "";
-                                if (txtDireccion != null) txtDireccion.Text = fila["DIRECCION"]?.ToString() ?? "";
-                                if (txtTelefono != null) txtTelefono.Text = fila["TELEFONO"]?.ToString() ?? "";
-
-                                if (cbCargos != null && fila["ID_CARGO"] != DBNull.Value)
-                                {
-                                    cbCargos.SelectedValue = Convert.ToInt32(fila["ID_CARGO"]);
-                                }
-                            }
-                            else
-                            {
-                                MessageBox.Show("No se encontró ningún empleado con ese nombre.", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                LimpiarCampos();
-                                CargarEmpleados();
-                            }
-                        }
-                    }
+                }
+                else
+                {
+                    MessageBox.Show("No se encontró ningún empleado con ese nombre.", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LimpiarCampos();
+                    CargarEmpleados();
                 }
             }
             catch (Exception ex)
