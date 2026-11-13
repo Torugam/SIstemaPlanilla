@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace SIstemaPlanilla.Modelo
 {
+    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo
     internal class Contrato
     {
         public int IdEmpleado { get; set; }

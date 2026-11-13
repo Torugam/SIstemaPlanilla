@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 namespace SIstemaPlanilla.Vista
 {
+    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo
     public partial class Departamentos : Form
     {
         private int idDepartamentoSeleccionado = 0;

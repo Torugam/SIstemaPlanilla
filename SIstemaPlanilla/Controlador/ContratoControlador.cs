@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace SIstemaPlanilla.Controlador
 {
+    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo
     internal class ContratoControlador
     {
         public DataTable ListarContratos(string filtro = "")

@@ -8,6 +8,7 @@ using SIstemaPlanilla.Modelo;
 
 namespace SIstemaPlanilla.Controlador
 {
+    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo
     internal class EmpleadoControlador
     {
         public DataTable ListarEmpleados(string filtro = "")
