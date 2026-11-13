@@ -23,6 +23,18 @@ namespace SIstemaPlanilla.Vista
             InitializeComponent();
             ConstruirInterfaz();
             Diseño();
+            EventHandler refrescarAlEntrar = (s, e) =>
+            {
+                if (this.Visible)
+                {
+                    CargarComboEmpleados();
+                    CargarGrid(txtBuscar?.Text.Trim() ?? "");
+                }
+            };
+
+            this.VisibleChanged += refrescarAlEntrar;
+            this.Enter += refrescarAlEntrar;
+            this.Activated += refrescarAlEntrar;
         }
 
         private void Prestamos_Load(object sender, EventArgs e)
