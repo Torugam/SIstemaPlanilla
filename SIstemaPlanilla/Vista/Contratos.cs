@@ -10,40 +10,6 @@ namespace SIstemaPlanilla.Vista
     public partial class Contratos : Form
     {
         private int idEmpleadoSeleccionado = 0;
-        private TextBox txtBuscar = null!;
-
-        // Propiedad inteligente y convertidor automático para el ComboBox del tipo de contrato
-        private ComboBox? cbTipoContrato
-        {
-            get
-            {
-                Control[] matches = this.Controls.Find("cbTipoContrato", true);
-                if (matches.Length > 0)
-                {
-                    if (matches[0] is ComboBox cb) return cb;
-
-                    // Si por error quedó como TextBox en el diseñador, lo convertimos dinámicamente a ComboBox
-                    if (matches[0] is TextBox tb)
-                    {
-                        Point loc = tb.Location;
-                        Size size = tb.Size;
-                        this.Controls.Remove(tb);
-
-                        ComboBox nuevoCb = new ComboBox
-                        {
-                            Name = "cbTipoContrato",
-                            Location = loc,
-                            Size = size,
-                            DropDownStyle = ComboBoxStyle.DropDownList
-                        };
-                        this.Controls.Add(nuevoCb);
-                        nuevoCb.BringToFront();
-                        return nuevoCb;
-                    }
-                }
-                return null;
-            }
-        }
 
         public Contratos()
         {
@@ -51,23 +17,12 @@ namespace SIstemaPlanilla.Vista
 
             bool enModoDiseno = this.DesignMode || (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime);
 
-            if (!enModoDiseno)
-            {
-                CrearBuscadorPorCodigo();
-            }
-
-            // Enlace seguro de botones
-            Control[] bGuardar = this.Controls.Find("btnGuardar", true);
-            if (bGuardar.Length > 0 && bGuardar[0] is Button bg) bg.Click += btnGuardar_Click;
-
-            Control[] bModificar = this.Controls.Find("btnModificar", true);
-            if (bModificar.Length > 0 && bModificar[0] is Button bm) bm.Click += btnModificar_Click;
-
-            Control[] bEliminar = this.Controls.Find("btnEliminar", true);
-            if (bEliminar.Length > 0 && bEliminar[0] is Button be) be.Click += btnEliminar_Click;
-
-            Control[] bLimpiar = this.Controls.Find("btnLimpiar", true);
-            if (bLimpiar.Length > 0 && bLimpiar[0] is Button bl) bl.Click += btnLimpiar_Click;
+        
+            if (btnGuardar != null) btnGuardar.Click += btnGuardar_Click;
+            if (btnModificar != null) btnModificar.Click += btnModificar_Click;
+            if (btnEliminar != null) btnEliminar.Click += btnEliminar_Click;
+            if (btnLimpiar != null) btnLimpiar.Click += btnLimpiar_Click;
+            if (btnBuscar != null) btnBuscar.Click += btnBuscar_Click;
 
             if (dgvContratos != null)
             {
@@ -75,31 +30,68 @@ namespace SIstemaPlanilla.Vista
                 dgvContratos.CellContentClick += dgvContratos_CellContentClick;
             }
 
+            Diseño();
+
             this.Load += Contratos_Load;
+            this.Activated += Contratos_Activated;
         }
 
-        private void CrearBuscadorPorCodigo()
+        private void Diseño()
         {
-            Label lblBuscar = new Label
+            Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321");
+            Color azulOscuro = ColorTranslator.FromHtml("#1D2D44");
+            Color azulAcero = ColorTranslator.FromHtml("#3E5C76");
+            Color azulClaro = ColorTranslator.FromHtml("#748CAB");
+            Color cremaClaro = ColorTranslator.FromHtml("#F0EBD8");
+
+            this.BackColor = cremaClaro;
+            this.ForeColor = azulMuyOscuro;
+
+
+            Button[] botones = { btnGuardar, btnModificar, btnEliminar, btnLimpiar, btnBuscar };
+            foreach (Button btn in botones)
             {
-                Text = "Buscar:",
-                AutoSize = true,
-                Font = new Font(this.Font, FontStyle.Bold),
-                Location = new Point(175, 20)
-            };
+                if (btn == null) continue;
 
-            txtBuscar = new TextBox
+                btn.BackColor = azulAcero;
+                btn.ForeColor = Color.White;
+                btn.FlatStyle = FlatStyle.Flat;
+                btn.FlatAppearance.BorderSize = 0;
+                btn.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                btn.Cursor = Cursors.Hand;
+                btn.FlatAppearance.MouseOverBackColor = azulOscuro;
+            }
+
+            // 2. DataGridView de Contratos
+            if (dgvContratos != null)
             {
-                Width = 230,
-                Location = new Point(230, 17)
-            };
-            txtBuscar.TextChanged += txtBuscar_TextChanged;
+                dgvContratos.BackgroundColor = cremaClaro;
+                dgvContratos.BorderStyle = BorderStyle.None;
+                dgvContratos.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+                dgvContratos.GridColor = azulClaro;
+                dgvContratos.EnableHeadersVisualStyles = false;
 
-            this.Controls.Add(lblBuscar);
-            this.Controls.Add(txtBuscar);
+                dgvContratos.ColumnHeadersDefaultCellStyle.BackColor = azulOscuro;
+                dgvContratos.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                dgvContratos.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+                dgvContratos.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+                dgvContratos.ColumnHeadersHeight = 35;
 
-            lblBuscar.BringToFront();
-            txtBuscar.BringToFront();
+                dgvContratos.DefaultCellStyle.BackColor = Color.White;
+                dgvContratos.DefaultCellStyle.ForeColor = azulMuyOscuro;
+                dgvContratos.DefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+                dgvContratos.DefaultCellStyle.SelectionBackColor = azulClaro;
+                dgvContratos.DefaultCellStyle.SelectionForeColor = Color.White;
+                dgvContratos.RowTemplate.Height = 35;
+            }
+
+            TextBox[] cajasDeTexto = { txtSalarioBase, txtBuscar };
+            foreach (TextBox txt in cajasDeTexto)
+            {
+                if (txt == null) continue;
+                txt.Enter += (s, e) => { txt.BackColor = Color.White; };
+                txt.Leave += (s, e) => { txt.BackColor = ColorTranslator.FromHtml("#F9F9F9"); };
+            }
         }
 
         private void Contratos_Load(object? sender, EventArgs e)
@@ -109,6 +101,11 @@ namespace SIstemaPlanilla.Vista
             CargarComboEmpleados();
             CargarComboTipoContrato();
             LimpiarCampos();
+        }
+
+        private void Contratos_Activated(object? sender, EventArgs e)
+        {
+            CargarComboEmpleados();
         }
 
         private void ConfigurarDataGridView()
@@ -196,6 +193,10 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
+                int empActual = (cbEmpleados != null && cbEmpleados.SelectedValue != null && cbEmpleados.SelectedValue != DBNull.Value)
+                    ? Convert.ToInt32(cbEmpleados.SelectedValue)
+                    : 0;
+
                 using (SqlConnection conexion = Conexion.GetConexion())
                 {
                     if (conexion == null) return;
@@ -211,7 +212,7 @@ namespace SIstemaPlanilla.Vista
 
                             DataRow fila = dt.NewRow();
                             fila["ID_EMPLEADO"] = 0;
-                            fila["NOMBRE_COMPLETO"] = "-- Seleccione un Empleado sin Contrato --";
+                            fila["NOMBRE_COMPLETO"] = "-- Seleccione un Empleado --";
                             dt.Rows.InsertAt(fila, 0);
 
                             if (cbEmpleados != null)
@@ -219,6 +220,7 @@ namespace SIstemaPlanilla.Vista
                                 cbEmpleados.DataSource = dt;
                                 cbEmpleados.DisplayMember = "NOMBRE_COMPLETO";
                                 cbEmpleados.ValueMember = "ID_EMPLEADO";
+                                cbEmpleados.SelectedValue = empActual;
                             }
                         }
                     }
@@ -235,17 +237,26 @@ namespace SIstemaPlanilla.Vista
             try
             {
                 DataTable dtTipo = new DataTable();
-                dtTipo.Columns.Add("Tipo", typeof(string));
-                dtTipo.Rows.Add("-- Seleccione Tipo --");
-                dtTipo.Rows.Add("Permanente");
-                dtTipo.Rows.Add("Temporal");
+                dtTipo.Columns.Add("Valor", typeof(string));
+                dtTipo.Columns.Add("Texto", typeof(string));
+
+                dtTipo.Rows.Add("", "-- Seleccione Tipo --");
+                dtTipo.Rows.Add("PERMANENTE", "Permanente");
+                dtTipo.Rows.Add("TEMPORAL", "Temporal");
 
                 if (cbTipoContrato != null)
                 {
+                    cbTipoContrato.SelectedIndexChanged -= cbTipoContrato_SelectedIndexChanged;
+
                     cbTipoContrato.DataSource = dtTipo;
-                    cbTipoContrato.DisplayMember = "Tipo";
-                    cbTipoContrato.ValueMember = "Tipo";
+                    cbTipoContrato.DisplayMember = "Texto";
+                    cbTipoContrato.ValueMember = "Valor";
+                    cbTipoContrato.SelectedIndex = 0;
+
+                    cbTipoContrato.SelectedIndexChanged += cbTipoContrato_SelectedIndexChanged;
                 }
+
+                ActualizarVisibilidadFechas();
             }
             catch (Exception ex)
             {
@@ -253,49 +264,58 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        private void cbTipoContrato_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            ActualizarVisibilidadFechas();
+        }
+
         private void btnGuardar_Click(object? sender, EventArgs e)
         {
             try
             {
-                if (cbEmpleados?.SelectedValue == null || Convert.ToInt32(cbEmpleados.SelectedValue) == 0 ||
-                    cbTipoContrato?.SelectedValue == null || cbTipoContrato.Text.Contains("Seleccione"))
+
+                /*if (cbEmpleados?.SelectedValue == null || Convert.ToInt32(cbEmpleados.SelectedValue) == 0 ||
+                    cbTipoContrato?.SelectedValue == null || string.IsNullOrWhiteSpace(cbTipoContrato.SelectedValue.ToString()))
                 {
                     MessageBox.Show("Por favor seleccione un empleado y el tipo de contrato.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
-                }
+                }*/
 
                 int idEmp = Convert.ToInt32(cbEmpleados.SelectedValue);
-                string tipo = cbTipoContrato.Text.Trim();
-                decimal salario = 0;
-                decimal.TryParse(txtSalarioBase?.Text.Trim(), out salario);
+                string tipo = cbTipoContrato.SelectedValue.ToString()!.Trim().ToUpper();
+                decimal.TryParse(txtSalarioBase?.Text.Trim(), out decimal salario);
 
                 using (SqlConnection conexion = Conexion.GetConexion())
                 {
                     if (conexion == null) return;
 
-                    string nombreSP = tipo.Equals("Permanente", StringComparison.OrdinalIgnoreCase)
-                        ? "sp_ContratoPermanente_Insertar"
-                        : "sp_ContratoTemporal_Insertar";
-
-                    using (SqlCommand cmd = new SqlCommand(nombreSP, conexion))
+                    if (tipo == "PERMANENTE")
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmp);
-                        cmd.Parameters.AddWithValue("@SALARIO_BASE", salario);
-
-                        if (tipo.Equals("Temporal", StringComparison.OrdinalIgnoreCase))
+                        using (SqlCommand cmd = new SqlCommand("sp_ContratoPermanente_Insertar", conexion))
                         {
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmp);
+                            cmd.Parameters.AddWithValue("@SALARIO_BASE", salario);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                    else if (tipo == "TEMPORAL")
+                    {
+                        using (SqlCommand cmd = new SqlCommand("sp_ContratoTemporal_Insertar", conexion))
+                        {
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@ID_EMPLEADO", idEmp);
+                            cmd.Parameters.AddWithValue("@SALARIO_BASE", salario);
                             cmd.Parameters.AddWithValue("@FECHA_INICIO", dtpFechaInicio?.Value ?? DateTime.Now);
                             cmd.Parameters.AddWithValue("@FECHA_FIN", dtpFechaFin?.Value ?? DateTime.Now.AddMonths(6));
+                            cmd.ExecuteNonQuery();
                         }
-
-                        cmd.ExecuteNonQuery();
-
-                        MessageBox.Show("Contrato registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LimpiarCampos();
-                        CargarContratos();
-                        CargarComboEmpleados();
                     }
+
+                    MessageBox.Show("Contrato registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LimpiarCampos();
+                    CargarContratos();
+                    CargarComboEmpleados();
                 }
             }
             catch (Exception ex)
@@ -314,10 +334,9 @@ namespace SIstemaPlanilla.Vista
 
             try
             {
-                decimal salario = 0;
-                decimal.TryParse(txtSalarioBase?.Text.Trim(), out salario);
-                string tipo = cbTipoContrato?.Text.Trim() ?? "";
-                bool esTemporal = tipo.Equals("Temporal", StringComparison.OrdinalIgnoreCase);
+                decimal.TryParse(txtSalarioBase?.Text.Trim(), out decimal salario);
+                string tipo = cbTipoContrato?.SelectedValue?.ToString()?.ToUpper() ?? "";
+                bool esTemporal = (tipo == "TEMPORAL");
 
                 using (SqlConnection conexion = Conexion.GetConexion())
                 {
@@ -344,6 +363,34 @@ namespace SIstemaPlanilla.Vista
             catch (Exception ex)
             {
                 MessageBox.Show("Error al modificar el contrato: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ActualizarVisibilidadFechas()
+        {
+            if (cbTipoContrato == null) return;
+
+            string tipo = cbTipoContrato.SelectedValue?.ToString()?.ToUpper().Trim() ?? "";
+
+            if (dtpFechaInicio != null)
+            {
+                dtpFechaInicio.Enabled = true;
+            }
+
+            if (tipo == "PERMANENTE" || tipo == "")
+            {
+                if (dtpFechaFin != null)
+                {
+                    dtpFechaFin.Enabled = false;
+                    dtpFechaFin.Value = DateTime.Now; 
+                }
+            }
+            else if (tipo == "TEMPORAL")
+            {
+                if (dtpFechaFin != null)
+                {
+                    dtpFechaFin.Enabled = true;
+                }
             }
         }
 
@@ -393,12 +440,16 @@ namespace SIstemaPlanilla.Vista
 
                 if (cbEmpleados != null)
                 {
-                    CargarComboEmpleados();
                     cbEmpleados.SelectedValue = idEmpleadoSeleccionado;
                 }
 
                 string tipo = row.Cells["TIPO_CONTRATO"].Value.ToString() ?? "";
-                if (cbTipoContrato != null) cbTipoContrato.Text = tipo;
+                if (cbTipoContrato != null)
+                {
+                    cbTipoContrato.SelectedValue = tipo.ToUpper().Trim();
+                }
+
+                ActualizarVisibilidadFechas();
 
                 if (txtSalarioBase != null) txtSalarioBase.Text = row.Cells["SALARIO_BASE"].Value.ToString();
 
@@ -422,7 +473,7 @@ namespace SIstemaPlanilla.Vista
         {
             idEmpleadoSeleccionado = 0;
             CargarComboEmpleados();
-            CargarComboTipoContrato();
+            if (cbTipoContrato != null && cbTipoContrato.Items.Count > 0) cbTipoContrato.SelectedIndex = 0;
             if (txtSalarioBase != null) txtSalarioBase.Clear();
             if (txtBuscar != null) txtBuscar.Clear();
             if (dtpFechaInicio != null) dtpFechaInicio.Value = DateTime.Now;
@@ -432,6 +483,100 @@ namespace SIstemaPlanilla.Vista
         private void btnLimpiar_Click(object? sender, EventArgs e)
         {
             LimpiarCampos();
+        }
+
+        private void btnBuscar_Click(object sender, EventArgs e)
+        {
+            string nombreBuscado = txtBuscar?.Text.Trim() ?? "";
+
+            if (string.IsNullOrWhiteSpace(nombreBuscado))
+            {
+                MessageBox.Show("Por favor ingrese el nombre del empleado para buscar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CargarContratos(); 
+                txtBuscar?.Focus();
+                return;
+            }
+
+            try
+            {
+                using (SqlConnection conexion = Conexion.GetConexion())
+                {
+                    if (conexion == null)
+                    {
+                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    using (SqlCommand cmd = new SqlCommand("sp_Contrato_Listar", conexion))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@FILTRO", nombreBuscado);
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            da.Fill(dt);
+
+                            if (dgvContratos != null)
+                            {
+                                dgvContratos.DataSource = dt;
+                            }
+
+                            if (dt.Rows.Count > 0)
+                            {
+                                DataRow fila = dt.Rows[0];
+
+                                idEmpleadoSeleccionado = Convert.ToInt32(fila["ID_EMPLEADO"]);
+                                string nombreEmp = fila["NOMBRE_COMPLETO"]?.ToString() ?? "";
+
+                                // Aseguramos que el empleado aparezca seleccionado en cbEmpleados aunque ya tenga contrato
+                                if (cbEmpleados != null)
+                                {
+                                    if (cbEmpleados.DataSource is DataTable dtEmp)
+                                    {
+                                        bool existe = dtEmp.AsEnumerable().Any(r => Convert.ToInt32(r["ID_EMPLEADO"]) == idEmpleadoSeleccionado);
+                                        if (!existe)
+                                        {
+                                            DataRow nuevaFila = dtEmp.NewRow();
+                                            nuevaFila["ID_EMPLEADO"] = idEmpleadoSeleccionado;
+                                            nuevaFila["NOMBRE_COMPLETO"] = nombreEmp;
+                                            dtEmp.Rows.Add(nuevaFila);
+                                        }
+                                    }
+                                    cbEmpleados.SelectedValue = idEmpleadoSeleccionado;
+                                }
+
+                                string tipo = fila["TIPO_CONTRATO"]?.ToString() ?? "";
+                                if (cbTipoContrato != null)
+                                {
+                                    cbTipoContrato.SelectedValue = tipo.ToUpper().Trim();
+                                }
+
+                                ActualizarVisibilidadFechas();
+
+                                if (txtSalarioBase != null)
+                                    txtSalarioBase.Text = fila["SALARIO_BASE"]?.ToString() ?? "";
+
+                                if (fila["FECHA_INICIO"] != DBNull.Value && dtpFechaInicio != null)
+                                    dtpFechaInicio.Value = Convert.ToDateTime(fila["FECHA_INICIO"]);
+
+                                if (tipo.Equals("Temporal", StringComparison.OrdinalIgnoreCase) && fila["FECHA_FIN"] != DBNull.Value && dtpFechaFin != null)
+                                    dtpFechaFin.Value = Convert.ToDateTime(fila["FECHA_FIN"]);
+                            }
+                            else
+                            {
+                                MessageBox.Show("No se encontró ningún contrato para ese empleado.", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                LimpiarCampos();
+                                CargarContratos();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al buscar el contrato: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
