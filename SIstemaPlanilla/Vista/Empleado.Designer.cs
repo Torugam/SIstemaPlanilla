@@ -33,6 +33,9 @@
             btnEliminar = new Button();
             btnLimpiar = new Button();
             dgvEmpleados = new DataGridView();
+            btnBuscar = new Button();
+            txtBuscar = new TextBox();
+            lblBuscar = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvEmpleados).BeginInit();
             SuspendLayout();
             // 
@@ -40,7 +43,7 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.Location = new Point(18, 11);
+            label1.Location = new Point(64, 39);
             label1.Name = "label1";
             label1.Size = new Size(143, 30);
             label1.TabIndex = 0;
@@ -49,7 +52,7 @@
             // lblNombre
             // 
             lblNombre.AutoSize = true;
-            lblNombre.Location = new Point(18, 56);
+            lblNombre.Location = new Point(165, 135);
             lblNombre.Name = "lblNombre";
             lblNombre.Size = new Size(110, 15);
             lblNombre.TabIndex = 1;
@@ -57,7 +60,7 @@
             // 
             // txtNombre
             // 
-            txtNombre.Location = new Point(140, 54);
+            txtNombre.Location = new Point(287, 133);
             txtNombre.Margin = new Padding(3, 2, 3, 2);
             txtNombre.Name = "txtNombre";
             txtNombre.Size = new Size(219, 23);
@@ -66,7 +69,7 @@
             // lblDui
             // 
             lblDui.AutoSize = true;
-            lblDui.Location = new Point(18, 86);
+            lblDui.Location = new Point(165, 165);
             lblDui.Name = "lblDui";
             lblDui.Size = new Size(29, 15);
             lblDui.TabIndex = 3;
@@ -74,7 +77,7 @@
             // 
             // txtDui
             // 
-            txtDui.Location = new Point(140, 84);
+            txtDui.Location = new Point(287, 163);
             txtDui.Margin = new Padding(3, 2, 3, 2);
             txtDui.Name = "txtDui";
             txtDui.Size = new Size(219, 23);
@@ -83,7 +86,7 @@
             // lblDireccion
             // 
             lblDireccion.AutoSize = true;
-            lblDireccion.Location = new Point(385, 56);
+            lblDireccion.Location = new Point(532, 135);
             lblDireccion.Name = "lblDireccion";
             lblDireccion.Size = new Size(60, 15);
             lblDireccion.TabIndex = 5;
@@ -91,7 +94,7 @@
             // 
             // txtDireccion
             // 
-            txtDireccion.Location = new Point(464, 54);
+            txtDireccion.Location = new Point(611, 133);
             txtDireccion.Margin = new Padding(3, 2, 3, 2);
             txtDireccion.Name = "txtDireccion";
             txtDireccion.Size = new Size(202, 23);
@@ -100,7 +103,7 @@
             // lblTelefono
             // 
             lblTelefono.AutoSize = true;
-            lblTelefono.Location = new Point(385, 86);
+            lblTelefono.Location = new Point(532, 165);
             lblTelefono.Name = "lblTelefono";
             lblTelefono.Size = new Size(56, 15);
             lblTelefono.TabIndex = 7;
@@ -108,7 +111,7 @@
             // 
             // txtTelefono
             // 
-            txtTelefono.Location = new Point(464, 84);
+            txtTelefono.Location = new Point(611, 163);
             txtTelefono.Margin = new Padding(3, 2, 3, 2);
             txtTelefono.Name = "txtTelefono";
             txtTelefono.Size = new Size(202, 23);
@@ -117,7 +120,7 @@
             // lblCargo
             // 
             lblCargo.AutoSize = true;
-            lblCargo.Location = new Point(18, 116);
+            lblCargo.Location = new Point(165, 195);
             lblCargo.Name = "lblCargo";
             lblCargo.Size = new Size(42, 15);
             lblCargo.TabIndex = 9;
@@ -127,7 +130,7 @@
             // 
             cbCargos.DropDownStyle = ComboBoxStyle.DropDownList;
             cbCargos.FormattingEnabled = true;
-            cbCargos.Location = new Point(140, 114);
+            cbCargos.Location = new Point(287, 193);
             cbCargos.Margin = new Padding(3, 2, 3, 2);
             cbCargos.Name = "cbCargos";
             cbCargos.Size = new Size(219, 23);
@@ -135,7 +138,7 @@
             // 
             // btnGuardar
             // 
-            btnGuardar.Location = new Point(385, 114);
+            btnGuardar.Location = new Point(532, 193);
             btnGuardar.Margin = new Padding(3, 2, 3, 2);
             btnGuardar.Name = "btnGuardar";
             btnGuardar.Size = new Size(70, 24);
@@ -145,7 +148,7 @@
             // 
             // btnModificar
             // 
-            btnModificar.Location = new Point(464, 114);
+            btnModificar.Location = new Point(611, 193);
             btnModificar.Margin = new Padding(3, 2, 3, 2);
             btnModificar.Name = "btnModificar";
             btnModificar.Size = new Size(70, 24);
@@ -155,7 +158,7 @@
             // 
             // btnEliminar
             // 
-            btnEliminar.Location = new Point(542, 114);
+            btnEliminar.Location = new Point(689, 193);
             btnEliminar.Margin = new Padding(3, 2, 3, 2);
             btnEliminar.Name = "btnEliminar";
             btnEliminar.Size = new Size(70, 24);
@@ -165,7 +168,7 @@
             // 
             // btnLimpiar
             // 
-            btnLimpiar.Location = new Point(621, 114);
+            btnLimpiar.Location = new Point(768, 193);
             btnLimpiar.Margin = new Padding(3, 2, 3, 2);
             btnLimpiar.Name = "btnLimpiar";
             btnLimpiar.Size = new Size(66, 24);
@@ -177,19 +180,49 @@
             // 
             dgvEmpleados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvEmpleados.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvEmpleados.Location = new Point(18, 154);
+            dgvEmpleados.Location = new Point(108, 250);
             dgvEmpleados.Margin = new Padding(3, 2, 3, 2);
             dgvEmpleados.Name = "dgvEmpleados";
             dgvEmpleados.RowHeadersWidth = 51;
-            dgvEmpleados.Size = new Size(719, 169);
+            dgvEmpleados.Size = new Size(824, 216);
             dgvEmpleados.TabIndex = 15;
             dgvEmpleados.CellContentClick += dgvEmpleados_CellContentClick;
+            // 
+            // btnBuscar
+            // 
+            btnBuscar.Location = new Point(652, 70);
+            btnBuscar.Name = "btnBuscar";
+            btnBuscar.Size = new Size(75, 23);
+            btnBuscar.TabIndex = 16;
+            btnBuscar.Text = "Buscar";
+            btnBuscar.UseVisualStyleBackColor = true;
+            btnBuscar.Click += btnBuscar_Click;
+            // 
+            // txtBuscar
+            // 
+            txtBuscar.Location = new Point(311, 71);
+            txtBuscar.Name = "txtBuscar";
+            txtBuscar.Size = new Size(326, 23);
+            txtBuscar.TabIndex = 17;
+            txtBuscar.Text = "Buscar por nombre del empleado";
+            // 
+            // lblBuscar
+            // 
+            lblBuscar.AutoSize = true;
+            lblBuscar.Location = new Point(269, 74);
+            lblBuscar.Name = "lblBuscar";
+            lblBuscar.Size = new Size(42, 15);
+            lblBuscar.TabIndex = 18;
+            lblBuscar.Text = "Buscar";
             // 
             // Empleado
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(709, 338);
+            ClientSize = new Size(967, 488);
+            Controls.Add(lblBuscar);
+            Controls.Add(txtBuscar);
+            Controls.Add(btnBuscar);
             Controls.Add(dgvEmpleados);
             Controls.Add(btnLimpiar);
             Controls.Add(btnEliminar);
@@ -234,5 +267,8 @@
         private System.Windows.Forms.Button btnEliminar;
         private System.Windows.Forms.Button btnLimpiar;
         private System.Windows.Forms.DataGridView dgvEmpleados;
+        private Button btnBuscar;
+        private TextBox txtBuscar;
+        private Label lblBuscar;
     }
 }

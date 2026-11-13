@@ -10,7 +10,6 @@ namespace SIstemaPlanilla.Vista
     public partial class Empleado : Form
     {
         private int idEmpleadoSeleccionado = 0;
-        private TextBox txtBuscar = null!;
         private Button btnReactivar = null!;
 
         public Empleado()
@@ -22,10 +21,6 @@ namespace SIstemaPlanilla.Vista
 
             if (!enModoDiseno)
             {
-                // Crear y posicionar el buscador arriba a la par del título "EMPLEADOS"
-                CrearBuscadorPorCodigo();
-
-                // Crear y posicionar el botón Reactivar ordenadamente entre Eliminar y Limpiar
                 CrearBotonReactivarPorCodigo();
             }
 
@@ -33,37 +28,72 @@ namespace SIstemaPlanilla.Vista
             if (btnModificar != null) btnModificar.Click += btnModificar_Click;
             if (btnEliminar != null) btnEliminar.Click += btnEliminar_Click;
             if (btnLimpiar != null) btnLimpiar.Click += btnLimpiar_Click;
+            if (btnBuscar != null) btnBuscar.Click += btnBuscar_Click;
             if (dgvEmpleados != null)
             {
                 dgvEmpleados.CellClick += dgvEmpleados_CellClick;
                 dgvEmpleados.CellContentClick += dgvEmpleados_CellContentClick;
             }
-
+            Diseño();
             this.Load += Empleado_Load;
+            this.Activated += Empleados_Activated;
         }
 
-        private void CrearBuscadorPorCodigo()
+        private void Diseño()
         {
-            Label lblBuscar = new Label
+            Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321");
+            Color azulOscuro = ColorTranslator.FromHtml("#1D2D44");
+            Color azulAcero = ColorTranslator.FromHtml("#3E5C76");
+            Color azulClaro = ColorTranslator.FromHtml("#748CAB");
+            Color cremaClaro = ColorTranslator.FromHtml("#F0EBD8");
+
+            this.BackColor = cremaClaro;
+            this.ForeColor = azulMuyOscuro;
+
+
+            Button[] botones = { btnGuardar, btnModificar, btnEliminar, btnReactivar, btnLimpiar, btnBuscar };
+            foreach (Button btn in botones)
             {
-                Text = "Buscar:",
-                AutoSize = true,
-                Font = new Font(this.Font, FontStyle.Bold),
-                Location = new Point(175, 20)
-            };
+                if (btn == null) continue;
 
-            txtBuscar = new TextBox
+                btn.BackColor = azulAcero;
+                btn.ForeColor = Color.White;
+                btn.FlatStyle = FlatStyle.Flat;
+                btn.FlatAppearance.BorderSize = 0;
+                btn.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                btn.Cursor = Cursors.Hand;
+                btn.FlatAppearance.MouseOverBackColor = azulOscuro;
+            }
+
+            if (dgvEmpleados != null)
             {
-                Width = 230,
-                Location = new Point(230, 17)
-            };
-            txtBuscar.TextChanged += txtBuscar_TextChanged;
+                dgvEmpleados.BackgroundColor = cremaClaro;
+                dgvEmpleados.BorderStyle = BorderStyle.None;
+                dgvEmpleados.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+                dgvEmpleados.GridColor = azulClaro;
+                dgvEmpleados.EnableHeadersVisualStyles = false;
 
-            this.Controls.Add(lblBuscar);
-            this.Controls.Add(txtBuscar);
+                dgvEmpleados.ColumnHeadersDefaultCellStyle.BackColor = azulOscuro;
+                dgvEmpleados.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                dgvEmpleados.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+                dgvEmpleados.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+                dgvEmpleados.ColumnHeadersHeight = 35;
 
-            lblBuscar.BringToFront();
-            txtBuscar.BringToFront();
+                dgvEmpleados.DefaultCellStyle.BackColor = Color.White;
+                dgvEmpleados.DefaultCellStyle.ForeColor = azulMuyOscuro;
+                dgvEmpleados.DefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+                dgvEmpleados.DefaultCellStyle.SelectionBackColor = azulClaro;
+                dgvEmpleados.DefaultCellStyle.SelectionForeColor = Color.White;
+                dgvEmpleados.RowTemplate.Height = 35;
+            }
+
+            TextBox[] cajasDeTexto = { txtNombre, txtDui, txtDireccion, txtTelefono, txtBuscar };
+            foreach (TextBox txt in cajasDeTexto)
+            {
+                if (txt == null) continue;
+                txt.Enter += (s, e) => { txt.BackColor = Color.White; };
+                txt.Leave += (s, e) => { txt.BackColor = ColorTranslator.FromHtml("#F9F9F9"); };
+            }
         }
 
         private void CrearBotonReactivarPorCodigo()
@@ -74,7 +104,6 @@ namespace SIstemaPlanilla.Vista
 
             if (btnEliminar != null && btnLimpiar != null)
             {
-                // Colocamos el botón Reactivar a la derecha de Eliminar, y movemos Limpiar un poco más a la derecha
                 btnReactivar.Location = new Point(btnEliminar.Location.X + btnEliminar.Width + 10, btnEliminar.Location.Y);
                 btnLimpiar.Location = new Point(btnReactivar.Location.X + btnReactivar.Width + 10, btnLimpiar.Location.Y);
             }
@@ -94,6 +123,11 @@ namespace SIstemaPlanilla.Vista
             CargarEmpleados();
             CargarComboCargos();
             LimpiarCampos();
+
+            if (cbCargos != null)
+            {
+                cbCargos.DropDown += (s, ev) => CargarComboCargos();
+            }
         }
 
         private void ConfigurarDataGridView()
@@ -105,14 +139,10 @@ namespace SIstemaPlanilla.Vista
                 dgvEmpleados.ReadOnly = true;
                 dgvEmpleados.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dgvEmpleados.MultiSelect = false;
-
-                // Ampliamos la altura de la tabla para que muestre más filas antes de que aparezca el scroll.
                 dgvEmpleados.Height = 280;
 
-                // Modo de llenado para las columnas
                 dgvEmpleados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-                // Anchos fijos y encabezados limpios
                 if (dgvEmpleados.Columns["ID_EMPLEADO"] != null)
                 {
                     dgvEmpleados.Columns["ID_EMPLEADO"].HeaderText = "ID";
@@ -191,6 +221,10 @@ namespace SIstemaPlanilla.Vista
         {
             try
             {
+                int cargoActual = (cbCargos != null && cbCargos.SelectedValue != null && cbCargos.SelectedValue != DBNull.Value)
+                    ? Convert.ToInt32(cbCargos.SelectedValue)
+                    : 0;
+
                 using (SqlConnection conexion = Conexion.GetConexion())
                 {
                     if (conexion == null) return;
@@ -204,6 +238,7 @@ namespace SIstemaPlanilla.Vista
                             DataTable dt = new DataTable();
                             da.Fill(dt);
 
+
                             DataRow fila = dt.NewRow();
                             fila["ID_CARGO"] = 0;
                             fila["NOMBRE_CARGO"] = "-- Seleccione un Cargo --";
@@ -214,6 +249,7 @@ namespace SIstemaPlanilla.Vista
                                 cbCargos.DataSource = dt;
                                 cbCargos.DisplayMember = "NOMBRE_CARGO";
                                 cbCargos.ValueMember = "ID_CARGO";
+                                cbCargos.SelectedValue = cargoActual;
                             }
                         }
                     }
@@ -429,6 +465,82 @@ namespace SIstemaPlanilla.Vista
         private void btnLimpiar_Click(object? sender, EventArgs e)
         {
             LimpiarCampos();
+        }
+
+        private void Empleados_Activated(object sender, EventArgs e)
+        {
+            CargarComboCargos();
+        }
+
+        private void btnBuscar_Click(object sender, EventArgs e)
+        {
+            string nombreBuscado = txtBuscar?.Text.Trim() ?? "";
+
+            if (string.IsNullOrWhiteSpace(nombreBuscado))
+            {
+                MessageBox.Show("Por favor ingrese un nombre para buscar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CargarEmpleados(); 
+                txtBuscar?.Focus();
+                return;
+            }
+
+            try
+            {
+                using (SqlConnection conexion = Conexion.GetConexion())
+                {
+                    if (conexion == null)
+                    {
+                        MessageBox.Show("Fallo al conectar con la base de datos.", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    using (SqlCommand cmd = new SqlCommand("sp_Empleado_Listar", conexion))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@FILTRO", nombreBuscado);
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            da.Fill(dt);
+
+                            if (dgvEmpleados != null)
+                            {
+                                dgvEmpleados.DataSource = dt;
+                                if (dgvEmpleados.Columns["ID_CARGO"] != null)
+                                    dgvEmpleados.Columns["ID_CARGO"].Visible = false;
+                            }
+
+                            if (dt.Rows.Count > 0)
+                            {
+                                DataRow fila = dt.Rows[0];
+
+                                idEmpleadoSeleccionado = Convert.ToInt32(fila["ID_EMPLEADO"]);
+
+                                if (txtNombre != null) txtNombre.Text = fila["NOMBRE_COMPLETO"]?.ToString() ?? "";
+                                if (txtDui != null) txtDui.Text = fila["DUI"]?.ToString() ?? "";
+                                if (txtDireccion != null) txtDireccion.Text = fila["DIRECCION"]?.ToString() ?? "";
+                                if (txtTelefono != null) txtTelefono.Text = fila["TELEFONO"]?.ToString() ?? "";
+
+                                if (cbCargos != null && fila["ID_CARGO"] != DBNull.Value)
+                                {
+                                    cbCargos.SelectedValue = Convert.ToInt32(fila["ID_CARGO"]);
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("No se encontró ningún empleado con ese nombre.", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                LimpiarCampos();
+                                CargarEmpleados();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al buscar el empleado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

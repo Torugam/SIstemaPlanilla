@@ -17,173 +17,237 @@
 
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.lblEmpleado = new System.Windows.Forms.Label();
-            this.cbEmpleados = new System.Windows.Forms.ComboBox();
-            this.lblInicio = new System.Windows.Forms.Label();
-            this.dtpFechaInicio = new System.Windows.Forms.DateTimePicker();
-            this.lblFin = new System.Windows.Forms.Label();
-            this.dtpFechaFin = new System.Windows.Forms.DateTimePicker();
-            this.lblSalario = new System.Windows.Forms.Label();
-            this.txtSalarioBase = new System.Windows.Forms.TextBox();
-            this.lblTipo = new System.Windows.Forms.Label();
-            this.txtTipoContrato = new System.Windows.Forms.TextBox();
-            this.btnGuardar = new System.Windows.Forms.Button();
-            this.btnLimpiar = new System.Windows.Forms.Button();
-            this.dgvContratos = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvContratos)).BeginInit();
-            this.SuspendLayout();
+            label1 = new Label();
+            lblEmpleado = new Label();
+            cbEmpleados = new ComboBox();
+            lblInicio = new Label();
+            dtpFechaInicio = new DateTimePicker();
+            lblFin = new Label();
+            dtpFechaFin = new DateTimePicker();
+            lblSalario = new Label();
+            txtSalarioBase = new TextBox();
+            lblTipo = new Label();
+            btnGuardar = new Button();
+            btnLimpiar = new Button();
+            dgvContratos = new DataGridView();
+            cbTipoContrato = new ComboBox();
+            btnModificar = new Button();
+            btnEliminar = new Button();
+            lblBuscar = new Label();
+            txtBuscar = new TextBox();
+            btnBuscar = new Button();
+            ((System.ComponentModel.ISupportInitialize)dgvContratos).BeginInit();
+            SuspendLayout();
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(20, 15);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(180, 38);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "CONTRATOS";
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.Location = new Point(54, 45);
+            label1.Name = "label1";
+            label1.Size = new Size(142, 30);
+            label1.TabIndex = 0;
+            label1.Text = "CONTRATOS";
             // 
             // lblEmpleado
             // 
-            this.lblEmpleado.AutoSize = true;
-            this.lblEmpleado.Location = new System.Drawing.Point(20, 75);
-            this.lblEmpleado.Name = "lblEmpleado";
-            this.lblEmpleado.Size = new System.Drawing.Size(81, 20);
-            this.lblEmpleado.TabIndex = 1;
-            this.lblEmpleado.Text = "Empleado:";
+            lblEmpleado.AutoSize = true;
+            lblEmpleado.Location = new Point(176, 120);
+            lblEmpleado.Name = "lblEmpleado";
+            lblEmpleado.Size = new Size(63, 15);
+            lblEmpleado.TabIndex = 1;
+            lblEmpleado.Text = "Empleado:";
             // 
             // cbEmpleados
             // 
-            this.cbEmpleados.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbEmpleados.FormattingEnabled = true;
-            this.cbEmpleados.Location = new System.Drawing.Point(130, 72);
-            this.cbEmpleados.Name = "cbEmpleados";
-            this.cbEmpleados.Size = new System.Drawing.Size(220, 28);
-            this.cbEmpleados.TabIndex = 2;
+            cbEmpleados.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbEmpleados.FormattingEnabled = true;
+            cbEmpleados.Location = new Point(272, 118);
+            cbEmpleados.Margin = new Padding(3, 2, 3, 2);
+            cbEmpleados.Name = "cbEmpleados";
+            cbEmpleados.Size = new Size(193, 23);
+            cbEmpleados.TabIndex = 2;
             // 
             // lblInicio
             // 
-            this.lblInicio.AutoSize = true;
-            this.lblInicio.Location = new System.Drawing.Point(20, 115);
-            this.lblInicio.Name = "lblInicio";
-            this.lblInicio.Size = new System.Drawing.Size(91, 20);
-            this.lblInicio.TabIndex = 3;
-            this.lblInicio.Text = "Fecha Inicio:";
+            lblInicio.AutoSize = true;
+            lblInicio.Location = new Point(176, 150);
+            lblInicio.Name = "lblInicio";
+            lblInicio.Size = new Size(73, 15);
+            lblInicio.TabIndex = 3;
+            lblInicio.Text = "Fecha Inicio:";
             // 
             // dtpFechaInicio
             // 
-            this.dtpFechaInicio.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpFechaInicio.Location = new System.Drawing.Point(130, 112);
-            this.dtpFechaInicio.Name = "dtpFechaInicio";
-            this.dtpFechaInicio.Size = new System.Drawing.Size(150, 27);
-            this.dtpFechaInicio.TabIndex = 4;
+            dtpFechaInicio.Format = DateTimePickerFormat.Short;
+            dtpFechaInicio.Location = new Point(272, 148);
+            dtpFechaInicio.Margin = new Padding(3, 2, 3, 2);
+            dtpFechaInicio.Name = "dtpFechaInicio";
+            dtpFechaInicio.Size = new Size(132, 23);
+            dtpFechaInicio.TabIndex = 4;
             // 
             // lblFin
             // 
-            this.lblFin.AutoSize = true;
-            this.lblFin.Location = new System.Drawing.Point(20, 155);
-            this.lblFin.Name = "lblFin";
-            this.lblFin.Size = new System.Drawing.Size(75, 20);
-            this.lblFin.TabIndex = 5;
-            this.lblFin.Text = "Fecha Fin:";
+            lblFin.AutoSize = true;
+            lblFin.Location = new Point(176, 180);
+            lblFin.Name = "lblFin";
+            lblFin.Size = new Size(60, 15);
+            lblFin.TabIndex = 5;
+            lblFin.Text = "Fecha Fin:";
             // 
             // dtpFechaFin
             // 
-            this.dtpFechaFin.Checked = false;
-            this.dtpFechaFin.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpFechaFin.Location = new System.Drawing.Point(130, 152);
-            this.dtpFechaFin.Name = "dtpFechaFin";
-            this.dtpFechaFin.Size = new System.Drawing.Size(180, 27);
-            this.dtpFechaFin.TabIndex = 6;
+            dtpFechaFin.Checked = false;
+            dtpFechaFin.Format = DateTimePickerFormat.Short;
+            dtpFechaFin.Location = new Point(272, 178);
+            dtpFechaFin.Margin = new Padding(3, 2, 3, 2);
+            dtpFechaFin.Name = "dtpFechaFin";
+            dtpFechaFin.Size = new Size(158, 23);
+            dtpFechaFin.TabIndex = 6;
             // 
             // lblSalario
             // 
-            this.lblSalario.AutoSize = true;
-            this.lblSalario.Location = new System.Drawing.Point(400, 75);
-            this.lblSalario.Name = "lblSalario";
-            this.lblSalario.Size = new System.Drawing.Size(92, 20);
-            this.lblSalario.TabIndex = 7;
-            this.lblSalario.Text = "Salario Base:";
+            lblSalario.AutoSize = true;
+            lblSalario.Location = new Point(508, 120);
+            lblSalario.Name = "lblSalario";
+            lblSalario.Size = new Size(72, 15);
+            lblSalario.TabIndex = 7;
+            lblSalario.Text = "Salario Base:";
             // 
             // txtSalarioBase
             // 
-            this.txtSalarioBase.Location = new System.Drawing.Point(520, 72);
-            this.txtSalarioBase.Name = "txtSalarioBase";
-            this.txtSalarioBase.Size = new System.Drawing.Size(150, 27);
-            this.txtSalarioBase.TabIndex = 8;
+            txtSalarioBase.Location = new Point(613, 118);
+            txtSalarioBase.Margin = new Padding(3, 2, 3, 2);
+            txtSalarioBase.Name = "txtSalarioBase";
+            txtSalarioBase.Size = new Size(132, 23);
+            txtSalarioBase.TabIndex = 8;
             // 
             // lblTipo
             // 
-            this.lblTipo.AutoSize = true;
-            this.lblTipo.Location = new System.Drawing.Point(400, 115);
-            this.lblTipo.Name = "lblTipo";
-            this.lblTipo.Size = new System.Drawing.Size(102, 20);
-            this.lblTipo.TabIndex = 9;
-            this.lblTipo.Text = "Tipo Contrato:";
-            // 
-            // txtTipoContrato
-            // 
-            this.txtTipoContrato.Location = new System.Drawing.Point(520, 112);
-            this.txtTipoContrato.Name = "txtTipoContrato";
-            this.txtTipoContrato.Size = new System.Drawing.Size(180, 27);
-            this.txtTipoContrato.TabIndex = 10;
+            lblTipo.AutoSize = true;
+            lblTipo.Location = new Point(508, 150);
+            lblTipo.Name = "lblTipo";
+            lblTipo.Size = new Size(84, 15);
+            lblTipo.TabIndex = 9;
+            lblTipo.Text = "Tipo Contrato:";
             // 
             // btnGuardar
             // 
-            this.btnGuardar.Location = new System.Drawing.Point(520, 155);
-            this.btnGuardar.Name = "btnGuardar";
-            this.btnGuardar.Size = new System.Drawing.Size(90, 32);
-            this.btnGuardar.TabIndex = 11;
-            this.btnGuardar.Text = "Guardar";
-            this.btnGuardar.UseVisualStyleBackColor = true;
-            this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
+            btnGuardar.Location = new Point(484, 180);
+            btnGuardar.Margin = new Padding(3, 2, 3, 2);
+            btnGuardar.Name = "btnGuardar";
+            btnGuardar.Size = new Size(79, 24);
+            btnGuardar.TabIndex = 11;
+            btnGuardar.Text = "Guardar";
+            btnGuardar.UseVisualStyleBackColor = true;
+            btnGuardar.Click += btnGuardar_Click;
             // 
             // btnLimpiar
             // 
-            this.btnLimpiar.Location = new System.Drawing.Point(620, 155);
-            this.btnLimpiar.Name = "btnLimpiar";
-            this.btnLimpiar.Size = new System.Drawing.Size(90, 32);
-            this.btnLimpiar.TabIndex = 12;
-            this.btnLimpiar.Text = "Limpiar";
-            this.btnLimpiar.UseVisualStyleBackColor = true;
-            this.btnLimpiar.Click += new System.EventHandler(this.btnLimpiar_Click);
+            btnLimpiar.Location = new Point(735, 180);
+            btnLimpiar.Margin = new Padding(3, 2, 3, 2);
+            btnLimpiar.Name = "btnLimpiar";
+            btnLimpiar.Size = new Size(79, 24);
+            btnLimpiar.TabIndex = 12;
+            btnLimpiar.Text = "Limpiar";
+            btnLimpiar.UseVisualStyleBackColor = true;
+            btnLimpiar.Click += btnLimpiar_Click;
             // 
             // dgvContratos
             // 
-            this.dgvContratos.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dgvContratos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvContratos.Location = new System.Drawing.Point(20, 210);
-            this.dgvContratos.Name = "dgvContratos";
-            this.dgvContratos.RowHeadersWidth = 51;
-            this.dgvContratos.Size = new System.Drawing.Size(750, 215);
-            this.dgvContratos.TabIndex = 13;
+            dgvContratos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvContratos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvContratos.Location = new Point(120, 241);
+            dgvContratos.Margin = new Padding(3, 2, 3, 2);
+            dgvContratos.Name = "dgvContratos";
+            dgvContratos.RowHeadersWidth = 51;
+            dgvContratos.Size = new Size(791, 204);
+            dgvContratos.TabIndex = 13;
+            // 
+            // cbTipoContrato
+            // 
+            cbTipoContrato.FormattingEnabled = true;
+            cbTipoContrato.Location = new Point(612, 147);
+            cbTipoContrato.Name = "cbTipoContrato";
+            cbTipoContrato.Size = new Size(158, 23);
+            cbTipoContrato.TabIndex = 14;
+            // 
+            // btnModificar
+            // 
+            btnModificar.Location = new Point(569, 180);
+            btnModificar.Name = "btnModificar";
+            btnModificar.Size = new Size(75, 23);
+            btnModificar.TabIndex = 15;
+            btnModificar.Text = "Modificar";
+            btnModificar.UseVisualStyleBackColor = true;
+            // 
+            // btnEliminar
+            // 
+            btnEliminar.Location = new Point(654, 181);
+            btnEliminar.Name = "btnEliminar";
+            btnEliminar.Size = new Size(75, 23);
+            btnEliminar.TabIndex = 16;
+            btnEliminar.Text = "Eliminar";
+            btnEliminar.UseVisualStyleBackColor = true;
+            // 
+            // lblBuscar
+            // 
+            lblBuscar.AutoSize = true;
+            lblBuscar.Location = new Point(276, 83);
+            lblBuscar.Name = "lblBuscar";
+            lblBuscar.Size = new Size(42, 15);
+            lblBuscar.TabIndex = 21;
+            lblBuscar.Text = "Buscar";
+            // 
+            // txtBuscar
+            // 
+            txtBuscar.Location = new Point(318, 80);
+            txtBuscar.Name = "txtBuscar";
+            txtBuscar.Size = new Size(326, 23);
+            txtBuscar.TabIndex = 20;
+            txtBuscar.Text = "Buscar por nombre del empleado";
+            // 
+            // btnBuscar
+            // 
+            btnBuscar.Location = new Point(659, 79);
+            btnBuscar.Name = "btnBuscar";
+            btnBuscar.Size = new Size(75, 23);
+            btnBuscar.TabIndex = 19;
+            btnBuscar.Text = "Buscar";
+            btnBuscar.UseVisualStyleBackColor = true;
+            btnBuscar.Click += btnBuscar_Click;
             // 
             // Contratos
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.dgvContratos);
-            this.Controls.Add(this.btnLimpiar);
-            this.Controls.Add(this.btnGuardar);
-            this.Controls.Add(this.txtTipoContrato);
-            this.Controls.Add(this.lblTipo);
-            this.Controls.Add(this.txtSalarioBase);
-            this.Controls.Add(this.lblSalario);
-            this.Controls.Add(this.dtpFechaFin);
-            this.Controls.Add(this.lblFin);
-            this.Controls.Add(this.dtpFechaInicio);
-            this.Controls.Add(this.lblInicio);
-            this.Controls.Add(this.cbEmpleados);
-            this.Controls.Add(this.lblEmpleado);
-            this.Controls.Add(this.label1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "Contratos";
-            this.Text = "Contratos";
-            this.Load += new System.EventHandler(this.Contratos_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvContratos)).EndInit();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1000, 553);
+            Controls.Add(lblBuscar);
+            Controls.Add(txtBuscar);
+            Controls.Add(btnBuscar);
+            Controls.Add(btnEliminar);
+            Controls.Add(btnModificar);
+            Controls.Add(cbTipoContrato);
+            Controls.Add(dgvContratos);
+            Controls.Add(btnLimpiar);
+            Controls.Add(btnGuardar);
+            Controls.Add(lblTipo);
+            Controls.Add(txtSalarioBase);
+            Controls.Add(lblSalario);
+            Controls.Add(dtpFechaFin);
+            Controls.Add(lblFin);
+            Controls.Add(dtpFechaInicio);
+            Controls.Add(lblInicio);
+            Controls.Add(cbEmpleados);
+            Controls.Add(lblEmpleado);
+            Controls.Add(label1);
+            FormBorderStyle = FormBorderStyle.None;
+            Margin = new Padding(3, 2, 3, 2);
+            Name = "Contratos";
+            Text = "Contratos";
+            Load += Contratos_Load;
+            ((System.ComponentModel.ISupportInitialize)dgvContratos).EndInit();
+            ResumeLayout(false);
             PerformLayout();
         }
 
@@ -199,9 +263,14 @@
         private System.Windows.Forms.Label lblSalario;
         private System.Windows.Forms.TextBox txtSalarioBase;
         private System.Windows.Forms.Label lblTipo;
-        private System.Windows.Forms.TextBox txtTipoContrato;
         private System.Windows.Forms.Button btnGuardar;
         private System.Windows.Forms.Button btnLimpiar;
         private System.Windows.Forms.DataGridView dgvContratos;
+        private ComboBox cbTipoContrato;
+        private Button btnModificar;
+        private Button btnEliminar;
+        private Label lblBuscar;
+        private TextBox txtBuscar;
+        private Button btnBuscar;
     }
 }
