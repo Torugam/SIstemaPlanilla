@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace SIstemaPlanilla.Vista
 {
-    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo
+    
     public partial class Departamentos : Form
     {
         private int idDepartamentoSeleccionado = 0;
@@ -29,6 +29,7 @@ namespace SIstemaPlanilla.Vista
             this.Load += Departamentos_Load;
         }
 
+        // Método para aplicar el diseño personalizado a los controles del formulario
         private void Diseño()
         {
             Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321");
@@ -93,6 +94,7 @@ namespace SIstemaPlanilla.Vista
             LimpiarCampos();
         }
 
+        // Configura las propiedades del DataGridView para mejorar la experiencia del usuario
         private void ConfigurarDataGridView()
         {
             if (dgvDepartamentos != null)
@@ -106,6 +108,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Carga los departamentos desde la base de datos y los muestra en el DataGridView
         private void CargarDepartamentos()
         {
             try
@@ -122,6 +125,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Oculta las columnas de ID en el DataGridView para mejorar la presentación
         private void OcultarColumnasId()
         {
             if (dgvDepartamentos == null) return;
@@ -133,6 +137,7 @@ namespace SIstemaPlanilla.Vista
                 dgvDepartamentos.Columns["ID_DEPARTAMENTO"].Visible = false;
         }
 
+        // Carga los encargados desde la base de datos y los muestra en el ComboBox
         private void CargarComboEncargados()
         {
             try
@@ -157,6 +162,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Evento del botón Guardar para registrar un nuevo departamento
         private void btnGuardar_Click(object? sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtNombreDepto?.Text))
@@ -187,6 +193,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Evento del botón Modificar para actualizar un departamento existente
         private void btnModificar_Click(object? sender, EventArgs e)
         {
             if (idDepartamentoSeleccionado == 0)
@@ -224,6 +231,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Evento del botón Eliminar para borrar un departamento seleccionado
         private void btnEliminar_Click(object? sender, EventArgs e)
         {
             if (idDepartamentoSeleccionado == 0)
@@ -247,6 +255,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Evento del DataGridView para seleccionar un departamento y mostrar sus detalles en los campos de texto
         private void dgvDepartamentos_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && dgvDepartamentos != null)
@@ -278,6 +287,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Limpia los campos de entrada y restablece el estado del formulario
         private void LimpiarCampos()
         {
             idDepartamentoSeleccionado = 0;
@@ -293,6 +303,7 @@ namespace SIstemaPlanilla.Vista
             LimpiarCampos();
         }
 
+        // Evento del botón Buscar para filtrar los departamentos por nombre
         private void btnBuscar_Click(object sender, EventArgs e)
         {
             string nombreBuscado = txtBuscar?.Text.Trim() ?? "";

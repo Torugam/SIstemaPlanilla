@@ -6,6 +6,7 @@ namespace SistemaPlanilla.Modelo
 {
     public static class HelperSeguridad
     {
+        //metodo para calcular el hash SHA256 de un texto
         public static string CalcularSHA256(string texto)
         {
             using (SHA256 sha256 = SHA256.Create())

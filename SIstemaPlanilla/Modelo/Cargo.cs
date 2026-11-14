@@ -12,6 +12,7 @@ namespace SistemaPlanilla.Modelo
         public decimal SalarioMin { get; set; }
         public decimal SalarioMax { get; set; }
 
+        //metodo para obtener todos los cargos 
         public DataTable ObtenerTodosLosCargos()
         {
             DataTable dt = new DataTable();
@@ -26,6 +27,7 @@ namespace SistemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para buscar cargos por nombre o cargo superior
         public DataTable BuscarCargos(string filtro)
         {
             DataTable dt = new DataTable();
@@ -45,6 +47,7 @@ namespace SistemaPlanilla.Modelo
             return dt;
         }
 
+        //meotodo para obtener los cargos para un combo box
         public DataTable ObtenerCargosParaCombo()
         {
             DataTable dt = new DataTable();
@@ -59,6 +62,7 @@ namespace SistemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para insertar un cargo
         public bool Insertar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -92,6 +96,7 @@ namespace SistemaPlanilla.Modelo
             }
         }
 
+        //metodo para actualizar un cargo
         public bool Actualizar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -126,6 +131,7 @@ namespace SistemaPlanilla.Modelo
             }
         }
 
+        //metodo para eliminar un cargo
         public bool EliminarCargo(out string mensaje)
         {
             mensaje = string.Empty;

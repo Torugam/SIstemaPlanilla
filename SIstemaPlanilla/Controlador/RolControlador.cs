@@ -11,6 +11,7 @@ namespace SIstemaPlanilla.Controlador
 {
     internal class RolControlador
     {
+        // Implementación de métodos para manejar la lógica de negocio relacionada con las roles y permisos
         public DataTable ListarRoles()
         {
             Rol objRol = new Rol();

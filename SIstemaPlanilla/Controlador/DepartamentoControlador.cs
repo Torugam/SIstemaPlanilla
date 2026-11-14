@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace SIstemaPlanilla.Controlador
 {
-    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo.
+  
     internal class DepartamentoControlador
     {
+        // Implementación de métodos para manejar la lógica de negocio relacionada con las departamentos
         public DataTable ListarDepartamentos()
         {
             Departamento obj = new Departamento();

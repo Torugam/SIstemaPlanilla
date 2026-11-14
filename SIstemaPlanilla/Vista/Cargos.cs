@@ -28,6 +28,7 @@ namespace SIstemaPlanilla.Vista
             CargarGrid();
         }
 
+        // metodo para cargar el combo box de cargos superiores
         private void CargarCombo()
         {
             DataTable dt = controlador.ListarCargosCombo();
@@ -43,6 +44,7 @@ namespace SIstemaPlanilla.Vista
             cbCargoSuperior.SelectedIndex = 0;
         }
 
+        // metodo para cargar el datagridview con los cargos
         private void CargarGrid()
         {
             try
@@ -56,6 +58,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // metodo para ocultar columnas innecesarias en el datagridview
         private void OcultarColumnas()
         {
             if (dgvCargos.Columns["ID_CARGO"] != null) dgvCargos.Columns["ID_CARGO"].Visible = false;
@@ -66,7 +69,7 @@ namespace SIstemaPlanilla.Vista
         }
 
 
-
+        // metodo para limpiar los campos del formulario
 
         private void Limpiar()
         {
@@ -78,7 +81,7 @@ namespace SIstemaPlanilla.Vista
             txtNombreCargo.Focus();
         }
 
-
+        // metodo para validar los campos del formulario
         private bool ValidarCampos(out decimal salMin, out decimal salMax)
         {
             salMin = 0;
@@ -107,6 +110,7 @@ namespace SIstemaPlanilla.Vista
             return true;
         }
 
+        // metodo para construir un objeto Cargo a partir de los datos del formulario
         private Cargo ConstruirCargo(decimal salMin, decimal salMax)
         {
             int idSuperior = Convert.ToInt32(cbCargoSuperior.SelectedValue);
@@ -121,6 +125,7 @@ namespace SIstemaPlanilla.Vista
             };
         }
 
+        // metodo para aplicar el diseño al formulario y sus controles
         private void Diseño()
         {
             Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321");
@@ -177,6 +182,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        //evento para guardar un nuevo cargo
         private void btnGuardar_Click_1(object sender, EventArgs e)
         {
             if (!ValidarCampos(out decimal salMin, out decimal salMax)) return;
@@ -196,6 +202,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        //evento para modificar un cargo existente
         private void btnModificar_Click_1(object sender, EventArgs e)
         {
             if (idCargoSeleccionado == 0)
@@ -220,6 +227,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        //evento para eliminar un cargo existente
         private void btnEliminar_Click_1(object sender, EventArgs e)
         {
             if (idCargoSeleccionado == 0)
@@ -244,6 +252,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        //evento para limpiar los campos del formulario
         private void btnLimpiar_Click_1(object sender, EventArgs e)
         {
 
@@ -251,6 +260,7 @@ namespace SIstemaPlanilla.Vista
             CargarGrid();
         }
 
+        //evento para seleccionar un cargo de la tabla y mostrar sus datos en los campos del formulario
         private void dgvCargos_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
@@ -273,6 +283,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        //evento para buscar cargos en la tabla a medida que se escribe en el campo de búsqueda
         private void txtBuscar_TextChanged(object sender, EventArgs e)
         {
             string filtro = txtBuscar.Text.Trim();

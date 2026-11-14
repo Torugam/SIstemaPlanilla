@@ -26,6 +26,7 @@ namespace SIstemaPlanilla.Vista
             CargarGridRoles();
         }
 
+        // Carga los roles en el DataGridView
         private void CargarGridRoles()
         {
             try
@@ -45,6 +46,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Limpia los campos del formulario
         private void Limpiar()
         {
             idRolSeleccionado = 0;
@@ -54,6 +56,7 @@ namespace SIstemaPlanilla.Vista
             txtNombreRol.Focus();
         }
 
+        // Evento que se dispara al hacer clic en una celda del DataGridView
         private void dgvRoles_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -80,6 +83,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento que guarada o modifica un rol según corresponda
         private void btnGuardar_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtNombreRol.Text))
@@ -101,7 +105,7 @@ namespace SIstemaPlanilla.Vista
 
             string nombre = txtNombreRol.Text.Trim();
 
-            if (idRolSeleccionado == 0) // Guardar nuevo
+            if (idRolSeleccionado == 0) 
             {
                 if (controlador.CrearNuevoRol(nombre, permisosSeleccionados))
                 {
@@ -121,10 +125,13 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento que limpia los campos del formulario
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             Limpiar();
         }
+
+        // Método para aplicar el diseño a los controles del formulario
 
         private void Diseño()
         {
@@ -188,6 +195,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Evento que se dispara al cambiar el texto en el cuadro de búsqueda
         private void txtBuscar_TextChanged(object sender, EventArgs e)
         {
             string filtro = txtBuscar.Text.Trim();

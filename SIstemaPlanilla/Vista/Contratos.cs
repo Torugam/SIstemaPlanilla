@@ -9,7 +9,6 @@ using System.Windows.Forms;
 
 namespace SIstemaPlanilla.Vista
 {
-    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo
     public partial class Contratos : Form
     {
         private int idEmpleadoSeleccionado = 0;
@@ -19,7 +18,6 @@ namespace SIstemaPlanilla.Vista
         {
             InitializeComponent();
 
-            if (btnGuardar != null) btnGuardar.Click += btnGuardar_Click;
             if (btnModificar != null) btnModificar.Click += btnModificar_Click;
             if (btnEliminar != null) btnEliminar.Click += btnEliminar_Click;
             if (btnLimpiar != null) btnLimpiar.Click += btnLimpiar_Click;
@@ -37,6 +35,7 @@ namespace SIstemaPlanilla.Vista
             this.Activated += Contratos_Activated;
         }
 
+        // Método para aplicar el diseño personalizado a los controles del formulario
         private void Diseño()
         {
             Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321");
@@ -104,9 +103,10 @@ namespace SIstemaPlanilla.Vista
 
         private void Contratos_Activated(object? sender, EventArgs e)
         {
-            CargarComboEmpleados();
+            if (idEmpleadoSeleccionado == 0) CargarComboEmpleados();
         }
 
+        // Configuración del DataGridView para mostrar los contratos
         private void ConfigurarDataGridView()
         {
             if (dgvContratos != null)
@@ -147,6 +147,8 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Carga de contratos en el DataGridView con un filtro opcional
+
         private void CargarContratos(string filtro = "")
         {
             try
@@ -163,15 +165,32 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Carga de empleados en el ComboBox, incluyendo al empleado actualmente seleccionado si no está en la lista
         private void CargarComboEmpleados()
         {
             try
             {
-                int empActual = (cbEmpleados != null && cbEmpleados.SelectedValue != null && cbEmpleados.SelectedValue != DBNull.Value)
-                    ? Convert.ToInt32(cbEmpleados.SelectedValue)
-                    : 0;
+                int empActual = 0;
+                string nombreActual = "";
+
+                if (cbEmpleados != null && cbEmpleados.SelectedValue != null && cbEmpleados.SelectedValue != DBNull.Value)
+                {
+                    if (int.TryParse(cbEmpleados.SelectedValue.ToString(), out int id))
+                    {
+                        empActual = id;
+                        nombreActual = cbEmpleados.Text;
+                    }
+                }
 
                 DataTable dt = controlador.ListarEmpleadosSinContrato();
+
+                if (empActual > 0 && !dt.AsEnumerable().Any(r => Convert.ToInt32(r["ID_EMPLEADO"]) == empActual))
+                {
+                    DataRow actual = dt.NewRow();
+                    actual["ID_EMPLEADO"] = empActual;
+                    actual["NOMBRE_COMPLETO"] = nombreActual;
+                    dt.Rows.Add(actual);
+                }
 
                 DataRow fila = dt.NewRow();
                 fila["ID_EMPLEADO"] = 0;
@@ -191,6 +210,8 @@ namespace SIstemaPlanilla.Vista
                 MessageBox.Show("Error al cargar empleados: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        // Carga de tipos de contrato en el ComboBox
 
         private void CargarComboTipoContrato()
         {
@@ -224,44 +245,40 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Actualiza la visibilidad de los controles de fecha según el tipo de contrato seleccionado
         private void cbTipoContrato_SelectedIndexChanged(object? sender, EventArgs e)
         {
             ActualizarVisibilidadFechas();
         }
 
+        // Maneja el evento de clic en el botón Guardar para registrar un nuevo contrato
         private void btnGuardar_Click(object? sender, EventArgs e)
         {
-            /*if (cbEmpleados?.SelectedValue == null || Convert.ToInt32(cbEmpleados.SelectedValue) == 0 ||
-                cbTipoContrato?.SelectedValue == null || string.IsNullOrWhiteSpace(cbTipoContrato.SelectedValue.ToString()))
-            {
-                MessageBox.Show("Por favor seleccione un empleado y el tipo de contrato.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }*/
-
             decimal.TryParse(txtSalarioBase?.Text.Trim(), out decimal salario);
 
             Contrato nuevo = new Contrato
             {
-                IdEmpleado = Convert.ToInt32(cbEmpleados.SelectedValue),
-                TipoContrato = cbTipoContrato.SelectedValue.ToString()!.Trim().ToUpper(),
+                IdEmpleado = cbEmpleados?.SelectedValue != null ? Convert.ToInt32(cbEmpleados.SelectedValue) : 0,
+                TipoContrato = cbTipoContrato?.SelectedValue?.ToString()?.Trim().ToUpper() ?? "",
                 SalarioBase = salario,
                 FechaInicio = dtpFechaInicio?.Value ?? DateTime.Now,
-                FechaFin = dtpFechaFin?.Value ?? DateTime.Now.AddMonths(6)
+                FechaFin = dtpFechaFin?.Value ?? DateTime.Now
             };
 
             if (controlador.GuardarNuevoContrato(nuevo, out string mensaje))
             {
-                MessageBox.Show("Contrato registrado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Contrato registrado exitosamente.", "Éxito",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LimpiarCampos();
                 CargarContratos();
-                CargarComboEmpleados();
             }
             else
             {
-                MessageBox.Show("Error al guardar el contrato: " + mensaje, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(mensaje, "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
+        // Maneja el evento de clic en el botón Modificar para actualizar un contrato existente
         private void btnModificar_Click(object? sender, EventArgs e)
         {
             if (idEmpleadoSeleccionado == 0)
@@ -294,6 +311,8 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Actualiza la visibilidad de los controles de fecha según el tipo de contrato seleccionado
+
         private void ActualizarVisibilidadFechas()
         {
             if (cbTipoContrato == null) return;
@@ -322,6 +341,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Maneja el evento de clic en el botón Eliminar para eliminar un contrato seleccionado
         private void btnEliminar_Click(object? sender, EventArgs e)
         {
             if (idEmpleadoSeleccionado == 0)
@@ -346,12 +366,15 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Maneja el evento de clic en una celda del DataGridView para seleccionar un contrato y mostrar sus detalles en los controles correspondientes
         private void dgvContratos_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && dgvContratos != null)
             {
                 DataGridViewRow row = dgvContratos.Rows[e.RowIndex];
                 idEmpleadoSeleccionado = Convert.ToInt32(row.Cells["ID_EMPLEADO"].Value);
+                string nombre = row.Cells["NOMBRE_COMPLETO"].Value?.ToString() ?? "";
+                SeleccionarEmpleadoEnCombo(idEmpleadoSeleccionado, nombre);
 
                 if (cbEmpleados != null)
                 {
@@ -379,15 +402,46 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Selecciona un empleado en el ComboBox, agregándolo si no está presente en la lista
+        private void SeleccionarEmpleadoEnCombo(int id, string nombre)
+        {
+            if (cbEmpleados == null) return;
+
+            DataTable dt = controlador.ListarEmpleadosSinContrato();
+
+            if (!dt.AsEnumerable().Any(r => Convert.ToInt32(r["ID_EMPLEADO"]) == id))
+            {
+                DataRow actual = dt.NewRow();
+                actual["ID_EMPLEADO"] = id;
+                actual["NOMBRE_COMPLETO"] = nombre;
+                dt.Rows.Add(actual);
+            }
+
+            DataRow vacio = dt.NewRow();
+            vacio["ID_EMPLEADO"] = 0;
+            vacio["NOMBRE_COMPLETO"] = "-- Seleccione un Empleado --";
+            dt.Rows.InsertAt(vacio, 0);
+
+            cbEmpleados.DataSource = dt;
+            cbEmpleados.DisplayMember = "NOMBRE_COMPLETO";
+            cbEmpleados.ValueMember = "ID_EMPLEADO";
+            cbEmpleados.SelectedValue = id;
+        }
+
+        // Maneja el evento de clic en el contenido de una celda del DataGridView para seleccionar un contrato y mostrar sus detalles en los controles correspondientes
         private void dgvContratos_CellContentClick(object? sender, DataGridViewCellEventArgs e)
         {
             dgvContratos_CellClick(sender, e);
         }
 
+        // Limpia los campos del formulario y reinicia la selección de empleado y tipo de contrato
         private void LimpiarCampos()
         {
             idEmpleadoSeleccionado = 0;
+
+            if (cbEmpleados != null) cbEmpleados.SelectedIndex = -1; 
             CargarComboEmpleados();
+
             if (cbTipoContrato != null && cbTipoContrato.Items.Count > 0) cbTipoContrato.SelectedIndex = 0;
             if (txtSalarioBase != null) txtSalarioBase.Clear();
             if (txtBuscar != null) txtBuscar.Clear();
@@ -395,10 +449,12 @@ namespace SIstemaPlanilla.Vista
             if (dtpFechaFin != null) dtpFechaFin.Value = DateTime.Now;
         }
 
+        // Maneja el evento de clic en el botón Limpiar para restablecer los campos del formulario
         private void btnLimpiar_Click(object? sender, EventArgs e)
         {
             LimpiarCampos();
         }
+        // Oculta las columnas de ID en el DataGridView para mejorar la presentación
 
         private void OcultarColumnasId()
         {
@@ -411,6 +467,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Maneja el evento de clic en el botón Buscar para filtrar los contratos por nombre de empleado
         private void btnBuscar_Click(object? sender, EventArgs e)
         {
             string nombreBuscado = txtBuscar?.Text.Trim() ?? "";

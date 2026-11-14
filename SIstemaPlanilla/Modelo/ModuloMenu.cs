@@ -5,7 +5,8 @@ using System.Data.SqlClient;
 
 namespace SistemaPlanilla.Modelo
 {
-    // Catálogo estático de tus pantallas (Enum)
+
+    // opciones del sistema
     public enum OpcionesSistema
     {
         Administracion = 1,
@@ -13,10 +14,13 @@ namespace SistemaPlanilla.Modelo
         GestionPlanilla = 3
     }
 
+    // Clase para manejar los permisos de los roles en el sistema
     public static class ModuloMenu
     {
+        // Método para obtener los permisos de un rol específico
         public static List<int> ObtenerPermisos(int idRol)
         {
+            // Lista para almacenar los permisos del rol
             List<int> permisos = new List<int>();
             string query = "SELECT ID_OPCION FROM ROL_OPCION WHERE ID_ROL = @idRol";
 

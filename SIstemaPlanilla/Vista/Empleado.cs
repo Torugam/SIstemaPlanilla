@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace SIstemaPlanilla.Vista
 {
-    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo
+    
     public partial class Empleado : Form
     {
         private int idEmpleadoSeleccionado = 0;
@@ -41,6 +41,7 @@ namespace SIstemaPlanilla.Vista
             this.Load += Empleado_Load;
         }
 
+        // Método para aplicar el diseño personalizado a los controles del formulario
         private void Diseño()
         {
             Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321");
@@ -97,6 +98,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Método para crear el botón "Reactivar" por código
         private void CrearBotonReactivarPorCodigo()
         {
             btnReactivar = new Button();
@@ -131,6 +133,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Método para configurar las propiedades del DataGridView
         private void ConfigurarDataGridView()
         {
             if (dgvEmpleados != null)
@@ -174,6 +177,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Método para cargar los empleados en el DataGridView
         private void CargarEmpleados(string filtro = "")
         {
             try
@@ -192,11 +196,9 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
-        private void txtBuscar_TextChanged(object? sender, EventArgs e)
-        {
-            string textoBusqueda = txtBuscar?.Text ?? string.Empty;
-            CargarEmpleados(textoBusqueda);
-        }
+        
+
+        // Método para cargar los cargos en el ComboBox
 
         private void CargarComboCargos()
         {
@@ -227,6 +229,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento para guardar un nuevo empleado
         private void btnGuardar_Click(object? sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtNombre?.Text) || string.IsNullOrWhiteSpace(txtDui?.Text) || cbCargos?.SelectedValue == null || Convert.ToInt32(cbCargos.SelectedValue) == 0)
@@ -256,6 +259,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento para modificar un empleado existente
         private void btnModificar_Click(object? sender, EventArgs e)
         {
             if (idEmpleadoSeleccionado == 0)
@@ -287,6 +291,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento para cambiar estado (dar de baja) un empleado
         private void btnEliminar_Click(object? sender, EventArgs e)
         {
             if (idEmpleadoSeleccionado == 0)
@@ -310,6 +315,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento para reactivar un empleado inactivo
         private void btnReactivar_Click(object? sender, EventArgs e)
         {
             if (idEmpleadoSeleccionado == 0)
@@ -333,6 +339,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento para seleccionar un empleado de la tabla y mostrar sus datos en los campos correspondientes
         private void dgvEmpleados_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && dgvEmpleados != null)
@@ -357,6 +364,7 @@ namespace SIstemaPlanilla.Vista
             dgvEmpleados_CellClick(sender, e);
         }
 
+        // evento para limpiar los campos del formulario
         private void LimpiarCampos()
         {
             idEmpleadoSeleccionado = 0;
@@ -369,11 +377,13 @@ namespace SIstemaPlanilla.Vista
             if (txtNombre != null) txtNombre.Focus();
         }
 
+        // evento para limpiar los campos del formulario al hacer clic en el botón "Limpiar"
         private void btnLimpiar_Click(object? sender, EventArgs e)
         {
             LimpiarCampos();
         }
 
+        // evento para buscar un empleado por nombre
 
         private void btnBuscar_Click(object? sender, EventArgs e)
         {
@@ -433,6 +443,7 @@ namespace SIstemaPlanilla.Vista
             CargarComboCargos();
         }
 
+        // Método para ocultar las columnas de ID en el DataGridView
         private void OcultarColumnasId()
         {
             if (dgvEmpleados == null) return;

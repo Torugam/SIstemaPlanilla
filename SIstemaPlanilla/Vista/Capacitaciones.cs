@@ -25,6 +25,7 @@ namespace SIstemaPlanilla.Vista
             CargarGrid();
         }
 
+        // metodo para cargar los datos en el DataGridView
         private void CargarGrid()
         {
             try
@@ -38,12 +39,14 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // metodo para ocultar columnas innecesarias en el DataGridView
         private void OcultarColumnas()
         {
             if (dgvCapacitaciones.Columns["ID_CAPACITACION"] != null)
                 dgvCapacitaciones.Columns["ID_CAPACITACION"].Visible = false;
         }
 
+        // metodo para limpiar los campos del formulario
         private void Limpiar()
         {
             idCapacitacionSeleccionada = 0;
@@ -53,6 +56,7 @@ namespace SIstemaPlanilla.Vista
             txtNombreCapacitacion.Focus();
         }
 
+        // metodo para validar los campos del formulario
         private bool ValidarCampos(out int horas)
         {
             horas = 0;
@@ -70,6 +74,7 @@ namespace SIstemaPlanilla.Vista
             return true;
         }
 
+        // metodo para construir un objeto Capacitacion a partir de los datos del formulario
         private Capacitacion ConstruirCapacitacion(int horas)
         {
             return new Capacitacion
@@ -81,6 +86,7 @@ namespace SIstemaPlanilla.Vista
             };
         }
 
+        // evento para guardar una nueva capacitación
         private void btnGuardar_Click(object sender, EventArgs e)
         {
             if (!ValidarCampos(out int horas)) return;
@@ -99,6 +105,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento para modificar una capacitación existente
         private void btnModificar_Click(object sender, EventArgs e)
         {
             if (idCapacitacionSeleccionada == 0)
@@ -122,6 +129,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento para eliminar una capacitación seleccionada
         private void btnEliminar_Click(object sender, EventArgs e)
         {
             if (idCapacitacionSeleccionada == 0)
@@ -145,6 +153,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento para buscar capacitaciones en tiempo real mientras se escribe en el TextBox de búsqueda
         private void txtBuscar_TextChanged(object sender, EventArgs e)
         {
             string filtro = txtBuscar.Text.Trim();
@@ -156,6 +165,7 @@ namespace SIstemaPlanilla.Vista
                 OcultarColumnas();
             }
         }
+        // evento para seleccionar una capacitación de la tabla y mostrar sus datos en los campos del formulario
 
         private void dgvCapacitaciones_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -171,11 +181,14 @@ namespace SIstemaPlanilla.Vista
             txtHoras.Text = row.Cells["Horas"].Value.ToString();
         }
 
+        // evento para limpiar los campos del formulario y recargar la tabla
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             Limpiar();
             CargarGrid();
         }
+
+        // metodo para aplicar el diseño personalizado a los controles del formulario
 
         private void Diseño()
         {

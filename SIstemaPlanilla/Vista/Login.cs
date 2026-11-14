@@ -33,6 +33,7 @@ namespace SistemaPlanilla.Vista
             ConstruirDiseñoFormulario();
         }
 
+        // metodo para construir el diseño del formulario de login
         private void ConstruirDiseñoFormulario()
         {
             this.Size = new Size(750, 450);
@@ -146,25 +147,27 @@ namespace SistemaPlanilla.Vista
             this.Controls.Add(btnIngresar);
         }
 
+        // Evento del botón de ingreso al sistema
         private void btnIngresar_Click(object? sender, EventArgs e)
         {
+            
             string username = txtUsuario.Text.Trim();
             string password = txtPassword.Text.Trim();
             string mensajeRespuesta = "";
-
+            
             bool exito = controlador.IniciarSesion(username, password, out mensajeRespuesta);
 
             if (exito)
             {
 
-                
+                // Mostrar mensaje de bienvenida
                 MessageBox.Show($"¡Bienvenido {SesionUsuario.Username}!", "Acceso Concedido", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 
 
                 Form1 frmPrincipal = new Form1();
                 this.Hide();                 
                 frmPrincipal.ShowDialog();
-
+                // Verificar si el usuario decidió salir del programa desde el formulario principal
                 if (frmPrincipal.SalirDelPrograma)
                 {
                     Application.Exit();
@@ -182,6 +185,7 @@ namespace SistemaPlanilla.Vista
             }
         }
 
+        // Método para mostrar mensajes de error en el formulario
         private void MostrarError(string mensaje)
         {
             lblError.Text = mensaje;

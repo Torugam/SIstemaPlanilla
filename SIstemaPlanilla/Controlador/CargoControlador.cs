@@ -7,6 +7,7 @@ namespace SIstemaPlanilla.Controlador
 {
     internal class CargoControlador
     {
+        // Implementación de métodos para manejar la lógica de negocio relacionada con las cargos
         public DataTable ListarCargos()
         {
             Cargo objCargo = new Cargo();

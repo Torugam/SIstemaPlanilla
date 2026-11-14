@@ -10,6 +10,7 @@ namespace SIstemaPlanilla
 {
     public partial class Form1 : Form
     {
+        // Instancias de los formularios
         Empleado empleado = null!;
         Departamentos departamento = null!;
         Contratos contratos = null!;
@@ -24,7 +25,7 @@ namespace SIstemaPlanilla
         CapacitacionesEmpleado capacitacionEmpleado = null!;
 
 
-
+        // Variables para controlar el estado de los menús
         bool menuExpandidoAdministracion = false;
         bool menuExpandidoGestion = false;
         bool sliderExpandido = true;
@@ -48,11 +49,14 @@ namespace SIstemaPlanilla
             AplicarPermisosMenu();
         }
 
+        // Método para actualizar la hora en el label lbHoras
+
         private void ActualizarHora()
         {
             lbHoras.Text = DateTime.Now.ToString("dd/MM/yyyy  hh:mm:ss tt");
         }
 
+        // Método para aplicar los permisos de los menús según el rol del usuario
         private void AplicarPermisosMenu()
         {
             if (btnAdministracion != null) btnAdministracion.Visible = false;
@@ -62,7 +66,7 @@ namespace SIstemaPlanilla
             if (menuContainer != null) menuContainer.Visible = false;
             if (menuPlanilla != null) menuPlanilla.Visible = false;
 
-
+            // Obtener los permisos del usuario según su rol
             List<int> permisos = ModuloMenu.ObtenerPermisos(SesionUsuario.IdRol);
 
 
@@ -86,7 +90,7 @@ namespace SIstemaPlanilla
         }
 
 
-
+        // Método para manejar la transición de expansión y contracción del menú
         private void menuTransicion_Tick(object sender, EventArgs e)
         {
             if (menuExpandido == false)
@@ -109,6 +113,7 @@ namespace SIstemaPlanilla
             }
         }
 
+        // Método para manejar la transición de expansión y contracción del slider
         private void sliderTransicion_Tick(object sender, EventArgs e)
         {
             if (sliderExpandido)
@@ -141,6 +146,7 @@ namespace SIstemaPlanilla
             }
         }
 
+        // Evento para manejar el clic en el botón del menú
         private void pMenu_Click(object sender, EventArgs e)
         {
             sliderTransicion.Start();
@@ -156,6 +162,7 @@ namespace SIstemaPlanilla
             menuGestion.Start();
         }
 
+        // Evento para manejar la transición de expansión y contracción del menú de gestión
         private void menuGestion_Tick(object sender, EventArgs e)
         {
             if (menuExpandidoGestion == false)
@@ -183,6 +190,7 @@ namespace SIstemaPlanilla
             menuUsuario.Start();
         }
 
+        // Evento para manejar la transición de expansión y contracción del menú de administración
         private void menuUsuario_Tick(object sender, EventArgs e)
         {
             if (menuExpandidoAdministracion == false)
@@ -210,6 +218,7 @@ namespace SIstemaPlanilla
 
         }
 
+        // evento para abrir el formulario de Departamentos
         private void btnDepartamento_Click(object sender, EventArgs e)
         {
             if (departamento == null)
@@ -226,6 +235,7 @@ namespace SIstemaPlanilla
             }
         }
 
+        // evento para cerrar el formulario de Departamentos
         private void Departamento_FormClosed(object? sender, FormClosedEventArgs e)
         {
             departamento = null!;

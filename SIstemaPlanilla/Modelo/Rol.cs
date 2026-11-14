@@ -10,6 +10,7 @@ namespace SistemaPlanilla.Modelo
         public int IdRol { get; set; }
         public string NombreRol { get; set; } = string.Empty;
 
+        //metodo para obtener todos los roles
         public DataTable ObtenerTodosLosRoles()
         {
             DataTable dt = new DataTable();
@@ -25,6 +26,7 @@ namespace SistemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para obtener los permisos asignados a un rol
         public List<int> ObtenerPermisosAsignados(int idRol)
         {
             List<int> permisos = new List<int>();
@@ -44,6 +46,7 @@ namespace SistemaPlanilla.Modelo
             return permisos;
         }
 
+        //metodo para guardar un rol con sus permisos
         public bool GuardarRolConPermisos(List<int> idsOpcionesSeleccionadas)
         {
             using (SqlConnection con = Conexion.GetConexion())
@@ -76,6 +79,7 @@ namespace SistemaPlanilla.Modelo
             }
         }
 
+        //metodo para actualizar un rol con sus permisos
         public bool ActualizarRolConPermisos(List<int> nuevosPermisos)
         {
             using (SqlConnection con = Conexion.GetConexion())
@@ -111,6 +115,7 @@ namespace SistemaPlanilla.Modelo
             }
         }
 
+        //metodo para buscar roles por nombre
         public DataTable BuscarRoles(string filtro)
         {
             DataTable dt = new DataTable();

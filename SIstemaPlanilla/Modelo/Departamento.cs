@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace SIstemaPlanilla.Modelo
 {
-    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo
     internal class Departamento
     {
         public int IdDepartamento { get; set; }
@@ -17,6 +16,7 @@ namespace SIstemaPlanilla.Modelo
         public string NombreDepartamento { get; set; } = string.Empty;
         public string? Descripcion { get; set; }
 
+        //metodo para obtener todos los departamentos
         public DataTable ObtenerTodosLosDepartamentos()
         {
             DataTable dt = new DataTable();
@@ -35,6 +35,7 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para buscar departamentos por nombre
         public DataTable BuscarDepartamentos(string filtro)
         {
             DataTable dt = ObtenerTodosLosDepartamentos();
@@ -43,6 +44,7 @@ namespace SIstemaPlanilla.Modelo
             return dv.ToTable();
         }
 
+        //metodo para obtener los encargados de departamento para un combo box
         public DataTable ObtenerEncargadosCombo()
         {
             DataTable dt = new DataTable();
@@ -58,6 +60,7 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para insertar un departamento
         public bool Insertar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -85,6 +88,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
+        //metodo para actualizar un departamento
         public bool Actualizar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -113,6 +117,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
+        //metodo para eliminar un departamento
         public bool Eliminar(out string mensaje)
         {
             mensaje = string.Empty;

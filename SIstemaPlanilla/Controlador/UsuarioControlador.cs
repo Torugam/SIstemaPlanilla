@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace SIstemaPlanilla.Controlador
 {
+    // Implementación de métodos para manejar la lógica de negocio relacionada con las usuarios
     internal class UsuarioControlador
     {
 

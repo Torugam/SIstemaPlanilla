@@ -7,12 +7,14 @@ namespace SIstemaPlanilla.Controlador
 {
     internal class CapacitacionControlador
     {
+        // Implementación de métodos para manejar la lógica de negocio relacionada con las capacitaciones
         public DataTable ListarCapacitaciones()
         {
             Capacitacion obj = new Capacitacion();
             return obj.ObtenerTodasLasCapacitaciones();
         }
 
+        
         public DataTable BuscarCapacitaciones(string filtro)
         {
             Capacitacion obj = new Capacitacion();

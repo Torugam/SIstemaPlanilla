@@ -23,8 +23,9 @@ namespace SIstemaPlanilla.Modelo
         public string NombreRol { get; set; } = string.Empty;
         public string NombreEmpleado { get; set; } = string.Empty;
 
-        
-        
+
+
+        //metodo para leer todos los usuarios 
         public DataTable Leer()
         {
             DataTable dt = new DataTable();
@@ -41,7 +42,8 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
-        
+
+        //metodo para buscar usuarios por nombre de usuario o nombre de empleado
         public DataTable Buscar(string textoBuscado)
         {
             DataTable dt = new DataTable();
@@ -64,7 +66,8 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
-        
+
+        //metodo para insertar un nuevo usuario
         public bool Insertar()
         {
             using (SqlConnection con = Conexion.GetConexion())
@@ -84,7 +87,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
-       
+        //metodo para actualizar un usuario existente
         public bool Actualizar(bool actualizaPassword)
         {
             using (SqlConnection con = Conexion.GetConexion())
@@ -106,7 +109,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
-       
+        //metodo para cambiar el estado de un usuario (ACTIVO o INACTIVO)
         public bool CambiarEstado(string nuevoEstado)
         {
             using (SqlConnection con = Conexion.GetConexion())
@@ -124,6 +127,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
+        //metodo para validar el login de un usuario
         public bool ValidarLogin(string username, string passwordHash, out string mensaje)
         {
             mensaje = string.Empty;
@@ -180,6 +184,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
+        //metodo para obtener los roles para un combo box
         public DataTable ObtenerRolesParaCombo()
         {
             DataTable dt = new DataTable();
@@ -193,6 +198,7 @@ namespace SIstemaPlanilla.Modelo
             }
             return dt;
         }
+        //metodo para obtener los empleados activos para un combo box
 
         public DataTable ObtenerEmpleadosActivosParaCombo()
         {

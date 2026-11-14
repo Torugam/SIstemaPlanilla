@@ -11,6 +11,8 @@ namespace SistemaPlanilla.Modelo
         public string? Descripcion { get; set; }
         public int HorasDuracion { get; set; }
 
+
+        // metodo para obtener todas las capacitaciones
         public DataTable ObtenerTodasLasCapacitaciones()
         {
             DataTable dt = new DataTable();
@@ -25,6 +27,7 @@ namespace SistemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para buscar capacitaciones por nombre o descripcion
         public DataTable BuscarCapacitaciones(string filtro)
         {
             DataTable dt = new DataTable();
@@ -44,6 +47,7 @@ namespace SistemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para insertar una nueva capacitacion
         public bool Insertar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -72,6 +76,7 @@ namespace SistemaPlanilla.Modelo
             }
         }
 
+        //metodo para actualizar una capacitacion existente
         public bool Actualizar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -101,6 +106,7 @@ namespace SistemaPlanilla.Modelo
             }
         }
 
+        //metodo para eliminar una capacitacion
         public bool Eliminar(out string mensaje)
         {
             mensaje = string.Empty;

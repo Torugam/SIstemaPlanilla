@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace SIstemaPlanilla.Modelo
 {
-    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo
     internal class Empleado
     {
         public int IdEmpleado { get; set; }
@@ -20,6 +19,7 @@ namespace SIstemaPlanilla.Modelo
         public int IdCargo { get; set; }
         public string Estado { get; set; } = "ACTIVO";
 
+        // Método para obtener la lista de empleados
         public DataTable ObtenerEmpleados(string filtro = "")
         {
             DataTable dt = new DataTable();
@@ -39,6 +39,7 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
+        // Método para obtener la lista de cargos para el combo box
         public DataTable ObtenerCargosParaCombo()
         {
             DataTable dt = new DataTable();
@@ -57,6 +58,7 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
+        // Método para insertar un nuevo empleado
         public bool Insertar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -86,6 +88,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
+        // Método para actualizar un empleado existente
         public bool Actualizar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -116,6 +119,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
+        // Método para cambiar el estado de un empleado
         public bool CambiarEstado(out string mensaje)
         {
             mensaje = string.Empty;

@@ -29,6 +29,7 @@ namespace SIstemaPlanilla.Vista
             CargarGrid();
         }
 
+        // metodo para cargar los combos de roles y empleados
         private void CargarCombos()
         {
             int rolActual = cmbRoles.SelectedValue != null ? Convert.ToInt32(cmbRoles.SelectedValue) : 0;
@@ -55,6 +56,7 @@ namespace SIstemaPlanilla.Vista
             cmbEmpleado.SelectedValue = empActual;
         }
 
+        // metodo para cargar el grid de usuarios
         private void CargarGrid()
         {
             try
@@ -72,6 +74,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // metodo para limpiar los campos del formulario
         private void Limpiar()
         {
             idUsuarioSeleccionado = 0;
@@ -84,6 +87,7 @@ namespace SIstemaPlanilla.Vista
             btnEliminar.Text = "Desactivar";
         }
 
+        // metodo para validar los campos del formulario
         private bool ValidarCampos(bool esNuevo)
         {
             if (string.IsNullOrWhiteSpace(txtUsuario.Text) || Convert.ToInt32(cmbRoles.SelectedValue) == 0)
@@ -99,6 +103,7 @@ namespace SIstemaPlanilla.Vista
             return true;
         }
 
+        //evento para el boton guardar, que valida los campos y guarda un nuevo usuario
         private void btnGuardar_Click(object sender, EventArgs e)
         {
             if (!ValidarCampos(true)) return;
@@ -123,6 +128,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        //evento para el boton actualizar, que valida los campos y actualiza un usuario existente
         private void btnActualizar_Click(object sender, EventArgs e)
         {
             if (idUsuarioSeleccionado == 0)
@@ -156,6 +162,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        //evento para el boton eliminar, que cambia el estado del usuario seleccionado
         private void btnEliminar_Click(object sender, EventArgs e)
         {
             if (idUsuarioSeleccionado == 0)
@@ -184,6 +191,7 @@ namespace SIstemaPlanilla.Vista
 
         }
 
+        //evento para el textbox de busqueda, que filtra los usuarios en el grid
         private void txtBuscar_TextChanged(object sender, EventArgs e)
         {
             string filtro = txtBuscar.Text.Trim();
@@ -198,6 +206,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        //evento para el click en una celda del grid, que carga los datos del usuario seleccionado en los campos del formulario
         private void dgvUsuarios_CellClick(object sender, DataGridViewCellEventArgs e)
         {
 
@@ -222,12 +231,14 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        //evento para el boton limpiar, que limpia los campos del formulario y recarga el grid
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             Limpiar();
             CargarGrid();
         }
 
+        //metodo para aplicar el diseño personalizado a los controles del formulario
         private void Diseño()
         {
             Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321");

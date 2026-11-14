@@ -11,6 +11,7 @@ namespace SIstemaPlanilla.Controlador
 {
     internal class CapacitacionEmpleadoControlador
     {
+        //// Implementación de métodos para manejar la lógica de negocio relacionada con CapacitacionEmpleado
         public DataTable ListarRegistros()
         {
             CapacitacionEmpleado obj = new CapacitacionEmpleado();

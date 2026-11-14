@@ -11,12 +11,14 @@ namespace SIstemaPlanilla.Modelo
 {
     internal class CapacitacionEmpleado
     {
+        
         public int IdEmpleado { get; set; }
         public int IdCapacitacion { get; set; }
         public DateTime FechaRealizacion { get; set; }
         public DateTime FechaOriginal { get; set; }   
         public decimal? Calificacion { get; set; }
 
+        //metodo para obtener todos los registros de la vista VW_EmpleadoCapacitacionLeer
         public DataTable ObtenerTodos()
         {
             DataTable dt = new DataTable();
@@ -32,6 +34,7 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para buscar registros en la vista VW_EmpleadoCapacitacionLeer por empleado o capacitacion
         public DataTable Buscar(string filtro)
         {
             DataTable dt = new DataTable();
@@ -51,6 +54,7 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para obtener los empleados y capacitaciones para llenar los combobox
         public DataTable ObtenerEmpleadosParaCombo()
         {
             DataTable dt = new DataTable();
@@ -81,6 +85,7 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para insertar un registro en la tabla EMPLEADO_CAPACITACION
         public bool Insertar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -115,6 +120,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
+        //metodo para actualizar un registro en la tabla EMPLEADO_CAPACITACION
         public bool Actualizar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -152,6 +158,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
+        //metodo para eliminar un registro en la tabla EMPLEADO_CAPACITACION
         public bool Eliminar(out string mensaje)
         {
             mensaje = string.Empty;

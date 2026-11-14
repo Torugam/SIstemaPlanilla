@@ -8,9 +8,10 @@ using SIstemaPlanilla.Modelo;
 
 namespace SIstemaPlanilla.Controlador
 {
-    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo
+  
     internal class EmpleadoControlador
     {
+        // Implementación de métodos para manejar la lógica de negocio relacionada con las entidades de empleados
         public DataTable ListarEmpleados(string filtro = "")
         {
             Empleado obj = new Empleado();

@@ -32,11 +32,14 @@ namespace SIstemaPlanilla.Vista
             CargarGrid();
         }
 
+        // Evento que se dispara cuando el formulario se activa
         private void CapacitacionesEmpleado_Activated(object sender, EventArgs e)
         {
             if (!haySeleccion) CargarCombos();
         }
 
+
+        // metodo para cargar los combos de empleadoscapacitaciones
         private void CargarCombos()
         {
             int empActual = cmbEmpleado.SelectedValue != null ? Convert.ToInt32(cmbEmpleado.SelectedValue) : 0;
@@ -65,6 +68,7 @@ namespace SIstemaPlanilla.Vista
             cmbCapacitacion.SelectedValue = capActual;
         }
 
+        // metodo para cargar el grid de empleadoscapacitaciones
         private void CargarGrid()
         {
             try
@@ -78,6 +82,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // metodo para configurar las columnas del grid de empleadoscapacitaciones
         private void ConfigurarColumnas()
         {
             if (dgvEmpleadoCapacitacion.Columns["ID_EMPLEADO"] != null) dgvEmpleadoCapacitacion.Columns["ID_EMPLEADO"].Visible = false;
@@ -86,6 +91,7 @@ namespace SIstemaPlanilla.Vista
                 dgvEmpleadoCapacitacion.Columns["FechaRealizacion"].DefaultCellStyle.Format = "dd/MM/yyyy";
         }
 
+        // metodo para limpiar los campos del formulario
         private void Limpiar()
         {
             haySeleccion = false;
@@ -102,6 +108,7 @@ namespace SIstemaPlanilla.Vista
             cmbEmpleado.Focus();
         }
 
+        // metodo para validar los campos del formulario
         private bool ValidarCampos(bool esNuevo, out decimal? calificacion)
         {
             calificacion = null;
@@ -132,6 +139,7 @@ namespace SIstemaPlanilla.Vista
             return true;
         }
 
+        // evento que guarda un nuevo registro de capacitación para un empleado
         private void btnGuardar_Click(object sender, EventArgs e)
         {
             if (haySeleccion)
@@ -162,6 +170,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento que actualiza un registro de capacitación para un empleado
         private void btnActualizar_Click(object sender, EventArgs e)
         {
             if (!haySeleccion)
@@ -192,6 +201,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento que elimina un registro de capacitación para un empleado
         private void btnEliminar_Click(object sender, EventArgs e)
         {
             if (!haySeleccion)
@@ -215,6 +225,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento que filtra los registros en el grid de empleadoscapacitaciones según el texto ingresado en el textbox de búsqueda
         private void txtBuscar_TextChanged(object sender, EventArgs e)
         {
             string filtro = txtBuscar.Text.Trim();
@@ -227,6 +238,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // evento para seleccionar un registro de capacitación para un empleado al hacer clic en una celda del grid
         private void dgvEmpleadoCapacitacion_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
@@ -250,12 +262,15 @@ namespace SIstemaPlanilla.Vista
             cmbCapacitacion.Enabled = false;
         }
 
+        // evento que limpia los campos del formulario y recarga el grid de empleadoscapacitaciones
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             Limpiar();
             CargarGrid();
         }
 
+
+        // metodo para aplicar el diseño al formulario y sus controles
         private void Diseño()
         {
             Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321");

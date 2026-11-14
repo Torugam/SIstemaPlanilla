@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace SIstemaPlanilla.Modelo
 {
-    //Comentario de prueba para ver si se sube al repositorio. Ignorenlo
     internal class Contrato
     {
         public int IdEmpleado { get; set; }
-        public string TipoContrato { get; set; } = string.Empty; // "PERMANENTE" o "TEMPORAL"
+        public string TipoContrato { get; set; } = string.Empty; 
         public decimal SalarioBase { get; set; }
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFin { get; set; }
         public bool EsTemporal => TipoContrato.Equals("TEMPORAL", StringComparison.OrdinalIgnoreCase);
 
+        //metodo para obtener los contratos 
         public DataTable ObtenerContratos(string filtro = "")
         {
             DataTable dt = new DataTable();
@@ -38,6 +38,7 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para obtener los empleados sin contrato
         public DataTable ObtenerEmpleadosSinContrato()
         {
             DataTable dt = new DataTable();
@@ -56,6 +57,7 @@ namespace SIstemaPlanilla.Modelo
             return dt;
         }
 
+        //metodo para insertar un contrato
         public bool Insertar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -87,6 +89,12 @@ namespace SIstemaPlanilla.Modelo
                             cmd.ExecuteNonQuery();
                         }
                     }
+                    else
+                    {
+                        mensaje = "Tipo de contrato no válido.";
+                        return false;
+                    }
+                    
                 }
                 return true;
             }
@@ -97,6 +105,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
+        //metodo para actualizar un contrato
         public bool Actualizar(out string mensaje)
         {
             mensaje = string.Empty;
@@ -126,6 +135,7 @@ namespace SIstemaPlanilla.Modelo
             }
         }
 
+        //metodo para eliminar un contrato
         public bool Eliminar(out string mensaje)
         {
             mensaje = string.Empty;
