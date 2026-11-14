@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace SIstemaPlanilla.Vista
 {
-    public partial class Planillas : Form // <-- Ajusta a 'planilla' o 'Planillas' si tu archivo .Designer.cs usa ese nombre
+    public partial class Planillas : Form 
     {
         private PlanilleroControlador controlador = new PlanilleroControlador();
         private int idPlanillaActual = 0;
@@ -40,7 +40,7 @@ namespace SIstemaPlanilla.Vista
 
             Label lblTitulo = new Label { Text = "PLANILLAS", Font = new Font("Segoe UI", 16F, FontStyle.Bold), Location = new Point(25, 20), AutoSize = true };
 
-            // Fila 1: Selección de Periodo y Búsqueda Dinámica
+            
             Label lblQuincena = new Label { Text = "Quincena:", Font = new Font("Segoe UI", 9.5F), Location = new Point(30, 68), AutoSize = true };
             cmbQuincena = new ComboBox { Location = new Point(108, 65), Width = 180, DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 9.5F) };
             cmbQuincena.Items.AddRange(new object[] { "1 - Primera Quincena", "2 - Segunda Quincena" });
@@ -58,7 +58,7 @@ namespace SIstemaPlanilla.Vista
             txtBuscar = new TextBox { Location = new Point(656, 65), Width = 164, Font = new Font("Segoe UI", 9.5F) };
             txtBuscar.TextChanged += (s, e) => ConsultarPlanilla(txtBuscar.Text.Trim());
 
-            // Fila 2: Horas extra y Bonificaciones para el empleado seleccionado
+            
             lblEmpleadoSel = new Label
             {
                 Text = "Empleado: (Seleccione una fila)",
@@ -78,7 +78,7 @@ namespace SIstemaPlanilla.Vista
             btnAplicarExtras = new Button { Text = "Aplicar Extras", Location = new Point(725, 104), Size = new Size(125, 34) };
             btnAplicarExtras.Click += BtnAplicarExtras_Click;
 
-            // Tabla principal
+
             dgvPlanilla = new DataGridView
             {
                 Location = new Point(30, 155),
@@ -92,7 +92,7 @@ namespace SIstemaPlanilla.Vista
             dgvPlanilla.CellClick += DgvPlanilla_CellClick;
             dgvPlanilla.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) MostrarBoletaIndividual(); };
 
-            // Botones laterales
+  
             btnGenerar = new Button { Text = "Generar Planilla", Location = new Point(832, 155), Size = new Size(118, 42), Anchor = AnchorStyles.Top | AnchorStyles.Right };
             btnGenerar.Click += BtnGenerar_Click;
 
@@ -102,7 +102,7 @@ namespace SIstemaPlanilla.Vista
             btnBoleta = new Button { Text = "Ver Boleta", Location = new Point(832, 255), Size = new Size(118, 38), Anchor = AnchorStyles.Top | AnchorStyles.Right };
             btnBoleta.Click += (s, e) => MostrarBoletaIndividual();
 
-            // Totalizador inferior
+
             lblTotalPlanilla = new Label
             {
                 Text = "Total Neto a Pagar: $0.00",
@@ -123,6 +123,7 @@ namespace SIstemaPlanilla.Vista
         private int ObtenerMes() => cmbMes.SelectedIndex + 1;
         private int ObtenerAnio() => (int)nudAnio.Value;
 
+        // Pide confirmación y procesa la planilla quincenal calculando ley y cuotas de préstamos
         private void BtnGenerar_Click(object? sender, EventArgs e)
         {
             if (MessageBox.Show($"¿Confirma generar la planilla de la Quincena {ObtenerQuincena()} de {cmbMes.Text} {ObtenerAnio()}?\nSe calcularán retenciones de ley y cuotas de préstamos activos.",
@@ -141,6 +142,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Consulta la planilla del período seleccionado, llena la tabla y suma el total neto a pagar
         private void ConsultarPlanilla(string filtro = "")
         {
             try
@@ -165,6 +167,8 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+
+        // Toma el ID del empleado seleccionado en la tabla y carga sus horas extra y bonos para editar
         private void DgvPlanilla_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
@@ -177,6 +181,8 @@ namespace SIstemaPlanilla.Vista
             txtBonificaciones.Text = row.Cells["Bonificaciones"].Value?.ToString() ?? "0.00";
         }
 
+
+        // Valida horas extra y bonificaciones del empleado seleccionado y recalcula sus deducciones
         private void BtnAplicarExtras_Click(object? sender, EventArgs e)
         {
             if (idPlanillaActual == 0 || idEmpleadoSeleccionado == 0)
@@ -206,6 +212,8 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+
+        // Obtiene el detalle individual del empleado seleccionado y abre su boleta de pago quincenal
         private void MostrarBoletaIndividual()
         {
             if (idPlanillaActual == 0 || idEmpleadoSeleccionado == 0)

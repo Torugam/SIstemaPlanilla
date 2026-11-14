@@ -19,11 +19,13 @@ namespace SIstemaPlanilla.Vista
             Diseño();
         }
 
+        // Evento al cargar el formulario: llena la tabla con los parámetros vigentes
         private void Parametros_Load(object sender, EventArgs e)
         {
             CargarGrid();
         }
 
+        // metodo para construir la interfaz de usuario 
         private void ConstruirInterfaz()
         {
             this.Controls.Clear();
@@ -75,6 +77,7 @@ namespace SIstemaPlanilla.Vista
             });
         }
 
+        // Consulta los parámetros de ley desde el controlador, los carga en el DataGridView y configura los encabezados de columna
         private void CargarGrid(string filtro = "")
         {
             try
@@ -124,6 +127,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        //valida los datos numericos, confirma y actualiza el parametro de ley seleccionado en la base de datos 
         private void BtnActualizar_Click(object? sender, EventArgs e)
         {
             if (idParametroSeleccionado == 0)
@@ -161,7 +165,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
-
+        // Carga los datos de la fila seleccionada en el DataGridView hacia las cajas de texto para la edición
         private void DgvParametros_CellClick(object? sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
@@ -175,7 +179,7 @@ namespace SIstemaPlanilla.Vista
             txtTramoHasta.Text = row.Cells["TRAMO_HASTA"].Value == DBNull.Value ? "" : row.Cells["TRAMO_HASTA"].Value.ToString();
         }
 
-
+        //reinicia los campos de texto y el id del parametro seleccionado
         private void Limpiar()
         {
             idParametroSeleccionado = 0;
@@ -191,6 +195,8 @@ namespace SIstemaPlanilla.Vista
             return decimal.TryParse(texto.Trim().Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out valor);
         }
 
+
+        //metodo para aplicar el diseño de la interfaz de usuario
         private void Diseño()
         {
             Color azulMuyOscuro = ColorTranslator.FromHtml("#0D1321");

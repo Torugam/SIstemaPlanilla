@@ -102,6 +102,8 @@ namespace SIstemaPlanilla.Vista
             });
         }
 
+
+        // Carga en el ComboBox los empleados activos con contrato vigente
         private void CargarComboEmpleados()
         {
             try
@@ -122,6 +124,8 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Lista los préstamos registrados en la tabla según el filtro de búsqueda
+
         private void CargarGrid(string filtro = "")
         {
             try
@@ -136,6 +140,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Calcula automáticamente la cuota quincenal dividiendo el monto total entre el plazo
         private void CalcularCuotaPorPlazo()
         {
             if (decimal.TryParse(txtMontoTotal.Text.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal monto) && monto > 0)
@@ -149,6 +154,7 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+        // Valida monto y cuota, y registra el nuevo préstamo en la base de datos
         private void BtnGuardar_Click(object? sender, EventArgs e)
         {
             int idEmpleado = cmbEmpleado.SelectedValue != null ? Convert.ToInt32(cmbEmpleado.SelectedValue) : 0;
@@ -184,6 +190,8 @@ namespace SIstemaPlanilla.Vista
             }
         }
 
+
+        // Muestra en una ventana emergente los abonos descontados al préstamo seleccionado
         private void MostrarHistorialPagos()
         {
             if (idPrestamoSeleccionado == 0)
