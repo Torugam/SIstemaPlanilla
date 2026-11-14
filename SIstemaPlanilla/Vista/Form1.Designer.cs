@@ -174,6 +174,7 @@
             // 
             // sliderbar
             // 
+            sliderbar.AutoScroll = true;
             sliderbar.BackColor = Color.FromArgb(29, 48, 64);
             sliderbar.Controls.Add(menuContainer);
             sliderbar.Controls.Add(menuPlanilla);
@@ -183,7 +184,7 @@
             sliderbar.FlowDirection = FlowDirection.TopDown;
             sliderbar.Location = new Point(0, 39);
             sliderbar.Name = "sliderbar";
-            sliderbar.Size = new Size(245, 632);
+            sliderbar.Size = new Size(248, 632);
             sliderbar.TabIndex = 2;
             sliderbar.WrapContents = false;
             // 
@@ -199,7 +200,7 @@
             menuContainer.Controls.Add(panel2);
             menuContainer.Location = new Point(3, 3);
             menuContainer.Name = "menuContainer";
-            menuContainer.Size = new Size(248, 48);
+            menuContainer.Size = new Size(245, 48);
             menuContainer.TabIndex = 7;
             // 
             // panel7
@@ -408,7 +409,7 @@
             menuPlanilla.Controls.Add(panel11);
             menuPlanilla.Location = new Point(3, 57);
             menuPlanilla.Name = "menuPlanilla";
-            menuPlanilla.Size = new Size(248, 48);
+            menuPlanilla.Size = new Size(245, 48);
             menuPlanilla.TabIndex = 8;
             // 
             // panel10
@@ -528,7 +529,7 @@
             menuAdministracion.FlowDirection = FlowDirection.TopDown;
             menuAdministracion.Location = new Point(3, 111);
             menuAdministracion.Name = "menuAdministracion";
-            menuAdministracion.Size = new Size(248, 48);
+            menuAdministracion.Size = new Size(245, 48);
             menuAdministracion.TabIndex = 9;
             menuAdministracion.Paint += menuAdministracion_Paint;
             // 
@@ -624,7 +625,7 @@
             btnCerrar.Location = new Point(3, 165);
             btnCerrar.Name = "btnCerrar";
             btnCerrar.Padding = new Padding(10, 0, 0, 0);
-            btnCerrar.Size = new Size(248, 48);
+            btnCerrar.Size = new Size(245, 48);
             btnCerrar.TabIndex = 4;
             btnCerrar.Text = "           Cerrar sesión";
             btnCerrar.TextAlign = ContentAlignment.MiddleLeft;

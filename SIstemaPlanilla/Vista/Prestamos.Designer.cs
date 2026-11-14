@@ -50,6 +50,7 @@
             FormBorderStyle = FormBorderStyle.None;
             Name = "Prestamos";
             Text = "Prestamos";
+            Activated += Prestamos_Activated;
             Load += Prestamos_Load;
             ResumeLayout(false);
             PerformLayout();

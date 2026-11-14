@@ -293,6 +293,7 @@ namespace SIstemaPlanilla.Vista
         private void Usuarios_Activated(object sender, EventArgs e)
         {
             CargarCombos();
+            CargarGrid();
         }
     }
 }

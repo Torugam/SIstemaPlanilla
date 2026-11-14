@@ -278,5 +278,10 @@ namespace SIstemaPlanilla.Vista
                 txt.Leave += (s, e) => { txt.BackColor = ColorTranslator.FromHtml("#F9F9F9"); };
             }
         }
+
+        private void Prestamos_Activated(object sender, EventArgs e)
+        {
+            CargarComboEmpleados();
+        }
     }
 }
