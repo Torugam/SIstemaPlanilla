@@ -7,7 +7,7 @@ namespace SIstemaPlanilla.Controlador
 {
     public class PlanilleroControlador
     {
-        // 1. PARÁMETROS DE LEY (ISSS, AFP, RENTA)
+        // parametros de ley (ISSS, AFP, RENTA)
         public DataTable ListarParametrosLey(string filtro = "")
         {
             DataTable dt = new DataTable();
@@ -47,7 +47,7 @@ namespace SIstemaPlanilla.Controlador
             }
         }
 
-        // 2. PRÉSTAMOS INTERNOS
+        //parametros internos 
         public DataTable ListarEmpleadosActivosCombo()
         {
             DataTable dt = new DataTable();
@@ -128,8 +128,8 @@ namespace SIstemaPlanilla.Controlador
             return dt;
         }
 
-        
-        // 3. GENERACIÓN Y CONSULTA DE PLANILLAS QUINCENALES
+
+        // proceso para generar planilla quincenal y consultar 
 
         public int GenerarPlanillaQuincenal(int periodoQuincenal, int mes, int anio)
         {
@@ -196,7 +196,7 @@ namespace SIstemaPlanilla.Controlador
             }
         }
         
-        // 4. BOLETA DE PAGO INDIVIDUAL  PARAVISTA VW_BoletaPagoIndividual
+        // boleta de pago individual para la vista VW_BoletaPagoIndividual
         public DataTable ConsultarBoletaIndividual(int idPlanilla, int idEmpleado)
         {
             DataTable dt = new DataTable();
