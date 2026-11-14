@@ -154,6 +154,7 @@ namespace SIstemaPlanilla.Vista
                 if (dgvContratos != null)
                 {
                     dgvContratos.DataSource = controlador.ListarContratos(filtro);
+                    OcultarColumnasId();
                 }
             }
             catch (Exception ex)
@@ -399,6 +400,17 @@ namespace SIstemaPlanilla.Vista
             LimpiarCampos();
         }
 
+        private void OcultarColumnasId()
+        {
+            if (dgvContratos == null) return;
+
+            foreach (DataGridViewColumn c in dgvContratos.Columns)
+            {
+                if (c.Name.Equals("ID_EMPLEADO", StringComparison.OrdinalIgnoreCase))
+                    c.Visible = false;
+            }
+        }
+
         private void btnBuscar_Click(object? sender, EventArgs e)
         {
             string nombreBuscado = txtBuscar?.Text.Trim() ?? "";
@@ -418,6 +430,7 @@ namespace SIstemaPlanilla.Vista
                 if (dgvContratos != null)
                 {
                     dgvContratos.DataSource = dt;
+                    OcultarColumnasId();
                 }
 
                 if (dt.Rows.Count > 0)

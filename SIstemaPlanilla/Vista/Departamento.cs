@@ -113,12 +113,24 @@ namespace SIstemaPlanilla.Vista
                 if (dgvDepartamentos != null)
                 {
                     dgvDepartamentos.DataSource = controlador.ListarDepartamentos();
+                    OcultarColumnasId();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error al cargar los departamentos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void OcultarColumnasId()
+        {
+            if (dgvDepartamentos == null) return;
+
+            if (dgvDepartamentos.Columns["ID_EMPLEADO"] != null)
+                dgvDepartamentos.Columns["ID_EMPLEADO"].Visible = false;
+
+            if (dgvDepartamentos.Columns["ID_DEPARTAMENTO"] != null)
+                dgvDepartamentos.Columns["ID_DEPARTAMENTO"].Visible = false;
         }
 
         private void CargarComboEncargados()
@@ -300,6 +312,7 @@ namespace SIstemaPlanilla.Vista
                 if (dgvDepartamentos != null)
                 {
                     dgvDepartamentos.DataSource = dtFiltrado;
+                    OcultarColumnasId();
                 }
 
                 if (dtFiltrado.Rows.Count > 0)

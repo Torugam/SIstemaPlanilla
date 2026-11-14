@@ -17,6 +17,8 @@
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Empleado));
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             label1 = new Label();
             lblNombre = new Label();
             txtNombre = new TextBox();
@@ -43,86 +45,86 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 16.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.Location = new Point(64, 39);
+            label1.Location = new Point(73, 52);
             label1.Name = "label1";
-            label1.Size = new Size(143, 30);
+            label1.Size = new Size(183, 38);
             label1.TabIndex = 0;
             label1.Text = "EMPLEADOS";
             // 
             // lblNombre
             // 
             lblNombre.AutoSize = true;
-            lblNombre.Location = new Point(165, 135);
+            lblNombre.Location = new Point(57, 177);
             lblNombre.Name = "lblNombre";
-            lblNombre.Size = new Size(110, 15);
+            lblNombre.Size = new Size(137, 20);
             lblNombre.TabIndex = 1;
             lblNombre.Text = "Nombre Completo:";
             // 
             // txtNombre
             // 
-            txtNombre.Location = new Point(287, 133);
-            txtNombre.Margin = new Padding(3, 2, 3, 2);
+            txtNombre.Location = new Point(219, 177);
             txtNombre.Name = "txtNombre";
-            txtNombre.Size = new Size(219, 23);
+            txtNombre.PlaceholderText = "Nombre";
+            txtNombre.Size = new Size(250, 27);
             txtNombre.TabIndex = 2;
             // 
             // lblDui
             // 
             lblDui.AutoSize = true;
-            lblDui.Location = new Point(165, 165);
+            lblDui.Location = new Point(57, 224);
             lblDui.Name = "lblDui";
-            lblDui.Size = new Size(29, 15);
+            lblDui.Size = new Size(37, 20);
             lblDui.TabIndex = 3;
             lblDui.Text = "DUI:";
             // 
             // txtDui
             // 
-            txtDui.Location = new Point(287, 163);
-            txtDui.Margin = new Padding(3, 2, 3, 2);
+            txtDui.Location = new Point(219, 217);
             txtDui.Name = "txtDui";
-            txtDui.Size = new Size(219, 23);
+            txtDui.PlaceholderText = "0000000-0";
+            txtDui.Size = new Size(250, 27);
             txtDui.TabIndex = 4;
             // 
             // lblDireccion
             // 
             lblDireccion.AutoSize = true;
-            lblDireccion.Location = new Point(532, 135);
+            lblDireccion.Location = new Point(579, 180);
             lblDireccion.Name = "lblDireccion";
-            lblDireccion.Size = new Size(60, 15);
+            lblDireccion.Size = new Size(75, 20);
             lblDireccion.TabIndex = 5;
             lblDireccion.Text = "Dirección:";
             // 
             // txtDireccion
             // 
-            txtDireccion.Location = new Point(611, 133);
-            txtDireccion.Margin = new Padding(3, 2, 3, 2);
+            txtDireccion.Location = new Point(682, 177);
             txtDireccion.Name = "txtDireccion";
-            txtDireccion.Size = new Size(202, 23);
+            txtDireccion.PlaceholderText = "Dirección";
+            txtDireccion.Size = new Size(230, 27);
             txtDireccion.TabIndex = 6;
             // 
             // lblTelefono
             // 
             lblTelefono.AutoSize = true;
-            lblTelefono.Location = new Point(532, 165);
+            lblTelefono.Location = new Point(579, 224);
             lblTelefono.Name = "lblTelefono";
-            lblTelefono.Size = new Size(56, 15);
+            lblTelefono.Size = new Size(70, 20);
             lblTelefono.TabIndex = 7;
             lblTelefono.Text = "Teléfono:";
             // 
             // txtTelefono
             // 
-            txtTelefono.Location = new Point(611, 163);
-            txtTelefono.Margin = new Padding(3, 2, 3, 2);
+            txtTelefono.Location = new Point(682, 221);
             txtTelefono.Name = "txtTelefono";
-            txtTelefono.Size = new Size(202, 23);
+            txtTelefono.PlaceholderText = "0000-0000";
+            txtTelefono.Size = new Size(230, 27);
             txtTelefono.TabIndex = 8;
             // 
             // lblCargo
             // 
             lblCargo.AutoSize = true;
-            lblCargo.Location = new Point(165, 195);
+            lblCargo.Location = new Point(57, 263);
             lblCargo.Name = "lblCargo";
-            lblCargo.Size = new Size(42, 15);
+            lblCargo.Size = new Size(52, 20);
             lblCargo.TabIndex = 9;
             lblCargo.Text = "Cargo:";
             // 
@@ -130,69 +132,79 @@
             // 
             cbCargos.DropDownStyle = ComboBoxStyle.DropDownList;
             cbCargos.FormattingEnabled = true;
-            cbCargos.Location = new Point(287, 193);
-            cbCargos.Margin = new Padding(3, 2, 3, 2);
+            cbCargos.Location = new Point(219, 260);
             cbCargos.Name = "cbCargos";
-            cbCargos.Size = new Size(219, 23);
+            cbCargos.Size = new Size(250, 28);
             cbCargos.TabIndex = 10;
             // 
             // btnGuardar
             // 
-            btnGuardar.Location = new Point(532, 193);
-            btnGuardar.Margin = new Padding(3, 2, 3, 2);
+            btnGuardar.Location = new Point(568, 276);
             btnGuardar.Name = "btnGuardar";
-            btnGuardar.Size = new Size(70, 24);
+            btnGuardar.Size = new Size(86, 32);
             btnGuardar.TabIndex = 11;
             btnGuardar.Text = "Guardar";
             btnGuardar.UseVisualStyleBackColor = true;
             // 
             // btnModificar
             // 
-            btnModificar.Location = new Point(611, 193);
-            btnModificar.Margin = new Padding(3, 2, 3, 2);
+            btnModificar.Location = new Point(670, 276);
             btnModificar.Name = "btnModificar";
-            btnModificar.Size = new Size(70, 24);
+            btnModificar.Size = new Size(86, 32);
             btnModificar.TabIndex = 12;
             btnModificar.Text = "Modificar";
             btnModificar.UseVisualStyleBackColor = true;
             // 
             // btnEliminar
             // 
-            btnEliminar.Location = new Point(689, 193);
-            btnEliminar.Margin = new Padding(3, 2, 3, 2);
+            btnEliminar.Location = new Point(771, 276);
             btnEliminar.Name = "btnEliminar";
-            btnEliminar.Size = new Size(70, 24);
+            btnEliminar.Size = new Size(92, 32);
             btnEliminar.TabIndex = 13;
-            btnEliminar.Text = "Eliminar";
+            btnEliminar.Text = "Desactivar";
             btnEliminar.UseVisualStyleBackColor = true;
             // 
             // btnLimpiar
             // 
-            btnLimpiar.Location = new Point(768, 193);
-            btnLimpiar.Margin = new Padding(3, 2, 3, 2);
+            btnLimpiar.Image = (Image)resources.GetObject("btnLimpiar.Image");
+            btnLimpiar.Location = new Point(1021, 276);
             btnLimpiar.Name = "btnLimpiar";
-            btnLimpiar.Size = new Size(66, 24);
+            btnLimpiar.Size = new Size(41, 35);
             btnLimpiar.TabIndex = 14;
-            btnLimpiar.Text = "Limpiar";
             btnLimpiar.UseVisualStyleBackColor = true;
             // 
             // dgvEmpleados
             // 
+            dgvEmpleados.AllowUserToAddRows = false;
+            dgvEmpleados.AllowUserToDeleteRows = false;
             dgvEmpleados.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvEmpleados.BackgroundColor = Color.FromArgb(240, 235, 216);
             dgvEmpleados.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvEmpleados.Location = new Point(108, 250);
-            dgvEmpleados.Margin = new Padding(3, 2, 3, 2);
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Window;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle1.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(116, 140, 171);
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.False;
+            dgvEmpleados.DefaultCellStyle = dataGridViewCellStyle1;
+            dgvEmpleados.Location = new Point(31, 331);
+            dgvEmpleados.MultiSelect = false;
             dgvEmpleados.Name = "dgvEmpleados";
+            dgvEmpleados.ReadOnly = true;
+            dgvEmpleados.RowHeadersVisible = false;
             dgvEmpleados.RowHeadersWidth = 51;
-            dgvEmpleados.Size = new Size(824, 216);
+            dgvEmpleados.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvEmpleados.Size = new Size(1031, 194);
             dgvEmpleados.TabIndex = 15;
             dgvEmpleados.CellContentClick += dgvEmpleados_CellContentClick;
             // 
             // btnBuscar
             // 
-            btnBuscar.Location = new Point(652, 70);
+            btnBuscar.Location = new Point(745, 93);
+            btnBuscar.Margin = new Padding(3, 4, 3, 4);
             btnBuscar.Name = "btnBuscar";
-            btnBuscar.Size = new Size(75, 23);
+            btnBuscar.Size = new Size(86, 31);
             btnBuscar.TabIndex = 16;
             btnBuscar.Text = "Buscar";
             btnBuscar.UseVisualStyleBackColor = true;
@@ -200,26 +212,27 @@
             // 
             // txtBuscar
             // 
-            txtBuscar.Location = new Point(311, 71);
+            txtBuscar.Location = new Point(355, 95);
+            txtBuscar.Margin = new Padding(3, 4, 3, 4);
             txtBuscar.Name = "txtBuscar";
-            txtBuscar.Size = new Size(326, 23);
+            txtBuscar.PlaceholderText = "Buscar por nombre del empleado";
+            txtBuscar.Size = new Size(372, 27);
             txtBuscar.TabIndex = 17;
-            txtBuscar.Text = "Buscar por nombre del empleado";
             // 
             // lblBuscar
             // 
             lblBuscar.AutoSize = true;
-            lblBuscar.Location = new Point(269, 74);
+            lblBuscar.Location = new Point(307, 99);
             lblBuscar.Name = "lblBuscar";
-            lblBuscar.Size = new Size(42, 15);
+            lblBuscar.Size = new Size(52, 20);
             lblBuscar.TabIndex = 18;
             lblBuscar.Text = "Buscar";
             // 
             // Empleado
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(967, 488);
+            ClientSize = new Size(1105, 651);
             Controls.Add(lblBuscar);
             Controls.Add(txtBuscar);
             Controls.Add(btnBuscar);
@@ -240,9 +253,9 @@
             Controls.Add(lblNombre);
             Controls.Add(label1);
             FormBorderStyle = FormBorderStyle.None;
-            Margin = new Padding(3, 2, 3, 2);
             Name = "Empleado";
             Text = "Empleado";
+            Activated += Empleado_Activated;
             Load += Empleado_Load;
             ((System.ComponentModel.ISupportInitialize)dgvEmpleados).EndInit();
             ResumeLayout(false);

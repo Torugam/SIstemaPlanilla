@@ -39,7 +39,6 @@ namespace SIstemaPlanilla.Vista
             }
             Diseño();
             this.Load += Empleado_Load;
-            this.Activated += Empleados_Activated;
         }
 
         private void Diseño()
@@ -182,6 +181,7 @@ namespace SIstemaPlanilla.Vista
                 if (dgvEmpleados != null)
                 {
                     dgvEmpleados.DataSource = controlador.ListarEmpleados(filtro);
+                    OcultarColumnasId();
                     if (dgvEmpleados.Columns["ID_CARGO"] != null)
                         dgvEmpleados.Columns["ID_CARGO"].Visible = false;
                 }
@@ -374,10 +374,6 @@ namespace SIstemaPlanilla.Vista
             LimpiarCampos();
         }
 
-        private void Empleados_Activated(object? sender, EventArgs e)
-        {
-            CargarComboCargos();
-        }
 
         private void btnBuscar_Click(object? sender, EventArgs e)
         {
@@ -398,6 +394,7 @@ namespace SIstemaPlanilla.Vista
                 if (dgvEmpleados != null)
                 {
                     dgvEmpleados.DataSource = dt;
+                    OcultarColumnasId();
                     if (dgvEmpleados.Columns["ID_CARGO"] != null)
                         dgvEmpleados.Columns["ID_CARGO"].Visible = false;
                 }
@@ -429,6 +426,22 @@ namespace SIstemaPlanilla.Vista
             {
                 MessageBox.Show("Error al buscar el empleado: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void Empleado_Activated(object sender, EventArgs e)
+        {
+            CargarComboCargos();
+        }
+
+        private void OcultarColumnasId()
+        {
+            if (dgvEmpleados == null) return;
+
+            if (dgvEmpleados.Columns["ID_EMPLEADO"] != null)
+                dgvEmpleados.Columns["ID_EMPLEADO"].Visible = false;
+
+            if (dgvEmpleados.Columns["ID_CARGO"] != null)
+                dgvEmpleados.Columns["ID_CARGO"].Visible = false;
         }
     }
 }

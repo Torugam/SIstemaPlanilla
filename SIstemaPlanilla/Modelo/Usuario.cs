@@ -112,7 +112,6 @@ namespace SIstemaPlanilla.Modelo
             using (SqlConnection con = Conexion.GetConexion())
             {
                 if (con == null) return false;
-
                 using (SqlCommand cmd = new SqlCommand("SP_GestionarEstadoUsuario", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;

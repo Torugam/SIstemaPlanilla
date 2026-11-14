@@ -179,6 +179,8 @@ namespace SIstemaPlanilla.Vista
                 }
             }
 
+            CargarGrid();
+
 
         }
 
