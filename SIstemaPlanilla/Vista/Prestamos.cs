@@ -53,7 +53,7 @@ namespace SIstemaPlanilla.Vista
             txtBuscar = new TextBox { Location = new Point(200, 65), Width = 480, Font = new Font("Segoe UI", 9.5F) };
             txtBuscar.TextChanged += (s, e) => CargarGrid(txtBuscar.Text.Trim());
 
-            // Fila 1: Empleado y Monto Total
+            //Empleado y Monto Total
             Label lblEmp = new Label { Text = "Empleado", Font = new Font("Segoe UI", 9.5F), Location = new Point(50, 115), AutoSize = true };
             cmbEmpleado = new ComboBox { Location = new Point(145, 112), Width = 300, DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 9.5F) };
 
@@ -61,7 +61,7 @@ namespace SIstemaPlanilla.Vista
             txtMontoTotal = new TextBox { Location = new Point(605, 112), Width = 140, Font = new Font("Segoe UI", 9.5F) };
             txtMontoTotal.TextChanged += (s, e) => CalcularCuotaPorPlazo();
 
-            // Fila 2: Plazo en quincenas y Cuota Quincenal calculada
+            //Plazo en quincenas y Cuota Quincenal calculada
             Label lblPlazo = new Label { Text = "Plazo (Quincenas)", Font = new Font("Segoe UI", 9.5F), Location = new Point(50, 155), AutoSize = true };
             nudPlazoQuincenas = new NumericUpDown { Location = new Point(195, 152), Width = 90, Minimum = 1, Maximum = 120, Value = 4, Font = new Font("Segoe UI", 9.5F) };
             nudPlazoQuincenas.ValueChanged += (s, e) => CalcularCuotaPorPlazo();
